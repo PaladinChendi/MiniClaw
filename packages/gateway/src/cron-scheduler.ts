@@ -1,42 +1,60 @@
-interface CronJob {
-	id: string;
-	spec: string;
-	handler: () => Promise<void>;
-	lastRunAt: number;
+import type { CronEntry } from "./types.ts";
+
+export interface CronRegisterOptions {
+	jitterMs: number;
+	minIntervalMs: number;
+	pluginName: string;
 }
 
 export class CronScheduler {
-	private jobs = new Map<string, CronJob>();
-	private minIntervalMs: number;
-	private maxJitterMs: number;
+	private entries: Map<string, CronEntry> = new Map();
 
-	constructor(opts: { minIntervalMs?: number; maxJitterMs?: number } = {}) {
-		this.minIntervalMs = opts.minIntervalMs ?? 60000;
-		this.maxJitterMs = opts.maxJitterMs ?? 10000;
+	computeJitter(id: string, jitterMs: number): number {
+		if (jitterMs <= 0) return 0;
+		let hash = 0;
+		for (let i = 0; i < id.length; i++) {
+			hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
+		}
+		return Math.abs(hash % jitterMs);
 	}
 
-	register(id: string, spec: string, handler: () => Promise<void>): void {
-		this.jobs.set(id, { id, spec, handler, lastRunAt: 0 });
+	register(id: string, spec: string, handler: () => Promise<void>, opts: CronRegisterOptions): void {
+		const entry: CronEntry = {
+			id,
+			spec,
+			handler,
+			jitterMs: opts.jitterMs,
+			minIntervalMs: opts.minIntervalMs,
+			lastRunAt: null,
+			pluginName: opts.pluginName,
+		};
+		this.entries.set(id, entry);
 	}
 
 	unregister(id: string): void {
-		this.jobs.delete(id);
+		this.entries.delete(id);
 	}
 
-	getJitterMs(id: string): number {
-		let hash = 0;
-		for (let i = 0; i < id.length; i++) {
-			hash = (hash * 31 + id.charCodeAt(i)) | 0;
+	list(): CronEntry[] {
+		return Array.from(this.entries.values());
+	}
+
+	async tryRun(id: string): Promise<boolean> {
+		const entry = this.entries.get(id);
+		if (!entry) return false;
+
+		if (entry.minIntervalMs > 0 && entry.lastRunAt !== null) {
+			const elapsed = Date.now() - entry.lastRunAt;
+			if (elapsed < entry.minIntervalMs) {
+				return false;
+			}
 		}
-		return Math.abs(hash) % this.maxJitterMs;
-	}
 
-	async tryRun(id: string): Promise<void> {
-		const job = this.jobs.get(id);
-		if (!job) throw new Error(`Job ${id} not registered`);
-		const now = Date.now();
-		if (now - job.lastRunAt < this.minIntervalMs) return;
-		job.lastRunAt = now;
-		await job.handler();
+		const jitter = this.computeJitter(id, entry.jitterMs);
+		await new Promise((r) => setTimeout(r, jitter));
+
+		await entry.handler();
+		entry.lastRunAt = Date.now();
+		return true;
 	}
 }

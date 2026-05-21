@@ -39,3 +39,13 @@ export interface SessionState {
 	updatedAt: number;
 	tokenCount?: number;
 }
+
+export interface CronEntry {
+	id: string;
+	spec: string;
+	handler: () => Promise<void>;
+	jitterMs: number;
+	minIntervalMs: number;
+	lastRunAt: number | null;
+	pluginName: string;
+}

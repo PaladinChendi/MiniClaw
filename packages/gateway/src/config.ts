@@ -20,24 +20,21 @@ export const DEFAULT_CONFIG: GatewayConfig = {
 	},
 };
 
-function deepMerge<T extends Record<string, unknown>>(base: T, override: Partial<T>): T {
-	const result = { ...base } as Record<string, unknown>;
+function deepMerge(base: Record<string, unknown>, override: Record<string, unknown>): Record<string, unknown> {
+	const result = { ...base };
 	for (const [key, value] of Object.entries(override)) {
 		if (
 			value &&
 			typeof value === "object" &&
 			!Array.isArray(value) &&
-			typeof (base as Record<string, unknown>)[key] === "object"
+			typeof base[key] === "object"
 		) {
-			result[key] = deepMerge(
-				(base as Record<string, unknown>)[key] as Record<string, unknown>,
-				value as Record<string, unknown>,
-			);
+			result[key] = deepMerge(base[key] as Record<string, unknown>, value as Record<string, unknown>);
 		} else {
 			result[key] = value;
 		}
 	}
-	return result as T;
+	return result;
 }
 
 const VALID_MODES: GatewayMode[] = ["embedded", "gateway"];
@@ -54,5 +51,5 @@ export async function loadConfig(configPath: string): Promise<GatewayConfig> {
 		throw new Error(`mode must be one of: ${VALID_MODES.join(", ")}`);
 	}
 
-	return deepMerge(DEFAULT_CONFIG, parsed);
+	return deepMerge(DEFAULT_CONFIG, parsed as Record<string, unknown>) as GatewayConfig;
 }

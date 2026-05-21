@@ -40,7 +40,7 @@ export class Gateway {
 		this.sessionManager = new SessionManager(this.sessionDir);
 		this.pluginRegistry = new PluginRegistry();
 		this.hookEngine = new HookEngine();
-		this.cronScheduler = new CronScheduler({ minIntervalMs: 0 });
+		this.cronScheduler = new CronScheduler();
 		this.heartbeat = new HeartbeatSystem();
 	}
 
@@ -60,7 +60,7 @@ export class Gateway {
 			config: pluginConfig,
 			callLLM: async (req: LLMRequest) => ({ text: "stub", model: req.model ?? "default" }) as LLMResponse,
 			scheduleCron: (spec: string, handler: () => Promise<void>) => {
-				this.cronScheduler.register(`${pluginId}-cron`, spec, handler);
+				this.cronScheduler.register(`${pluginId}-cron`, spec, handler, { jitterMs: 0, minIntervalMs: 0, pluginName: pluginId });
 			},
 		};
 	}
