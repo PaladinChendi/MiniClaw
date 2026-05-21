@@ -1,0 +1,67 @@
+import { describe, it, expect, beforeEach, afterEach } from "bun:test";
+import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { mkdir, rm } from "fs/promises";
+import { join } from "path";
+
+const testDir = join(import.meta.dir, "__tmp_memstore__");
+
+beforeEach(async () => { await mkdir(testDir, { recursive: true }); });
+afterEach(async () => { await rm(testDir, { recursive: true, force: true }); });
+
+describe("MemoryStore", () => {
+	it("create + read round-trip", async () => {
+		const store = new MemoryStore(testDir);
+		await store.init();
+		const id = await store.create({
+			content: "user prefers dark theme",
+			type: "user",
+			scope: "private",
+		});
+		const entry = await store.read(id);
+		expect(entry).toBeDefined();
+		expect(entry!.content).toBe("user prefers dark theme");
+		expect(entry!.type).toBe("user");
+	});
+
+	it("update modifies content", async () => {
+		const store = new MemoryStore(testDir);
+		await store.init();
+		const id = await store.create({ content: "old", type: "feedback" });
+		await store.update(id, { content: "new" });
+		const entry = await store.read(id);
+		expect(entry!.content).toBe("new");
+	});
+
+	it("delete removes entry", async () => {
+		const store = new MemoryStore(testDir);
+		await store.init();
+		const id = await store.create({ content: "gone", type: "project" });
+		await store.delete(id);
+		const entry = await store.read(id);
+		expect(entry).toBeNull();
+	});
+
+	it("list returns all entries with metadata", async () => {
+		const store = new MemoryStore(testDir);
+		await store.init();
+		await store.create({ content: "a", type: "user" });
+		await store.create({ content: "b", type: "feedback" });
+		const entries = await store.list();
+		expect(entries.length).toBe(2);
+		expect(entries[0].name).toBeDefined();
+		expect(entries[0].description).toBeDefined();
+		expect(entries[0].type).toBeDefined();
+	});
+
+	it("MEMORY.md index stays under 200 lines", async () => {
+		const store = new MemoryStore(testDir);
+		await store.init();
+		for (let i = 0; i < 50; i++) {
+			await store.create({ content: `memory ${i}`, type: "user" });
+		}
+		const { readFile } = await import("fs/promises");
+		const index = await readFile(join(testDir, "MEMORY.md"), "utf-8");
+		const lines = index.split("\n").filter((l) => l.trim().length > 0);
+		expect(lines.length).toBeLessThanOrEqual(200);
+	});
+});

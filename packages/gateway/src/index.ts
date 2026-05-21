@@ -7,6 +7,8 @@ import { CronScheduler } from "./cron-scheduler.ts";
 import { HeartbeatSystem } from "./heartbeat.ts";
 import { createStructuredLogger } from "@ebsclaw/shared";
 
+export { MemoryStore } from "./memory-store.ts";
+
 export interface GatewayOpts {
 	sessionDir: string;
 	config?: Partial<GatewayConfig>;

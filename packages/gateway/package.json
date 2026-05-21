@@ -9,6 +9,9 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@ebsclaw/plugin-api": "workspace:*",
+    "@ebsclaw/shared": "workspace:*",
+    "@ebsclaw/memory": "workspace:*",
     "yaml": "^2.4.0"
   },
   "devDependencies": {
