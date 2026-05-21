@@ -2,5 +2,18 @@
   "name": "@ebsclaw/channel-qqbot",
   "version": "0.1.0",
   "type": "module",
-  "ebsclaw": { "type": "channel", "manifest": "ebsclaw.manifest.json" }
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "ebsclaw": { "type": "channel", "manifest": "ebsclaw.manifest.json" },
+  "devDependencies": {
+    "@ebsclaw/plugin-api": "workspace:*",
+    "@ebsclaw/shared": "workspace:*",
+    "@types/node": "^25.9.1",
+    "@types/bun": "^1.3.14",
+    "typescript": "^5.6.0"
+  }
 }
