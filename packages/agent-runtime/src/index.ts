@@ -31,6 +31,8 @@ export type { LegacyCompactDeps } from "./compaction/legacy-compact.ts";
 export { CompactionPipeline } from "./compaction/pipeline.ts";
 export type { CompactionPipelineDeps } from "./compaction/pipeline.ts";
 export { DEFAULT_COMPACTION_CONFIG } from "./compaction/types.ts";
+export { AgentRuntime } from "./agent-runtime.ts";
+export type { AgentRuntimeConfig } from "./agent-runtime.ts";
 export type {
 	CircuitBreakerState,
 	CircuitBreakerConfig,
