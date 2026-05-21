@@ -12,6 +12,11 @@ export { ToolRegistry } from "./tool-execution.ts";
 export { BashTool } from "./tools/bash.ts";
 export { ReadFileTool } from "./tools/read-file.ts";
 export { ListFilesTool } from "./tools/list-files.ts";
+export { SpawnSubAgentTool } from "./tools/spawn-sub-agent.ts";
+export { PromptAssembler } from "./prompt-assembly.ts";
+export type { MemoryEntry, ToolDef, PromptAssemblerConfig } from "./prompt-assembly.ts";
+export { StreamingEngine } from "./streaming-engine.ts";
+export type { StreamingEngineConfig } from "./streaming-engine.ts";
 export type {
 	CircuitBreakerState,
 	CircuitBreakerConfig,
