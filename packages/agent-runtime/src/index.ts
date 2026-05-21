@@ -8,6 +8,10 @@ export { OpenAIProvider } from "./llm-router/providers/openai.ts";
 export type { OpenAIProviderDeps } from "./llm-router/providers/openai.ts";
 export { GoogleProvider } from "./llm-router/providers/google.ts";
 export { BedrockProvider } from "./llm-router/providers/bedrock.ts";
+export { ToolRegistry } from "./tool-execution.ts";
+export { BashTool } from "./tools/bash.ts";
+export { ReadFileTool } from "./tools/read-file.ts";
+export { ListFilesTool } from "./tools/list-files.ts";
 export type {
 	CircuitBreakerState,
 	CircuitBreakerConfig,
