@@ -8,6 +8,7 @@ import { HeartbeatSystem } from "./heartbeat.ts";
 import { createStructuredLogger } from "@ebsclaw/shared";
 
 export { MemoryStore } from "./memory-store.ts";
+export { MemoryStoreHandle } from "./memory-store-handle.ts";
 
 export interface GatewayOpts {
 	sessionDir: string;
