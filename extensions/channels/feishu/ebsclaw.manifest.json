@@ -1,0 +1,8 @@
+{
+  "name": "feishu",
+  "version": "0.1.0",
+  "type": "channel",
+  "displayName": "Feishu (Lark)",
+  "status": "stub",
+  "permissions": { "fs": [], "net": [], "env": [] }
+}

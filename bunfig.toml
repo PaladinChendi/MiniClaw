@@ -1,0 +1,6 @@
+[install]
+optional = true
+
+[test]
+coverage = true
+coverageThreshold = 80

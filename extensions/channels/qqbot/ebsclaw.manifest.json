@@ -1,0 +1,12 @@
+{
+  "name": "qqbot",
+  "version": "0.1.0",
+  "type": "channel",
+  "displayName": "QQ Bot",
+  "status": "implemented",
+  "permissions": {
+    "fs": ["read:./data", "write:./data"],
+    "net": ["sandbox.api.qq.com:443"],
+    "env": ["QQBOT_APP_ID", "QQBOT_APP_SECRET"]
+  }
+}
