@@ -17,6 +17,20 @@ export { PromptAssembler } from "./prompt-assembly.ts";
 export type { MemoryEntry, ToolDef, PromptAssemblerConfig } from "./prompt-assembly.ts";
 export { StreamingEngine } from "./streaming-engine.ts";
 export type { StreamingEngineConfig } from "./streaming-engine.ts";
+export { ToolResultBudget } from "./compaction/tool-result-budget.ts";
+export { TimeMicrocompact } from "./compaction/time-microcompact.ts";
+export { CachedMicrocompact } from "./compaction/cached-microcompact.ts";
+export type { CachedMicrocompactDeps } from "./compaction/cached-microcompact.ts";
+export { HistorySnip } from "./compaction/history-snip.ts";
+export { ContextCollapse } from "./compaction/context-collapse.ts";
+export type { ContextCollapseDeps } from "./compaction/context-collapse.ts";
+export { SMCompact } from "./compaction/sm-compact.ts";
+export type { SMCompactDeps } from "./compaction/sm-compact.ts";
+export { LegacyCompact } from "./compaction/legacy-compact.ts";
+export type { LegacyCompactDeps } from "./compaction/legacy-compact.ts";
+export { CompactionPipeline } from "./compaction/pipeline.ts";
+export type { CompactionPipelineDeps } from "./compaction/pipeline.ts";
+export { DEFAULT_COMPACTION_CONFIG } from "./compaction/types.ts";
 export type {
 	CircuitBreakerState,
 	CircuitBreakerConfig,
@@ -30,4 +44,8 @@ export type {
 	CompactionResult,
 	StreamChunk,
 	EmbedRequest,
+	CompactionConfig,
+	CompactionLevelResult,
+	CompactionHookMessage,
+	CompactionProvider,
 } from "./types.ts";
