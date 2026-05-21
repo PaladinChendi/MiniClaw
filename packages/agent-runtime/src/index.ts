@@ -1,4 +1,7 @@
 export { CircuitBreaker } from "./circuit-breaker.ts";
+export { LLMRouter } from "./llm-router/index.ts";
+export { FallbackChain } from "./llm-router/fallback-chain.ts";
+export type { ProviderLike } from "./llm-router/fallback-chain.ts";
 export { AnthropicProvider } from "./llm-router/providers/anthropic.ts";
 export type { AnthropicProviderDeps } from "./llm-router/providers/anthropic.ts";
 export { OpenAIProvider } from "./llm-router/providers/openai.ts";
