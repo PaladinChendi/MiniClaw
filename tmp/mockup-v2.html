@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>ebsclaw TUI Mockup — Variant B: Neon Cyberpunk (Full)</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #080808; color: #ccc; font-family: 'JetBrains Mono', 'Courier New', monospace; padding: 20px; }
+
+  .screen { background: #0d0d0d; border: 1px solid rgba(0,212,255,0.2); width: 720px; margin: 30px auto; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(0,212,255,0.05); }
+  .screen::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,255,65,0.015) 1px, rgba(0,255,65,0.015) 3px);
+    pointer-events: none; z-index: 10;
+  }
+  .screen::after {
+    content: ''; position: absolute; top: 0; right: 0; width: 40%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.01));
+    pointer-events: none; z-index: 5;
+  }
+  .screen-title { color: #00d4ff; font-size: 9px; padding: 6px 12px; border-bottom: 1px solid rgba(0,212,255,0.15); background: #0a0a0a; letter-spacing: 2px; text-transform: uppercase; }
+
+  /* ── Startup ── */
+  .startup-wrap { padding: 16px 24px; text-align: center; }
+  .startup-ascii { color: #00ff41; font-size: 9px; line-height: 1.15; white-space: pre; text-shadow: 0 0 12px rgba(0,255,65,0.6), 0 0 40px rgba(0,255,65,0.15); font-weight: 700; }
+  .startup-tagline { color: #00d4ff; font-size: 11px; margin-top: 6px; text-shadow: 0 0 8px rgba(0,212,255,0.4); letter-spacing: 4px; }
+  .startup-hr { color: #1a3a1a; margin: 8px 0; font-size: 9px; letter-spacing: 4px; }
+  .startup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; text-align: left; font-size: 9px; padding: 0 40px; }
+  .startup-grid .key { color: #00d4ff; }
+  .startup-grid .val { color: #00ff41; }
+  .startup-grid .val.err { color: #ff4444; }
+  .startup-grid .val.warn { color: #ffaa00; }
+  .startup-boot { color: #333; font-size: 8px; padding: 10px 24px; text-align: left; line-height: 1.5; }
+  .startup-ready { color: #00ff41; font-size: 12px; padding: 6px; text-shadow: 0 0 10px rgba(0,255,65,0.5); animation: readyPulse 2s ease-in-out infinite; }
+  @keyframes readyPulse { 0%,100% { opacity: 0.8; } 50% { opacity: 1; text-shadow: 0 0 20px rgba(0,255,65,0.8); } }
+
+  /* ── Conversation ── */
+  .conv-topbar { background: linear-gradient(180deg, #0a0a0a, #0d0d0d); border-bottom: 1px solid rgba(0,255,65,0.15); padding: 4px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; }
+  .conv-topbar .logo { color: #00ff41; font-weight: 700; text-shadow: 0 0 6px rgba(0,255,65,0.4); }
+  .conv-topbar .meta { color: #444; font-size: 9px; }
+  .conv-topbar .meta .hl { color: #00d4ff; }
+  .conv-topbar .meta .warn { color: #ffaa00; }
+
+  .conv-body { padding: 10px 16px; min-height: 300px; font-size: 11px; line-height: 1.65; }
+  .msg-user { margin-bottom: 10px; padding: 4px 8px; background: rgba(0,212,255,0.03); border-left: 2px solid rgba(0,212,255,0.3); }
+  .msg-user .who { color: #00d4ff; font-size: 8px; letter-spacing: 1px; margin-bottom: 2px; }
+  .msg-agent { margin-bottom: 10px; padding: 4px 8px; border-left: 2px solid #00ff41; background: rgba(0,255,65,0.02); }
+  .msg-agent .who { color: #00ff41; font-size: 8px; letter-spacing: 1px; margin-bottom: 2px; }
+  .msg-agent code { color: #00d4ff; background: rgba(0,212,255,0.08); padding: 1px 4px; font-size: 10px; }
+  .msg-tool { margin: 6px 0; padding: 4px 8px; background: #111; border: 1px solid #222; font-size: 9px; }
+  .msg-tool .tool { color: #ffaa00; font-size: 8px; letter-spacing: 1px; }
+
+  .compacting-bar { background: rgba(0,212,255,0.08); border-bottom: 1px solid rgba(0,212,255,0.2); padding: 4px 16px; font-size: 9px; color: #00d4ff; display: flex; align-items: center; gap: 8px; }
+  .compacting-bar .glyph { color: #00d4ff; animation: glyphSpin 1.5s linear infinite; font-size: 12px; }
+  @keyframes glyphSpin { 0% { content: '◈'; } 33% { opacity: 0.6; } 66% { opacity: 1; } 100% { opacity: 0.6; } }
+  .compacting-bar .progress-track { flex: 1; height: 2px; background: #1a1a1a; border-radius: 1px; overflow: hidden; }
+  .compacting-bar .progress-fill { height: 100%; background: #00d4ff; width: 60%; animation: progressSlide 2s ease-in-out; }
+  @keyframes progressSlide { 0% { width: 0; } 100% { width: 60%; } }
+
+  .conv-inputbar { border-top: 1px solid rgba(0,255,65,0.15); padding: 6px 16px; display: flex; align-items: center; font-size: 11px; background: #0a0a0a; }
+  .conv-inputbar .prompt-glyph { color: #00ff41; margin-right: 6px; text-shadow: 0 0 6px rgba(0,255,65,0.5); }
+  .conv-inputbar .typing { animation: blink 1s step-end infinite; color: #00ff41; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .conv-inputbar .keys { color: #333; font-size: 8px; margin-left: auto; letter-spacing: 1px; }
+
+  .conv-statusbar { background: #080808; padding: 3px 16px; font-size: 8px; color: #333; display: flex; justify-content: space-between; border-top: 1px solid #111; }
+  .conv-statusbar .active { color: #00ff41; }
+  .conv-statusbar .fallback { color: #ffaa00; }
+
+  /* ── Error ── */
+  .error-strip { background: rgba(255,68,68,0.08); border-bottom: 1px solid rgba(255,68,68,0.3); padding: 5px 16px; font-size: 9px; display: flex; justify-content: space-between; }
+  .error-strip .msg { color: #ff6666; }
+  .error-strip .action { color: #00d4ff; cursor: pointer; font-size: 8px; }
+
+  /* ── Empty ── */
+  .empty-center { padding: 60px 24px; text-align: center; }
+  .empty-center .big-glyph { font-size: 32px; color: #00ff41; opacity: 0.15; margin-bottom: 16px; text-shadow: 0 0 20px rgba(0,255,65,0.2); }
+  .empty-center .headline { color: #00d4ff; font-size: 13px; margin-bottom: 8px; text-shadow: 0 0 6px rgba(0,212,255,0.3); }
+  .empty-center .sub { color: #444; font-size: 10px; margin-bottom: 16px; }
+  .empty-center .cta { color: #00ff41; font-size: 11px; border: 1px solid rgba(0,255,65,0.3); padding: 6px 20px; display: inline-block; cursor: pointer; }
+  .empty-center .cta:hover { background: rgba(0,255,65,0.08); }
+  .empty-center .shortcuts { color: #333; font-size: 9px; margin-top: 20px; line-height: 2; }
+
+  /* ── Wizard ── */
+  .wiz-header { background: linear-gradient(180deg, rgba(0,255,65,0.03), transparent); padding: 16px 24px 8px; border-bottom: 1px solid rgba(0,255,65,0.1); }
+  .wiz-header .title { color: #00ff41; font-size: 15px; font-weight: 700; text-shadow: 0 0 8px rgba(0,255,65,0.4); }
+  .wiz-header .subtitle { color: #00d4ff; font-size: 10px; margin-top: 4px; }
+  .wiz-steps { display: flex; padding: 8px 24px; gap: 4px; }
+  .wiz-steps .step { font-size: 8px; padding: 3px 10px; border: 1px solid #222; color: #444; }
+  .wiz-steps .step.current { border-color: #00ff41; color: #00ff41; background: rgba(0,255,65,0.05); }
+  .wiz-steps .step.done { border-color: #00d4ff; color: #00d4ff; }
+  .wiz-body { padding: 16px 24px; }
+  .wiz-field { margin-bottom: 14px; }
+  .wiz-field .lbl { color: #00d4ff; font-size: 9px; margin-bottom: 3px; display: flex; justify-content: space-between; letter-spacing: 1px; }
+  .wiz-field .lbl .req { color: #ff4444; font-size: 8px; }
+  .wiz-field .lbl .opt { color: #333; font-size: 8px; }
+  .wiz-field .val { background: #111; border: 1px solid #1a3a1a; color: #00ff41; padding: 5px 10px; font-family: inherit; font-size: 10px; }
+  .wiz-field .val.full { width: 100%; }
+  .wiz-field .val:focus { border-color: #00ff41; outline: none; box-shadow: 0 0 6px rgba(0,255,65,0.15); }
+  .wiz-field .val.masked { color: #00ff41; letter-spacing: 2px; }
+  .wiz-field .hint { color: #333; font-size: 8px; margin-top: 3px; }
+  .wiz-field select { background: #111; border: 1px solid #1a3a1a; color: #00d4ff; padding: 5px 10px; font-family: inherit; font-size: 10px; width: 100%; }
+  .wiz-nav { padding: 10px 24px; border-top: 1px solid rgba(0,255,65,0.1); display: flex; justify-content: space-between; }
+  .wiz-btn { font-family: inherit; font-size: 9px; padding: 5px 14px; border: 1px solid #333; background: transparent; color: #666; cursor: pointer; letter-spacing: 1px; }
+  .wiz-btn.next { border-color: #00ff41; color: #00ff41; }
+  .wiz-btn.next:hover { background: rgba(0,255,65,0.08); text-shadow: 0 0 6px rgba(0,255,65,0.4); }
+
+  .label { color: #333; font-size: 8px; text-transform: uppercase; letter-spacing: 3px; margin: 30px 0 12px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="label">VARIANT B · NEON CYBERPUNK · SCREEN 1 — 启动画面</div>
+<div class="screen">
+  <div class="screen-title">TUI STARTUP · 80×24 · EMBEDDED</div>
+  <div class="startup-wrap">
+    <div class="startup-ascii">
+    ███████╗███████╗██╗  ██╗███████╗██╗     ███████╗
+    ██╔════╝██╔════╝██║ ██╔╝██╔════╝██║     ██╔════╝
+    █████╗  ███████╗█████╔╝ █████╗  ██║     █████╗
+    ██╔══╝  ╚════██║██╔═██╗ ██╔══╝  ██║     ██╔══╝
+    ███████╗███████║██║  ██╗███████╗███████╗███████╗
+    ╚══════╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</div>
+    <div class="startup-tagline">A I · A G E N T · P L A T F O R M</div>
+    <div class="startup-hr">══════════════════════════════════</div>
+    <div class="startup-grid">
+      <span class="key">PLUGINS</span>   <span class="val">◆ 3 loaded</span>
+      <span class="key">ROUTER</span>    <span class="val">◆ anthropic/sonnet</span>
+      <span class="key">CHANNEL</span>    <span class="val err">✕ QQbot — reconnecting</span>
+      <span class="key">MEMORY</span>    <span class="val">◆ 2,847 entries</span>
+      <span class="key">SESSION</span>   <span class="val">◆ 0 active</span>
+      <span class="key">UPTIME</span>    <span class="val warn">◆ booting...</span>
+    </div>
+  </div>
+  <div class="startup-boot">
+  [0.12s] gateway.init() — Plugin Registry ready<br>
+  [0.34s] llm-router.init() — Fallback chain: anthropic → openai → local<br>
+  [0.51s] qqbot.connect() — WS handshake... <span style="color:#ff4444">ECONNREFUSED</span><br>
+  [0.67s] memory-core.init() — ONNX index loaded (2,847 entries)<br>
+  [0.89s] <span style="color:#00ff41">READY</span> — Gateway daemon listening on /tmp/ebsclaw.sock
+  </div>
+  <div class="startup-ready">◈ PRESS ENTER TO START</div>
+</div>
+
+<div class="label">VARIANT B · SCREEN 2 — 对话界面（正常）</div>
+<div class="screen">
+  <div class="conv-topbar">
+    <span class="logo">◈ ebsclaw</span>
+    <span class="meta"><span class="hl">a3f8</span> · 4,231 tok · 23% · <span class="hl">sonnet-4-6</span></span>
+  </div>
+  <div class="conv-body">
+    <div class="msg-user">
+      <div class="who">▸ USER</div>
+      帮我分析今天仓库最活跃的模块
+    </div>
+    <div class="msg-tool">
+      <div class="tool">⚡ run_bash</div>
+      git log --since="today" --stat | head -40
+    </div>
+    <div class="msg-agent">
+      <div class="who">▸ AGENT</div>
+      今天最活跃的模块是 <code>src/agent-runtime/</code>，12 次提交，主要是 Compaction Pipeline 级别 4 重构。<br>
+      次活跃的是 <code>extensions/memory/</code>，8 次提交，AutoDream cron 修复。
+    </div>
+    <div class="msg-user">
+      <div class="who">▸ USER</div>
+      Compaction 重构改了什么？
+    </div>
+    <div class="msg-agent">
+      <div class="who">▸ AGENT</div>
+      核心变更：<br>
+      1. <code>Context Collapse</code> — 三阶段 (Stage→Arm→Commit)<br>
+      2. <code>Legacy compact</code> — 熔断器 (3 fail → stop)<br>
+      3. <code>SM-compact</code> 优先 fallback 至 legacy<span class="typing">█</span>
+    </div>
+  </div>
+  <div class="conv-inputbar">
+    <span class="prompt-glyph">▸</span>
+    <span class="typing">█</span>
+    <span class="keys">ENTER ↵ · CTRL+C ⨘ · /help</span>
+  </div>
+  <div class="conv-statusbar">
+    <span class="active">◈ online</span>
+    <span>3 plugins · 2,847 memories · 4h 23m</span>
+  </div>
+</div>
+
+<div class="label">VARIANT B · SCREEN 3 — Compaction 进行中</div>
+<div class="screen">
+  <div class="conv-topbar">
+    <span class="logo">◈ ebsclaw</span>
+    <span class="meta"><span class="warn">a3f8</span> · <span class="warn">6,891 tok</span> · <span class="warn">92%</span> · sonnet-4-6</span>
+  </div>
+  <div class="compacting-bar">
+    <span class="glyph">◈</span>
+    <span>COMPACTING · L3 → L4 Legacy</span>
+    <div class="progress-track"><div class="progress-fill"></div></div>
+    <span>2.1s</span>
+  </div>
+  <div class="conv-body">
+    <div class="msg-user">
+      <div class="who">▸ USER</div>
+      继续讲讲熔断器实现
+    </div>
+    <div class="msg-agent" style="opacity:0.5">
+      <div class="who">▸ AGENT</div>
+      熔断器 <code>CircuitBreaker</code> 维护 failureCount：<br>
+      - compactConversation 失败 → failureCount++<br>
+      - >= 3 → <span style="color:#ff4444">circuitOpen = true</span><br>
+      - circuitOpen 时自动压缩停止...
+    </div>
+  </div>
+  <div class="conv-inputbar" style="opacity:0.6">
+    <span class="prompt-glyph" style="color:#00d4ff">▸</span>
+    <span style="color:#00d4ff;animation:none;opacity:0.5">█</span>
+    <span class="keys" style="color:#00d4ff">输入排队中 · 压缩完成后自动发送</span>
+  </div>
+  <div class="conv-statusbar">
+    <span style="color:#00d4ff">◈ compacting</span>
+    <span>3 plugins · 2,847 memories · 4h 24m</span>
+  </div>
+</div>
+
+<div class="label">VARIANT B · SCREEN 4 — 错误状态 (429 + fallback)</div>
+<div class="screen">
+  <div class="conv-topbar">
+    <span class="logo">◈ ebsclaw</span>
+    <span class="meta">a3f8 · <span style="color:#ff4444">ERR</span> · 7,102 tok · <span class="fallback">gpt-4o (fallback)</span></span>
+  </div>
+  <div class="error-strip">
+    <span class="msg">⚠ 429 Rate Limited — 已切换至 openai/gpt-4o · 3s 后自动重试主 provider</span>
+    <span class="action">✕ 关闭</span>
+  </div>
+  <div class="conv-body" style="opacity:0.5">
+    <div class="msg-user">
+      <div class="who">▸ USER</div>
+      circuitOpen 之后怎么恢复？
+    </div>
+    <div class="msg-agent">
+      <div class="who">▸ AGENT</div>
+      两种恢复路径：<br>
+      1. 用户 <code>/compact</code> 强制重置<br>
+      2. 新 session 自动重置 circuitOpen...
+    </div>
+  </div>
+  <div class="conv-inputbar">
+    <span class="prompt-glyph">▸</span>
+    <span class="typing">█</span>
+    <span class="keys">ENTER ↵ · CTRL+C ⨘ · /compact 强制压缩</span>
+  </div>
+  <div class="conv-statusbar">
+    <span class="fallback">⚠ fallback: openai/gpt-4o</span>
+    <span>3 plugins · 2,847 memories · 4h 25m</span>
+  </div>
+</div>
+
+<div class="label">VARIANT B · SCREEN 5 — 空状态 (新对话)</div>
+<div class="screen">
+  <div class="conv-topbar">
+    <span class="logo">◈ ebsclaw</span>
+    <span class="meta"><span class="hl">new</span> · 0 tok · 0%</span>
+  </div>
+  <div class="empty-center">
+    <div class="big-glyph">◈</div>
+    <div class="headline">开始新对话</div>
+    <div class="sub">输入自然语言或 / 命令</div>
+    <div class="cta">/help 查看所有命令</div>
+    <div class="shortcuts">
+      /compact — 手动压缩 &nbsp;·&nbsp; /memory — 记忆管理 &nbsp;·&nbsp; /config — 配置<br>
+      Ctrl+C — 中断当前生成 &nbsp;·&nbsp; Ctrl+D — 退出
+    </div>
+  </div>
+  <div class="conv-inputbar">
+    <span class="prompt-glyph">▸</span>
+    <span class="typing">█</span>
+    <span class="keys">ENTER ↵ · CTRL+C ⨘ · /help</span>
+  </div>
+  <div class="conv-statusbar">
+    <span class="active">◈ online</span>
+    <span>3 plugins · 2,847 memories · 4h 26m</span>
+  </div>
+</div>
+
+<div class="label">VARIANT B · SCREEN 6 — 首次启动向导 Step 2/5</div>
+<div class="screen">
+  <div class="screen-title">WIZARD · SETUP · STEP 2/5</div>
+  <div class="wiz-header">
+    <div class="title">◈ 首次配置</div>
+    <div class="subtitle">Step 2: LLM Provider</div>
+  </div>
+  <div class="wiz-steps">
+    <span class="step done">① 欢迎页</span>
+    <span class="step current">② Provider</span>
+    <span class="step">③ Model</span>
+    <span class="step">④ Embedding</span>
+    <span class="step">⑤ QQbot (可选)</span>
+  </div>
+  <div class="wiz-body">
+    <div class="wiz-field">
+      <div class="lbl"><span>PROVIDER</span><span class="req">必选</span></div>
+      <select><option>anthropic</option><option>openai</option><option>google</option><option>bedrock</option><option>local (ollama)</option></select>
+    </div>
+    <div class="wiz-field">
+      <div class="lbl"><span>API KEY</span><span class="req">必选</span></div>
+      <input class="val full masked" type="password" value="sk-ant-••••••••••••••••••••••••">
+      <div class="hint">存储: ~/.ebsclaw/config.yaml · 权限: 600</div>
+    </div>
+    <div class="wiz-field">
+      <div class="lbl"><span>FALLBACK PROVIDER</span><span class="opt">可选</span></div>
+      <select><option>— 不设置 —</option><option>openai</option><option>google</option><option>local</option></select>
+      <div class="hint">主 provider 失败时自动切换</div>
+    </div>
+  </div>
+  <div class="wiz-nav">
+    <button class="wiz-btn">← 上一步</button>
+    <button class="wiz-btn next">下一步 →</button>
+  </div>
+</div>
+
+</body>
+</html>

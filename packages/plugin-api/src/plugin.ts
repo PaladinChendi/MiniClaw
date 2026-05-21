@@ -1,3 +1,5 @@
+import type { LLMRequest, LLMResponse, LLMOptions } from "./llm";
+
 export interface Plugin {
   init(ctx: PluginContext): Promise<void>;
   destroy(): Promise<void>;
