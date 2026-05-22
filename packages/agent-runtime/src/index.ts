@@ -35,6 +35,8 @@ export { EmbedQueue } from "./llm-router/embed-queue.ts";
 export { SemanticSearch } from "./llm-router/semantic-search.ts";
 export type { SearchResult } from "./llm-router/semantic-search.ts";
 export { MemoryExtractor } from "./memory/extract.ts";
+export { AutoDream } from "./memory/autodream.ts";
+export type { AutoDreamResult, AutoDreamOpts } from "./memory/autodream.ts";
 export { AgentRuntime } from "./agent-runtime.ts";
 export type { AgentRuntimeConfig } from "./agent-runtime.ts";
 export type {
