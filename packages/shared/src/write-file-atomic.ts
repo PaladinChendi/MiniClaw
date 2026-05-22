@@ -1,5 +1,5 @@
-import { writeFile, rename, unlink, open, readdir, stat } from "fs/promises";
-import { join, dirname } from "path";
+import { dirname, join } from "path";
+import { open, readdir, rename, stat, unlink, writeFile } from "fs/promises";
 
 export interface AtomicWriteOptions {
 	tmpPrefix?: string;
@@ -17,12 +17,7 @@ export async function writeFileAtomic(
 	data: string | Buffer | Uint8Array,
 	options: AtomicWriteOptions = {},
 ): Promise<void> {
-	const {
-		tmpPrefix = ".tmp-",
-		tmpSuffix = "",
-		fsync = true,
-		encoding = "utf-8",
-	} = options;
+	const { tmpPrefix = ".tmp-", tmpSuffix = "", fsync = true, encoding = "utf-8" } = options;
 
 	const dir = dirname(filePath);
 	const tmpPath = join(dir, `${tmpPrefix}${Date.now()}-${process.pid}-${atomicCounter++}${tmpSuffix}`);

@@ -1,11 +1,11 @@
-import type { LLMRequest, LLMResponse, LLMOptions } from "@ebsclaw/plugin-api";
-import type { LLMProviderConfig, EmbedRequest } from "../types.ts";
+import type { LLMOptions, LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import { CircuitBreaker } from "../circuit-breaker.ts";
+import type { EmbedRequest, LLMProviderConfig } from "../types.ts";
+import { EmbedQueue } from "./embed-queue.ts";
 import { FallbackChain } from "./fallback-chain.ts";
 import type { ProviderLike } from "./fallback-chain.ts";
 import { AnthropicProvider } from "./providers/anthropic.ts";
 import { OpenAIProvider } from "./providers/openai.ts";
-import { CircuitBreaker } from "../circuit-breaker.ts";
-import { EmbedQueue } from "./embed-queue.ts";
 
 export class LLMRouter {
 	private chain: FallbackChain;
@@ -38,7 +38,12 @@ export class LLMRouter {
 		throw new Error("All LLM providers unavailable — circuit breakers open or all failed");
 	}
 
-	async embed(text: string, priority: EmbedRequest["priority"] = "memory_search", model?: string, tenantId?: string): Promise<number[]> {
+	async embed(
+		text: string,
+		priority: EmbedRequest["priority"] = "memory_search",
+		model?: string,
+		tenantId?: string,
+	): Promise<number[]> {
 		return new Promise<number[]>((resolve, reject) => {
 			this.embedQueue.enqueue({
 				id: crypto.randomUUID(),
@@ -60,10 +65,22 @@ export class LLMRouter {
 	private createProvider(cfg: LLMProviderConfig): ProviderLike {
 		const apiKey = process.env[cfg.apiKeyEnvVar] ?? "";
 		switch (cfg.type) {
-			case "anthropic":
-				return { name: cfg.name, ...new AnthropicProvider({ apiKey, model: cfg.model, maxTokens: cfg.maxTokens }) };
-			case "openai":
-				return { name: cfg.name, ...new OpenAIProvider({ apiKey, model: cfg.model, maxTokens: cfg.maxTokens }) };
+			case "anthropic": {
+				const provider = new AnthropicProvider({ apiKey, model: cfg.model, maxTokens: cfg.maxTokens });
+				return {
+					name: cfg.name,
+					chat: (req, signal) => provider.chat(req, signal),
+					embed: (text, model) => provider.embed(text, model),
+				};
+			}
+			case "openai": {
+				const provider = new OpenAIProvider({ apiKey, model: cfg.model, maxTokens: cfg.maxTokens });
+				return {
+					name: cfg.name,
+					chat: (req, signal) => provider.chat(req, signal),
+					embed: (text, model) => provider.embed(text, model),
+				};
+			}
 			default:
 				throw new Error(`Unknown provider type: ${cfg.type}`);
 		}

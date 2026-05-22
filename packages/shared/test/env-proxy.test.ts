@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { createEnvProxy } from "../src/index.ts";
 
 describe("createEnvProxy", () => {
@@ -8,8 +8,8 @@ describe("createEnvProxy", () => {
 		const env = createEnvProxy(["__EBSCLAW_TEST_FOO"]);
 		expect(env.__EBSCLAW_TEST_FOO).toBe("bar");
 		expect((env as any).__EBSCLAW_TEST_SECRET).toBeUndefined();
-		delete process.env.__EBSCLAW_TEST_FOO;
-		delete process.env.__EBSCLAW_TEST_SECRET;
+		process.env.__EBSCLAW_TEST_FOO = undefined;
+		process.env.__EBSCLAW_TEST_SECRET = undefined;
 	});
 
 	it("hides non-whitelisted keys from Object.keys", () => {
@@ -18,7 +18,7 @@ describe("createEnvProxy", () => {
 		const keys = Object.keys(env);
 		expect(keys).toContain("__EBSCLAW_TEST_BAZ");
 		expect(keys).not.toContain("PATH");
-		delete process.env.__EBSCLAW_TEST_BAZ;
+		process.env.__EBSCLAW_TEST_BAZ = undefined;
 	});
 
 	it("returns undefined for unset whitelisted vars", () => {

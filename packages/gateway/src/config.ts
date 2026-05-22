@@ -1,5 +1,5 @@
+import { existsSync, readFileSync } from "fs";
 import { parse } from "yaml";
-import { readFileSync, existsSync } from "fs";
 import type { GatewayConfig, GatewayMode } from "./types.ts";
 
 export const DEFAULT_CONFIG: GatewayConfig = {
@@ -23,12 +23,7 @@ export const DEFAULT_CONFIG: GatewayConfig = {
 function deepMerge(base: Record<string, unknown>, override: Record<string, unknown>): Record<string, unknown> {
 	const result = { ...base };
 	for (const [key, value] of Object.entries(override)) {
-		if (
-			value &&
-			typeof value === "object" &&
-			!Array.isArray(value) &&
-			typeof base[key] === "object"
-		) {
+		if (value && typeof value === "object" && !Array.isArray(value) && typeof base[key] === "object") {
 			result[key] = deepMerge(base[key] as Record<string, unknown>, value as Record<string, unknown>);
 		} else {
 			result[key] = value;
@@ -51,5 +46,8 @@ export async function loadConfig(configPath: string): Promise<GatewayConfig> {
 		throw new Error(`mode must be one of: ${VALID_MODES.join(", ")}`);
 	}
 
-	return deepMerge(DEFAULT_CONFIG, parsed as Record<string, unknown>) as GatewayConfig;
+	return deepMerge(
+		DEFAULT_CONFIG as unknown as Record<string, unknown>,
+		parsed as Record<string, unknown>,
+	) as unknown as GatewayConfig;
 }

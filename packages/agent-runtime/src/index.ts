@@ -58,8 +58,10 @@ export type {
 	CompactionResult,
 	StreamChunk,
 	EmbedRequest,
+} from "./types.ts";
+export type {
 	CompactionConfig,
 	CompactionLevelResult,
 	CompactionHookMessage,
 	CompactionProvider,
-} from "./types.ts";
+} from "./compaction/types.ts";

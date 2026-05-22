@@ -1,19 +1,10 @@
-import { readFile, writeFile, mkdir, readdir, unlink, stat } from "fs/promises";
 import { existsSync } from "fs";
 import { join } from "path";
-import { writeFileAtomic, cleanupTempFiles } from "@ebsclaw/shared";
+import type { MemoryFileEntry, MemoryFileFrontmatter, MemoryIndexEntry } from "@ebsclaw/memory/types";
+import { MAX_INDEX_BYTES, MAX_INDEX_LINES, MEMORY_DIR, MEMORY_INDEX_FILE } from "@ebsclaw/memory/types";
 import type { MemoryType } from "@ebsclaw/plugin-api";
-import type {
-	MemoryFileEntry,
-	MemoryFileFrontmatter,
-	MemoryIndexEntry,
-} from "@ebsclaw/memory/types";
-import {
-	MEMORY_DIR,
-	MEMORY_INDEX_FILE,
-	MAX_INDEX_LINES,
-	MAX_INDEX_BYTES,
-} from "@ebsclaw/memory/types";
+import { cleanupTempFiles, writeFileAtomic } from "@ebsclaw/shared";
+import { mkdir, readFile, readdir, stat, unlink, writeFile } from "fs/promises";
 
 function generateId(): string {
 	return `mem_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -65,7 +56,10 @@ export class MemoryStore {
 	}): Promise<string> {
 		const id = generateId();
 		const now = Date.now();
-		const name = data.content.slice(0, 40).replace(/[^a-zA-Z0-9一-鿿-]/g, "-").slice(0, 40);
+		const name = data.content
+			.slice(0, 40)
+			.replace(/[^a-zA-Z0-9一-鿿-]/g, "-")
+			.slice(0, 40);
 		const description = data.content.slice(0, 80);
 		const fm: MemoryFileFrontmatter = { name, description, type: data.type };
 		const filename = `${data.type}_${id}.md`;
@@ -116,7 +110,10 @@ export class MemoryStore {
 		const { frontmatter } = parseFrontmatter(existing);
 		if (data.content !== undefined) {
 			const newFm: MemoryFileFrontmatter = {
-				name: data.content.slice(0, 40).replace(/[^a-zA-Z0-9一-鿿-]/g, "-").slice(0, 40),
+				name: data.content
+					.slice(0, 40)
+					.replace(/[^a-zA-Z0-9一-鿿-]/g, "-")
+					.slice(0, 40),
 				description: data.content.slice(0, 80),
 				type: frontmatter.type,
 			};
@@ -155,7 +152,7 @@ export class MemoryStore {
 		content += line;
 		const lines = content.split("\n").filter((l) => l.trim().length > 0);
 		if (lines.length > MAX_INDEX_LINES) {
-			content = lines.slice(0, MAX_INDEX_LINES).join("\n") + "\n";
+			content = `${lines.slice(0, MAX_INDEX_LINES).join("\n")}\n`;
 		}
 		if (Buffer.byteLength(content, "utf-8") > MAX_INDEX_BYTES) {
 			content = content.slice(0, MAX_INDEX_BYTES);
@@ -179,7 +176,7 @@ export class MemoryStore {
 		}
 		const lines = content.split("\n").filter((l) => l.trim().length > 0);
 		if (lines.length > MAX_INDEX_LINES) {
-			content = lines.slice(0, MAX_INDEX_LINES).join("\n") + "\n";
+			content = `${lines.slice(0, MAX_INDEX_LINES).join("\n")}\n`;
 		}
 		await writeFileAtomic(indexPath, content);
 	}

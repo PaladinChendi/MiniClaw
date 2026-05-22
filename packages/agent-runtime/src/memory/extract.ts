@@ -1,7 +1,7 @@
+import { join } from "path";
 import type { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
 import type { MemoryType } from "@ebsclaw/plugin-api";
 import { writeFile } from "fs/promises";
-import { join } from "path";
 
 interface ConvMessage {
 	role: "user" | "assistant";
@@ -40,7 +40,7 @@ export class MemoryExtractor {
 		}
 
 		if (this.sessionDir && sessionNotes.length > 0) {
-			await writeFile(join(this.sessionDir, "notes.md"), sessionNotes.join("\n\n") + "\n");
+			await writeFile(join(this.sessionDir, "notes.md"), `${sessionNotes.join("\n\n")}\n`);
 		}
 
 		return ids;

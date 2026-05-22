@@ -1,12 +1,12 @@
 import type { AgentMessage } from "../types.ts";
-import type { CompactionConfig, CompactionLevelResult, CompactionHookMessage } from "./types.ts";
-import { ToolResultBudget } from "./tool-result-budget.ts";
-import { TimeMicrocompact } from "./time-microcompact.ts";
 import { CachedMicrocompact, type CachedMicrocompactDeps } from "./cached-microcompact.ts";
-import { HistorySnip } from "./history-snip.ts";
 import { ContextCollapse, type ContextCollapseDeps } from "./context-collapse.ts";
-import { SMCompact, type SMCompactDeps } from "./sm-compact.ts";
+import { HistorySnip } from "./history-snip.ts";
 import { LegacyCompact, type LegacyCompactDeps } from "./legacy-compact.ts";
+import { SMCompact, type SMCompactDeps } from "./sm-compact.ts";
+import { TimeMicrocompact } from "./time-microcompact.ts";
+import { ToolResultBudget } from "./tool-result-budget.ts";
+import type { CompactionConfig, CompactionHookMessage, CompactionLevelResult } from "./types.ts";
 
 export interface CompactionPipelineDeps {
 	cachedMicrocompact: CachedMicrocompactDeps;

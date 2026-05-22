@@ -1,12 +1,19 @@
-import type { AgentMessage, ToolCall, ToolResult, ToolDefinition, ToolExecutionContext, CompactionResult } from "./types.ts";
-import { PromptAssembler } from "./prompt-assembly.ts";
-import type { ToolDef, MemoryEntry } from "./prompt-assembly.ts";
-import { ToolRegistry } from "./tool-execution.ts";
-import { StreamingEngine } from "./streaming-engine.ts";
-import type { CompactionConfig } from "./compaction/types.ts";
-import { DEFAULT_COMPACTION_CONFIG } from "./compaction/types.ts";
 import { CompactionPipeline } from "./compaction/pipeline.ts";
 import type { CompactionPipelineDeps } from "./compaction/pipeline.ts";
+import type { CompactionConfig } from "./compaction/types.ts";
+import { DEFAULT_COMPACTION_CONFIG } from "./compaction/types.ts";
+import { PromptAssembler } from "./prompt-assembly.ts";
+import type { MemoryEntry, ToolDef } from "./prompt-assembly.ts";
+import { StreamingEngine } from "./streaming-engine.ts";
+import { ToolRegistry } from "./tool-execution.ts";
+import type {
+	AgentMessage,
+	CompactionResult,
+	ToolCall,
+	ToolDefinition,
+	ToolExecutionContext,
+	ToolResult,
+} from "./types.ts";
 
 export interface AgentRuntimeConfig {
 	chatFn: (messages: AgentMessage[]) => Promise<AgentMessage>;
@@ -150,7 +157,10 @@ export class AgentRuntime {
 
 		if (this.compactFn) {
 			const result = await this.compactFn(messages);
-			return result.messages;
+			if (result.applied && result.summary) {
+				return [{ role: "system", content: result.summary, timestamp: Date.now() }, ...messages.slice(-1)];
+			}
+			return messages;
 		}
 
 		return messages;

@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { writeFileAtomic, cleanupTempFiles } from "../src/index.ts";
-import { readFile, mkdir, rm, stat, readdir } from "fs/promises";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { existsSync } from "fs";
 import { join } from "path";
+import { mkdir, readFile, readdir, rm, stat } from "fs/promises";
+import { cleanupTempFiles, writeFileAtomic } from "../src/index.ts";
 
 const tmpDir = join(import.meta.dir, "__tmp_atomic__");
 
@@ -68,9 +68,7 @@ describe("cleanupTempFiles", () => {
 describe("Crash recovery", () => {
 	it("concurrent writes: last write wins, no corruption", async () => {
 		const target = join(tmpDir, "concurrent.json");
-		const writes = Array.from({ length: 5 }, (_, i) =>
-			writeFileAtomic(target, JSON.stringify({ version: i })),
-		);
+		const writes = Array.from({ length: 5 }, (_, i) => writeFileAtomic(target, JSON.stringify({ version: i })));
 		await Promise.all(writes);
 		const data = JSON.parse(await readFile(target, "utf-8"));
 		expect(typeof data.version).toBe("number");

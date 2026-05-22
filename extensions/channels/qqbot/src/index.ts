@@ -1,4 +1,4 @@
-import type { ChannelPlugin, PluginContext, InboundMessage, OutboundMessage } from "@ebsclaw/plugin-api";
+import type { ChannelPlugin, InboundMessage, OutboundMessage, PluginContext } from "@ebsclaw/plugin-api";
 import { QQBotAPI } from "./qq-api.ts";
 
 type SendFn = (channelId: string, msg: OutboundMessage) => Promise<void>;

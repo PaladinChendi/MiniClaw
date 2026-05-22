@@ -1,5 +1,12 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "outDir": "dist", "types": ["bun", "node"] },
-  "include": ["src", "test"]
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"types": ["bun", "node"],
+		"jsx": "react-jsx",
+		"jsxImportSource": "react",
+		"allowImportingTsExtensions": true,
+		"noEmit": true
+	},
+	"include": ["src", "test"]
 }

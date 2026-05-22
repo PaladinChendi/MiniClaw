@@ -1,6 +1,6 @@
-import { Gateway, MemoryStore } from "../../packages/gateway/src/index.ts";
-import { mkdir, rm } from "fs/promises";
 import { existsSync } from "fs";
+import { mkdir, rm } from "fs/promises";
+import { Gateway, MemoryStore } from "../../packages/gateway/src/index.ts";
 
 export interface HarnessOpts {
 	dataDir: string;
@@ -55,7 +55,7 @@ export class E2EHarness {
 		const entries: Array<{ content: string; type: string }> = [];
 		for (const item of list) {
 			const entry = await this.store.read(item.filename.replace("memories/", "").replace(".md", ""));
-			if (entry && entry.content.toLowerCase().includes(query.toLowerCase())) {
+			if (entry?.content.toLowerCase().includes(query.toLowerCase())) {
 				entries.push({ content: entry.content, type: entry.type });
 			}
 		}

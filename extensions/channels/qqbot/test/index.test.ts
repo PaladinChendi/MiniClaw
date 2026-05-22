@@ -1,7 +1,7 @@
-import { describe, it, expect } from "bun:test";
-import { QQBotAPI } from "../src/qq-api.ts";
+import { describe, expect, it } from "bun:test";
+import type { InboundMessage, OutboundMessage, PluginContext } from "@ebsclaw/plugin-api";
 import { QQBotChannelPlugin } from "../src/index.ts";
-import type { PluginContext, InboundMessage, OutboundMessage } from "@ebsclaw/plugin-api";
+import { QQBotAPI } from "../src/qq-api.ts";
 
 function createMockContext(): PluginContext {
 	return {
@@ -14,6 +14,8 @@ function createMockContext(): PluginContext {
 		config: { appId: "123", appSecret: "secret", enabled: true },
 		callLLM: async () => ({ text: "mock", model: "mock" }),
 		scheduleCron: () => {},
+		callPlugin: async () => {},
+		getStore: () => ({ read: async () => null, list: async () => [] }),
 	};
 }
 

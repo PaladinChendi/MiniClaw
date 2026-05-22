@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from "bun:test";
+import { describe, expect, it, vi } from "bun:test";
 import { CompactionPipeline } from "../../src/compaction/pipeline.ts";
-import type { AgentMessage } from "../../src/types.ts";
 import { DEFAULT_COMPACTION_CONFIG } from "../../src/compaction/types.ts";
+import type { AgentMessage } from "../../src/types.ts";
 
 function makeDeps() {
 	return {
@@ -13,13 +13,11 @@ function makeDeps() {
 			projectView: () => "Project: test",
 		},
 		smCompact: {
-			summarizeWithLLM: vi.fn(async (msgs: AgentMessage[]) =>
-				`Summary of ${msgs.length} messages`),
+			summarizeWithLLM: vi.fn(async (msgs: AgentMessage[]) => `Summary of ${msgs.length} messages`),
 			sessionId: "test-session",
 		},
 		legacyCompact: {
-			forkAndSummarize: vi.fn(async (msgs: AgentMessage[]) =>
-				`Full summary of ${msgs.length} messages`),
+			forkAndSummarize: vi.fn(async (msgs: AgentMessage[]) => `Full summary of ${msgs.length} messages`),
 			sessionId: "test-session",
 		},
 	};
@@ -27,10 +25,7 @@ function makeDeps() {
 
 describe("CompactionPipeline", () => {
 	it("runs L1 only when budget resolves overflow", async () => {
-		const pipeline = new CompactionPipeline(
-			{ ...DEFAULT_COMPACTION_CONFIG, maxTokens: 128000 },
-			makeDeps(),
-		);
+		const pipeline = new CompactionPipeline({ ...DEFAULT_COMPACTION_CONFIG, maxTokens: 128000 }, makeDeps());
 		const messages: AgentMessage[] = [
 			{
 				role: "tool",
@@ -46,14 +41,16 @@ describe("CompactionPipeline", () => {
 	});
 
 	it("progresses through levels until under budget", async () => {
-		const pipeline = new CompactionPipeline(
-			{ ...DEFAULT_COMPACTION_CONFIG, maxTokens: 5 },
-			makeDeps(),
-		);
+		const pipeline = new CompactionPipeline({ ...DEFAULT_COMPACTION_CONFIG, maxTokens: 5 }, makeDeps());
 		const messages: AgentMessage[] = [
 			{ role: "user", content: "hello world this is a test", timestamp: Date.now() - 100000 },
 			{ role: "assistant", content: "response text here with some content", timestamp: Date.now() - 90000 },
-			{ role: "tool", content: "tool output is long " + "z".repeat(100), toolCallId: "tc1", timestamp: Date.now() - 80000 },
+			{
+				role: "tool",
+				content: `tool output is long ${"z".repeat(100)}`,
+				toolCallId: "tc1",
+				timestamp: Date.now() - 80000,
+			},
 			{ role: "user", content: "another message with lots of text content", timestamp: Date.now() - 1000 },
 		];
 		const result = await pipeline.compact(messages);
@@ -62,13 +59,8 @@ describe("CompactionPipeline", () => {
 	});
 
 	it("returns totalTokensFreed from all applied levels", async () => {
-		const pipeline = new CompactionPipeline(
-			{ ...DEFAULT_COMPACTION_CONFIG, maxTokens: 128000 },
-			makeDeps(),
-		);
-		const result = await pipeline.compact([
-			{ role: "user", content: "short", timestamp: Date.now() },
-		]);
+		const pipeline = new CompactionPipeline({ ...DEFAULT_COMPACTION_CONFIG, maxTokens: 128000 }, makeDeps());
+		const result = await pipeline.compact([{ role: "user", content: "short", timestamp: Date.now() }]);
 		expect(typeof result.totalTokensFreed).toBe("number");
 	});
 });
