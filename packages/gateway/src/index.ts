@@ -10,6 +10,28 @@ import { createStructuredLogger } from "@ebsclaw/shared";
 export { MemoryStore } from "./memory-store.ts";
 export { MemoryStoreHandle } from "./memory-store-handle.ts";
 
+const PRIORITY_ORDER: Record<string, number> = {
+	session_chat: 0,
+	memory_search: 1,
+	rag_indexing: 2,
+};
+
+interface EmbedReq {
+	text: string;
+	priority: string;
+	resolve: (emb: number[]) => void;
+	reject: (err: Error) => void;
+}
+
+function hashVector(text: string, dims = 64): number[] {
+	const vec = new Array(dims).fill(0);
+	for (let i = 0; i < text.length; i++) {
+		vec[i % dims] += text.charCodeAt(i);
+	}
+	const norm = Math.sqrt(vec.reduce((s, v) => s + v * v, 0)) || 1;
+	return vec.map((v) => v / norm);
+}
+
 export interface GatewayOpts {
 	sessionDir: string;
 	config?: Partial<GatewayConfig>;
@@ -25,6 +47,9 @@ export class Gateway {
 	private heartbeat: HeartbeatSystem;
 	private sessionDir: string;
 	private config: GatewayConfig;
+	private embedQueue: EmbedReq[] = [];
+	private embedFn: ((text: string) => Promise<number[]>) | null = null;
+	private processing = false;
 
 	constructor(opts: GatewayOpts) {
 		this.sessionDir = opts.sessionDir;
@@ -54,6 +79,40 @@ export class Gateway {
 	async stop(): Promise<void> {
 		await this.pluginRegistry.destroyAll();
 		this.isRunning = false;
+	}
+
+	setEmbedFn(fn: (text: string) => Promise<number[]>): void {
+		this.embedFn = fn;
+	}
+
+	async embed(text: string, priority: string = "memory_search"): Promise<number[]> {
+		if (this.embedFn) {
+			return new Promise<number[]>((resolve, reject) => {
+				this.embedQueue.push({ text, priority, resolve, reject });
+				this.embedQueue.sort((a, b) => (PRIORITY_ORDER[a.priority] ?? 9) - (PRIORITY_ORDER[b.priority] ?? 9));
+				this.drainQueue();
+			});
+		}
+		return hashVector(text);
+	}
+
+	private drainQueue(): void {
+		if (this.processing || !this.embedFn) return;
+		this.processing = true;
+		this.processNext();
+	}
+
+	private async processNext(): Promise<void> {
+		while (this.embedQueue.length > 0 && this.embedFn) {
+			const req = this.embedQueue.shift()!;
+			try {
+				const emb = await this.embedFn(req.text);
+				req.resolve(emb);
+			} catch (err) {
+				req.reject(err instanceof Error ? err : new Error(String(err)));
+			}
+		}
+		this.processing = false;
 	}
 
 	createPluginContext(pluginId: string, pluginConfig: Record<string, unknown>): PluginContext {
