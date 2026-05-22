@@ -37,6 +37,8 @@ export type { SearchResult } from "./llm-router/semantic-search.ts";
 export { MemoryExtractor } from "./memory/extract.ts";
 export { AutoDream } from "./memory/autodream.ts";
 export type { AutoDreamResult, AutoDreamOpts } from "./memory/autodream.ts";
+export { MemoryPlugin } from "./memory/memory-plugin.ts";
+export type { MemoryPluginOpts } from "./memory/memory-plugin.ts";
 export { AgentRuntime } from "./agent-runtime.ts";
 export type { AgentRuntimeConfig } from "./agent-runtime.ts";
 export type {
