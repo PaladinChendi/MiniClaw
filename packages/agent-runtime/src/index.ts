@@ -34,6 +34,7 @@ export { DEFAULT_COMPACTION_CONFIG } from "./compaction/types.ts";
 export { EmbedQueue } from "./llm-router/embed-queue.ts";
 export { SemanticSearch } from "./llm-router/semantic-search.ts";
 export type { SearchResult } from "./llm-router/semantic-search.ts";
+export { MemoryExtractor } from "./memory/extract.ts";
 export { AgentRuntime } from "./agent-runtime.ts";
 export type { AgentRuntimeConfig } from "./agent-runtime.ts";
 export type {
