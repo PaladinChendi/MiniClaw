@@ -39,6 +39,7 @@ export { AutoDream } from "./memory/autodream.ts";
 export type { AutoDreamResult, AutoDreamOpts } from "./memory/autodream.ts";
 export { MemoryPlugin } from "./memory/memory-plugin.ts";
 export type { MemoryPluginOpts } from "./memory/memory-plugin.ts";
+export { SkillLoader } from "./skill/skill-loader.ts";
 export { AgentRuntime } from "./agent-runtime.ts";
 export type { AgentRuntimeConfig } from "./agent-runtime.ts";
 export type {
