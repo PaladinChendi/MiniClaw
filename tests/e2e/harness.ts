@@ -54,7 +54,9 @@ export class E2EHarness {
 		const list = await this.store.list();
 		const entries: Array<{ content: string; type: string }> = [];
 		for (const item of list) {
-			const entry = await this.store.read(item.filename.replace("memories/", "").replace(".md", ""));
+			const stem = item.filename.replace("memories/", "").replace(".md", "");
+			const id = stem.includes("_mem_") ? stem.slice(stem.indexOf("mem_")) : stem;
+			const entry = await this.store.read(id);
 			if (entry?.content.toLowerCase().includes(query.toLowerCase())) {
 				entries.push({ content: entry.content, type: entry.type });
 			}

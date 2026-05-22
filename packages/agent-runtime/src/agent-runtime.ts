@@ -114,6 +114,8 @@ export class AgentRuntime {
 					throw new Error("Aborted");
 				}
 
+				this.streamingEngine.push({ type: "tool_call", content: call.name, toolCall: call });
+
 				const ctx: ToolExecutionContext = {
 					sessionId: this.sessionId,
 					workingDir: this.workingDir,

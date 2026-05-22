@@ -1,33 +1,31 @@
+import type { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
 import type { MemoryPlugin as IMemoryPlugin, MemoryEntry, MemoryQuery, MemoryResult } from "@ebsclaw/plugin-api";
 import type { PluginContext } from "@ebsclaw/plugin-api";
-import type { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { keywordScore } from "@ebsclaw/shared";
+import { AutoDream } from "./autodream.ts";
+import { MemoryExtractor } from "./extract.ts";
 
 export interface MemoryPluginOpts {
 	store: MemoryStore;
-}
-
-function simpleScore(query: string, text: string): number {
-	const qTokens = new Set(query.toLowerCase().split(/\s+/));
-	const tTokens = new Set(text.toLowerCase().split(/\s+/));
-	let overlap = 0;
-	for (const t of qTokens) {
-		if (tTokens.has(t)) overlap++;
-	}
-	return qTokens.size === 0 ? 0 : overlap / qTokens.size;
+	sessionDir?: string;
 }
 
 export class MemoryPlugin implements IMemoryPlugin {
 	private memStore: MemoryStore;
 	private ctx: PluginContext | null = null;
+	private extractor: MemoryExtractor;
+	private dream: AutoDream;
 
 	constructor(opts: MemoryPluginOpts) {
 		this.memStore = opts.store;
+		this.extractor = new MemoryExtractor(opts.store, { sessionDir: opts.sessionDir });
+		this.dream = new AutoDream(opts.store);
 	}
 
 	async init(ctx: PluginContext): Promise<void> {
 		this.ctx = ctx;
 		ctx.scheduleCron("0 3 * * *", async () => {
-			// Auto-dream would run here in production
+			await this.dream.run();
 		});
 	}
 
@@ -49,10 +47,12 @@ export class MemoryPlugin implements IMemoryPlugin {
 		const entries: MemoryResult["entries"] = [];
 
 		for (const item of all) {
-			const full = await this.memStore.read(item.filename.replace("memories/", "").replace(".md", ""));
+			const stem = item.filename.replace("memories/", "").replace(".md", "");
+			const id = stem.includes("_mem_") ? stem.slice(stem.indexOf("mem_")) : stem;
+			const full = await this.memStore.read(id);
 			if (!full) continue;
 			if (req.type && full.type !== req.type) continue;
-			const score = simpleScore(req.text, full.content);
+			const score = keywordScore(req.text, full.content);
 			entries.push({ content: full.content, type: full.type, relevanceScore: score });
 		}
 
@@ -61,8 +61,7 @@ export class MemoryPlugin implements IMemoryPlugin {
 	}
 
 	async extractAndStore(sessionId: string): Promise<void> {
-		// In production, this would extract from session messages
-		// For now, it's a no-op that accepts the session ID
 		void sessionId;
+		await this.extractor.extract([]);
 	}
 }

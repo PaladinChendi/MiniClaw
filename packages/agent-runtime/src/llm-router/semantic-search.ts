@@ -1,3 +1,5 @@
+import { hashVector } from "@ebsclaw/shared";
+
 export interface SearchResult {
 	id: string;
 	text: string;
@@ -23,20 +25,11 @@ function cosineSimilarity(a: number[], b: number[]): number {
 	return denom === 0 ? 0 : dot / denom;
 }
 
-function hashVector(text: string, dims: number): number[] {
-	const vec = new Array(dims).fill(0);
-	for (let i = 0; i < text.length; i++) {
-		vec[i % dims] += text.charCodeAt(i);
-	}
-	const norm = Math.sqrt(vec.reduce((s, v) => s + v * v, 0)) || 1;
-	return vec.map((v) => v / norm);
-}
-
 export class SemanticSearch {
 	private docs: Map<string, IndexedDoc> = new Map();
 	private embedFn: ((text: string) => Promise<number[]>) | null = null;
 	private rerankFn: ((query: string, candidates: SearchResult[]) => Promise<SearchResult[]>) | null = null;
-	private embedDims = 8;
+	private embedDims = 64;
 
 	setEmbedFn(fn: (text: string) => Promise<number[]>): void {
 		this.embedFn = fn;

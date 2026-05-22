@@ -1,8 +1,9 @@
-import type { RAGPlugin as IRAGPlugin, DocumentSource, RAGQuery, RAGResult } from "@ebsclaw/plugin-api";
-import type { PluginContext } from "@ebsclaw/plugin-api";
-import { readFile, readdir, stat } from "fs/promises";
 import { existsSync } from "fs";
-import { join, extname } from "path";
+import { extname, join } from "path";
+import type { DocumentSource, RAGPlugin as IRAGPlugin, RAGQuery, RAGResult } from "@ebsclaw/plugin-api";
+import type { PluginContext } from "@ebsclaw/plugin-api";
+import { keywordScore } from "@ebsclaw/shared";
+import { readFile, readdir, stat } from "fs/promises";
 
 export interface RAGPluginOpts {
 	dataDir: string;
@@ -11,16 +12,6 @@ export interface RAGPluginOpts {
 interface IndexedChunk {
 	content: string;
 	source: string;
-}
-
-function keywordScore(query: string, text: string): number {
-	const qTokens = new Set(query.toLowerCase().split(/\s+/));
-	const tTokens = new Set(text.toLowerCase().split(/\s+/));
-	let overlap = 0;
-	for (const t of qTokens) {
-		if (tTokens.has(t)) overlap++;
-	}
-	return qTokens.size === 0 ? 0 : overlap / qTokens.size;
 }
 
 export class RAGPlugin implements IRAGPlugin {
@@ -48,9 +39,7 @@ export class RAGPlugin implements IRAGPlugin {
 	async initMutex(): Promise<void> {
 		if (this.initialized) return;
 		if (!this.initPromise) {
-			this.initPromise = (async () => {
-				this.initialized = true;
-			})();
+			this.initPromise = this.init(this.ctx!);
 		}
 		return this.initPromise;
 	}

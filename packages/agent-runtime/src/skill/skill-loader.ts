@@ -1,7 +1,7 @@
-import type { SkillDescriptor, SkillContent } from "@ebsclaw/plugin-api";
-import { readdir, readFile } from "fs/promises";
 import { existsSync } from "fs";
 import { join } from "path";
+import type { SkillContent, SkillDescriptor } from "@ebsclaw/plugin-api";
+import { readFile, readdir, stat } from "fs/promises";
 
 interface ParsedManifest {
 	id: string;
@@ -31,8 +31,8 @@ export class SkillLoader {
 		this.dirs = dirs;
 	}
 
-	listSkills(): SkillDescriptor[] {
-		if (!this.cache) this.discover();
+	async listSkills(): Promise<SkillDescriptor[]> {
+		if (!this.cache) await this.discover();
 		const skills: SkillDescriptor[] = [];
 		for (const m of this.cache!.values()) {
 			skills.push({
@@ -46,7 +46,7 @@ export class SkillLoader {
 	}
 
 	async loadSkill(id: string): Promise<SkillContent> {
-		if (!this.cache) this.discover();
+		if (!this.cache) await this.discover();
 		const manifest = this.cache!.get(id);
 		if (!manifest) throw new Error(`Skill '${id}' not found`);
 		const content = await readFile(join(manifest.dir, "SKILL.md"), "utf-8");
@@ -54,21 +54,26 @@ export class SkillLoader {
 		return { id, content: body.trim() };
 	}
 
-	private discover(): void {
+	private async discover(): Promise<void> {
 		this.cache = new Map();
 		for (const dir of this.dirs) {
 			if (!existsSync(dir)) continue;
 			try {
-				const entries = require("fs").readdirSync(dir, { withFileTypes: true });
+				const entries = await readdir(dir, { withFileTypes: true });
 				for (const entry of entries) {
 					if (!entry.isDirectory()) continue;
 					const skillPath = join(dir, entry.name, "SKILL.md");
 					if (!existsSync(skillPath)) continue;
 					try {
-						const content = require("fs").readFileSync(skillPath, "utf-8");
+						const content = await readFile(skillPath, "utf-8");
 						const { frontmatter, body } = parseSkillMd(content);
 						const id = frontmatter.id || entry.name;
-						const tags = frontmatter.tags ? frontmatter.tags.replace(/[[\]]/g, "").split(",").map((t: string) => t.trim()) : undefined;
+						const tags = frontmatter.tags
+							? frontmatter.tags
+									.replace(/[[\]]/g, "")
+									.split(",")
+									.map((t: string) => t.trim())
+							: undefined;
 						this.cache.set(id, {
 							id,
 							name: frontmatter.name || id,

@@ -1,20 +1,29 @@
 import { existsSync } from "fs";
 import { join } from "path";
-import type { MemoryFileEntry, MemoryFileFrontmatter, MemoryIndexEntry } from "@ebsclaw/memory/types";
+import type { MemoryFileEntry, MemoryIndexEntry } from "@ebsclaw/memory/types";
 import { MAX_INDEX_BYTES, MAX_INDEX_LINES, MEMORY_DIR, MEMORY_INDEX_FILE } from "@ebsclaw/memory/types";
 import type { MemoryType } from "@ebsclaw/plugin-api";
 import { cleanupTempFiles, writeFileAtomic } from "@ebsclaw/shared";
-import { mkdir, readFile, readdir, stat, unlink, writeFile } from "fs/promises";
+import { mkdir, readFile, readdir, unlink } from "fs/promises";
 
 function generateId(): string {
 	return `mem_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function frontmatterToYaml(fm: MemoryFileFrontmatter): string {
-	return `---\nname: ${fm.name}\ndescription: ${fm.description}\ntype: ${fm.type}\n---\n`;
+interface StoredFrontmatter {
+	name: string;
+	description: string;
+	type: MemoryType;
+	scope: "private" | "team";
+	createdAt: number;
+	updatedAt: number;
 }
 
-function parseFrontmatter(content: string): { frontmatter: MemoryFileFrontmatter; body: string } {
+function frontmatterToYaml(fm: StoredFrontmatter): string {
+	return `---\nname: ${fm.name}\ndescription: ${fm.description}\ntype: ${fm.type}\nscope: ${fm.scope}\ncreatedAt: ${fm.createdAt}\nupdatedAt: ${fm.updatedAt}\n---\n`;
+}
+
+function parseFrontmatter(content: string): { frontmatter: StoredFrontmatter; body: string } {
 	const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
 	if (!match) throw new Error("Invalid memory file: missing frontmatter");
 	const fm: Record<string, string> = {};
@@ -27,6 +36,9 @@ function parseFrontmatter(content: string): { frontmatter: MemoryFileFrontmatter
 			name: fm.name ?? "",
 			description: fm.description ?? "",
 			type: (fm.type as MemoryType) ?? "user",
+			scope: (fm.scope as "private" | "team") ?? "private",
+			createdAt: Number(fm.createdAt) || 0,
+			updatedAt: Number(fm.updatedAt) || 0,
 		},
 		body: match[2],
 	};
@@ -61,7 +73,8 @@ export class MemoryStore {
 			.replace(/[^a-zA-Z0-9一-鿿-]/g, "-")
 			.slice(0, 40);
 		const description = data.content.slice(0, 80);
-		const fm: MemoryFileFrontmatter = { name, description, type: data.type };
+		const scope = data.scope ?? "private";
+		const fm: StoredFrontmatter = { name, description, type: data.type, scope, createdAt: now, updatedAt: now };
 		const filename = `${data.type}_${id}.md`;
 		const filePath = join(this.memDir, filename);
 		const fileContent = `${frontmatterToYaml(fm)}${data.content}\n`;
@@ -70,7 +83,7 @@ export class MemoryStore {
 			id,
 			content: data.content,
 			type: data.type,
-			scope: data.scope ?? "private",
+			scope,
 			name,
 			description,
 			createdAt: now,
@@ -84,38 +97,42 @@ export class MemoryStore {
 
 	async read(id: string): Promise<MemoryFileEntry | null> {
 		const files = await readdir(this.memDir);
-		const match = files.find((f) => f.includes(id) && f.endsWith(".md"));
+		const match = files.find((f) => f.endsWith(`_${id}.md`));
 		if (!match) return null;
 		const content = await readFile(join(this.memDir, match), "utf-8");
 		const { frontmatter, body } = parseFrontmatter(content);
-		const s = await stat(join(this.memDir, match));
 		return {
 			id,
 			content: body.trim(),
 			type: frontmatter.type,
-			scope: "private",
+			scope: frontmatter.scope,
 			name: frontmatter.name,
 			description: frontmatter.description,
-			createdAt: s.mtimeMs,
-			updatedAt: s.mtimeMs,
+			createdAt: frontmatter.createdAt,
+			updatedAt: frontmatter.updatedAt,
 		};
 	}
 
 	async update(id: string, data: { content?: string }): Promise<void> {
 		const files = await readdir(this.memDir);
-		const match = files.find((f) => f.includes(id) && f.endsWith(".md"));
+		const match = files.find((f) => f.endsWith(`_${id}.md`));
 		if (!match) throw new Error(`Memory entry ${id} not found`);
 		const filePath = join(this.memDir, match);
 		const existing = await readFile(filePath, "utf-8");
 		const { frontmatter } = parseFrontmatter(existing);
 		if (data.content !== undefined) {
-			const newFm: MemoryFileFrontmatter = {
-				name: data.content
-					.slice(0, 40)
-					.replace(/[^a-zA-Z0-9一-鿿-]/g, "-")
-					.slice(0, 40),
+			const now = Date.now();
+			const newName = data.content
+				.slice(0, 40)
+				.replace(/[^a-zA-Z0-9一-鿿-]/g, "-")
+				.slice(0, 40);
+			const newFm: StoredFrontmatter = {
+				name: newName,
 				description: data.content.slice(0, 80),
 				type: frontmatter.type,
+				scope: frontmatter.scope,
+				createdAt: frontmatter.createdAt,
+				updatedAt: now,
 			};
 			const fileContent = `${frontmatterToYaml(newFm)}${data.content}\n`;
 			await writeFileAtomic(filePath, fileContent);
@@ -125,21 +142,28 @@ export class MemoryStore {
 
 	async delete(id: string): Promise<void> {
 		const files = await readdir(this.memDir);
-		const match = files.find((f) => f.includes(id) && f.endsWith(".md"));
+		const match = files.find((f) => f.endsWith(`_${id}.md`));
 		if (!match) return;
 		await unlink(join(this.memDir, match));
 		await this.rebuildIndex();
 	}
 
 	async list(): Promise<MemoryIndexEntry[]> {
-		const indexPath = join(this.baseDir, MEMORY_INDEX_FILE);
-		if (!existsSync(indexPath)) return [];
-		const content = await readFile(indexPath, "utf-8");
+		const files = await readdir(this.memDir);
+		const mdFiles = files.filter((f) => f.endsWith(".md")).sort();
 		const entries: MemoryIndexEntry[] = [];
-		for (const line of content.split("\n")) {
-			const m = line.match(/^- \[([^\]]+)\]\(([^)]+)\)\s*—\s*(.+)$/);
-			if (m) {
-				entries.push({ filename: m[2], name: m[1], description: m[3], type: "user" });
+		for (const file of mdFiles) {
+			try {
+				const fc = await readFile(join(this.memDir, file), "utf-8");
+				const { frontmatter } = parseFrontmatter(fc);
+				entries.push({
+					filename: `${MEMORY_DIR}/${file}`,
+					name: frontmatter.name,
+					description: frontmatter.description,
+					type: frontmatter.type,
+				});
+			} catch {
+				// skip malformed files
 			}
 		}
 		return entries;
@@ -155,7 +179,9 @@ export class MemoryStore {
 			content = `${lines.slice(0, MAX_INDEX_LINES).join("\n")}\n`;
 		}
 		if (Buffer.byteLength(content, "utf-8") > MAX_INDEX_BYTES) {
-			content = content.slice(0, MAX_INDEX_BYTES);
+			const lastNewline = content.lastIndexOf("\n", MAX_INDEX_BYTES);
+			content = content.slice(0, lastNewline > 0 ? lastNewline : MAX_INDEX_BYTES);
+			if (!content.endsWith("\n")) content += "\n";
 		}
 		await writeFileAtomic(indexPath, content);
 	}

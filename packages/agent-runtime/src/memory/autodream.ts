@@ -20,14 +20,16 @@ export class AutoDream {
 	constructor(store: MemoryStore, opts?: AutoDreamOpts) {
 		this.store = store;
 		this.consolidateFn = opts?.consolidateFn ?? (async (entries) => entries.join("; "));
-		this.pruneAge = opts?.pruneAge ?? Infinity;
+		this.pruneAge = opts?.pruneAge ?? Number.POSITIVE_INFINITY;
 	}
 
 	async orient(): Promise<{ entries: MemoryFileEntry[] }> {
 		const index = await this.store.list();
 		const entries: MemoryFileEntry[] = [];
 		for (const item of index) {
-			const entry = await this.store.read(item.filename.replace("memories/", "").replace(".md", ""));
+			const stem = item.filename.replace("memories/", "").replace(".md", "");
+			const id = stem.includes("_mem_") ? stem.slice(stem.indexOf("mem_")) : stem;
+			const entry = await this.store.read(id);
 			if (entry) entries.push(entry);
 		}
 		return { entries };
@@ -46,7 +48,7 @@ export class AutoDream {
 	}
 
 	async prune(): Promise<number> {
-		if (this.pruneAge === Infinity) return 0;
+		if (this.pruneAge === Number.POSITIVE_INFINITY) return 0;
 		const { entries } = await this.orient();
 		const now = Date.now();
 		let pruned = 0;

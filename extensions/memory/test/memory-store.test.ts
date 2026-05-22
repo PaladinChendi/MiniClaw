@@ -1,12 +1,16 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { join } from "path";
 import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
 import { mkdir, rm } from "fs/promises";
-import { join } from "path";
 
 const testDir = join(import.meta.dir, "__tmp_memstore__");
 
-beforeEach(async () => { await mkdir(testDir, { recursive: true }); });
-afterEach(async () => { await rm(testDir, { recursive: true, force: true }); });
+beforeEach(async () => {
+	await mkdir(testDir, { recursive: true });
+});
+afterEach(async () => {
+	await rm(testDir, { recursive: true, force: true });
+});
 
 describe("MemoryStore", () => {
 	it("create + read round-trip", async () => {
@@ -51,6 +55,43 @@ describe("MemoryStore", () => {
 		expect(entries[0].name).toBeDefined();
 		expect(entries[0].description).toBeDefined();
 		expect(entries[0].type).toBeDefined();
+		const types = entries.map((e) => e.type);
+		expect(types).toContain("user");
+		expect(types).toContain("feedback");
+	});
+
+	it("read returns scope from frontmatter", async () => {
+		const store = new MemoryStore(testDir);
+		await store.init();
+		const id = await store.create({
+			content: "team knowledge",
+			type: "project",
+			scope: "team",
+		});
+		const entry = await store.read(id);
+		expect(entry).toBeDefined();
+		expect(entry!.scope).toBe("team");
+	});
+
+	it("read returns distinct createdAt/updatedAt timestamps", async () => {
+		const store = new MemoryStore(testDir);
+		await store.init();
+		const id = await store.create({ content: "timestamp test", type: "user" });
+		const entry = await store.read(id);
+		expect(entry).toBeDefined();
+		expect(entry!.createdAt).toBeGreaterThan(0);
+		expect(entry!.updatedAt).toBeGreaterThanOrEqual(entry!.createdAt);
+	});
+
+	it("read uses exact filename match, not substring", async () => {
+		const store = new MemoryStore(testDir);
+		await store.init();
+		const id1 = await store.create({ content: "alpha", type: "user" });
+		const id2 = await store.create({ content: "beta", type: "user" });
+		const entry1 = await store.read(id1);
+		const entry2 = await store.read(id2);
+		expect(entry1!.content).toBe("alpha");
+		expect(entry2!.content).toBe("beta");
 	});
 
 	it("MEMORY.md index stays under 200 lines", async () => {
