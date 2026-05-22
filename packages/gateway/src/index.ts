@@ -6,6 +6,8 @@ import { HookEngine } from "./hook-engine.ts";
 import { CronScheduler } from "./cron-scheduler.ts";
 import { HeartbeatSystem } from "./heartbeat.ts";
 import { createStructuredLogger } from "@ebsclaw/shared";
+import { MemoryStore } from "./memory-store.ts";
+import { MemoryStoreHandle } from "./memory-store-handle.ts";
 
 export { MemoryStore } from "./memory-store.ts";
 export { MemoryStoreHandle } from "./memory-store-handle.ts";
@@ -50,6 +52,7 @@ export class Gateway {
 	private embedQueue: EmbedReq[] = [];
 	private embedFn: ((text: string) => Promise<number[]>) | null = null;
 	private processing = false;
+	private memoryStore: MemoryStore | null = null;
 
 	constructor(opts: GatewayOpts) {
 		this.sessionDir = opts.sessionDir;
@@ -85,6 +88,10 @@ export class Gateway {
 		this.embedFn = fn;
 	}
 
+	setMemoryStore(store: MemoryStore): void {
+		this.memoryStore = store;
+	}
+
 	async embed(text: string, priority: string = "memory_search"): Promise<number[]> {
 		if (this.embedFn) {
 			return new Promise<number[]>((resolve, reject) => {
@@ -117,12 +124,24 @@ export class Gateway {
 
 	createPluginContext(pluginId: string, pluginConfig: Record<string, unknown>): PluginContext {
 		const logger = createStructuredLogger(pluginId, () => {});
+		const gw = this;
 		return {
 			logger,
 			config: pluginConfig,
 			callLLM: async (req: LLMRequest) => ({ text: "stub", model: req.model ?? "default" }) as LLMResponse,
 			scheduleCron: (spec: string, handler: () => Promise<void>) => {
 				this.cronScheduler.register(`${pluginId}-cron`, spec, handler, { jitterMs: 0, minIntervalMs: 0, pluginName: pluginId });
+			},
+			callPlugin: async (pluginName: string, method: string, args: Record<string, unknown>) => {
+				const entry = gw.pluginRegistry.get(pluginName);
+				if (!entry) throw new Error(`Plugin '${pluginName}' not found`);
+				const inst = entry.instance as any;
+				if (typeof inst[method] !== "function") throw new Error(`Method '${method}' not found on plugin '${pluginName}'`);
+				return inst[method](args);
+			},
+			getStore: () => {
+				if (!gw.memoryStore) throw new Error("MemoryStore not configured");
+				return new MemoryStoreHandle(gw.memoryStore);
 			},
 		};
 	}
