@@ -40,6 +40,8 @@ export type { AutoDreamResult, AutoDreamOpts } from "./memory/autodream.ts";
 export { MemoryPlugin } from "./memory/memory-plugin.ts";
 export type { MemoryPluginOpts } from "./memory/memory-plugin.ts";
 export { SkillLoader } from "./skill/skill-loader.ts";
+export { RAGPlugin } from "./rag/rag-plugin.ts";
+export type { RAGPluginOpts } from "./rag/rag-plugin.ts";
 export { AgentRuntime } from "./agent-runtime.ts";
 export type { AgentRuntimeConfig } from "./agent-runtime.ts";
 export type {
