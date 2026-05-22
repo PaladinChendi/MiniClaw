@@ -32,6 +32,7 @@ export { CompactionPipeline } from "./compaction/pipeline.ts";
 export type { CompactionPipelineDeps } from "./compaction/pipeline.ts";
 export { DEFAULT_COMPACTION_CONFIG } from "./compaction/types.ts";
 export { EmbedQueue } from "./llm-router/embed-queue.ts";
+export { EmbedEngine } from "./llm-router/embed-engine.ts";
 export { SemanticSearch } from "./llm-router/semantic-search.ts";
 export type { SearchResult } from "./llm-router/semantic-search.ts";
 export { MemoryExtractor } from "./memory/extract.ts";
