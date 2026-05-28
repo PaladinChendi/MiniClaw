@@ -9,6 +9,7 @@ import { parseArgs } from "./commands.ts";
 import { ConfigStore, type ProviderConfig } from "./config-store.ts";
 import { TUIApp, type ChatMessage, type TUIState } from "./tui/app.tsx";
 import { SetupWizard } from "./tui/wizard.tsx";
+import { StartupSplash } from "./tui/splash.tsx";
 
 const CONFIG_DIR = join(homedir(), ".ebsclaw");
 const CONFIG_PATH = join(CONFIG_DIR, "config.yaml");
@@ -152,6 +153,20 @@ async function runTUI(mode?: string): Promise<void> {
 		chatFn,
 		baseSystemPrompt: "You are ebsclaw, a helpful AI assistant.",
 	});
+
+	// Show startup splash, then transition to chat
+	const splashDone = new Promise<void>((resolve) => {
+		const { unmount } = render(
+			React.createElement(StartupSplash, {
+				model: config.model,
+				onDone: () => {
+					unmount();
+					resolve();
+				},
+			}),
+		);
+	});
+	await splashDone;
 
 	const { waitUntilExit } = render(
 		React.createElement(ChatScreen, { config, runtime, store }),
