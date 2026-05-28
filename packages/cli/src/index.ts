@@ -38,26 +38,35 @@ async function buildChatFn(config: ProviderConfig): Promise<(messages: AgentMess
 		};
 	}
 
-	// kcode — Anthropic messages format + custom header
+	// kcode — Anthropic messages format via fetch, with Bearer auth + custom header
 	if (config.provider === "kcode") {
-		const { default: Anthropic } = await import("@anthropic-ai/sdk");
-		const client = new Anthropic({
-			apiKey,
-			baseURL: baseUrl ?? "",
-			defaultHeaders: { "ksyun-code-type": "kscc-cli" },
-		});
+		const endpoint = (baseUrl || "").replace(/\/$/, "") + "/messages";
 		return async (msgs: AgentMessage[]) => {
 			const system = msgs.find((m) => m.role === "system")?.content;
-			const userMsgs = msgs.filter((m) => m.role !== "system");
-			const lastUser = userMsgs.filter((m) => m.role === "user").pop();
-			const res = await client.messages.create({
-				model,
-				max_tokens: 4096,
-				messages: [{ role: "user", content: lastUser?.content ?? "" }],
-				...(system ? { system } : {}),
+			const apiMsgs = msgs
+				.filter((m) => m.role !== "system")
+				.map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
+			const res = await fetch(endpoint, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": `Bearer ${apiKey}`,
+					"ksyun-code-type": "kscc-cli",
+				},
+				body: JSON.stringify({
+					model,
+					max_tokens: 4096,
+					messages: apiMsgs,
+					...(system ? { system } : {}),
+				}),
 			});
-			const text = res.content.find((b: any) => b.type === "text") as { type: "text"; text: string } | undefined;
-			return { role: "assistant", content: text?.text ?? "", timestamp: Date.now() };
+			if (!res.ok) {
+				const err = await res.text();
+				throw new Error(`${res.status} ${err}`);
+			}
+			const data = await res.json() as any;
+			const block = data.content?.find((b: any) => b.type === "text");
+			return { role: "assistant", content: block?.text ?? "", timestamp: Date.now() };
 		};
 	}
 
