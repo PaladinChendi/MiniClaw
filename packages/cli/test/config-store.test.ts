@@ -17,19 +17,21 @@ afterEach(async () => {
 describe("ConfigStore", () => {
 	it("saves config to YAML file", async () => {
 		const store = new ConfigStore(configFile);
-		await store.save({ baseUrl: "", apiKey: "sk-test-123", model: "gpt-4o" });
+		await store.save({ provider: "openai", baseUrl: "", apiKey: "sk-test-123", model: "gpt-4o" });
 
 		expect(existsSync(configFile)).toBe(true);
 		const content = await readFile(configFile, "utf-8");
 		expect(content).toContain("gpt-4o");
 		expect(content).toContain("sk-test-123");
+		expect(content).toContain("openai");
 	});
 
 	it("loads existing config from YAML file", async () => {
 		const store = new ConfigStore(configFile);
-		await store.save({ baseUrl: "https://api.openai.com/v1", apiKey: "sk-openai", model: "gpt-4o" });
+		await store.save({ provider: "openai", baseUrl: "https://api.openai.com/v1", apiKey: "sk-openai", model: "gpt-4o" });
 
 		const loaded = await store.load();
+		expect(loaded!.provider).toBe("openai");
 		expect(loaded!.model).toBe("gpt-4o");
 		expect(loaded!.apiKey).toBe("sk-openai");
 		expect(loaded!.baseUrl).toBe("https://api.openai.com/v1");
@@ -43,11 +45,12 @@ describe("ConfigStore", () => {
 
 	it("overwrites existing config on save", async () => {
 		const store = new ConfigStore(configFile);
-		await store.save({ baseUrl: "", apiKey: "sk-old", model: "gpt-4o" });
-		await store.save({ baseUrl: "https://custom.api", apiKey: "sk-new", model: "deepseek-chat" });
+		await store.save({ provider: "anthropic", baseUrl: "", apiKey: "sk-old", model: "gpt-4o" });
+		await store.save({ provider: "kcode", baseUrl: "", apiKey: "sk-new", model: "glm-5.1" });
 
 		const loaded = await store.load();
-		expect(loaded!.model).toBe("deepseek-chat");
+		expect(loaded!.provider).toBe("kcode");
+		expect(loaded!.model).toBe("glm-5.1");
 		expect(loaded!.apiKey).toBe("sk-new");
 	});
 });

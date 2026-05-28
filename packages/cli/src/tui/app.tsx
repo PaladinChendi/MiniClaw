@@ -39,6 +39,7 @@ export interface ChatMessage {
 
 export interface TUIAppProps {
 	state: TUIState;
+	provider?: string;
 	model?: string;
 	sessionId?: string;
 	tokenCount?: number;

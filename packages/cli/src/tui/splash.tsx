@@ -49,13 +49,14 @@ interface StartupItem {
 }
 
 export interface StartupSplashProps {
+	provider: string;
 	model: string;
 	items?: StartupItem[];
 	onDone?: () => void;
 	autoDismissMs?: number;
 }
 
-export function StartupSplash({ model, items, onDone, autoDismissMs = 3000 }: StartupSplashProps) {
+export function StartupSplash({ provider, model, items, onDone, autoDismissMs = 3000 }: StartupSplashProps) {
 	const { exit } = useApp();
 	const blink = useBlink();
 	const barStep = useLoadingBar(200);
@@ -63,7 +64,7 @@ export function StartupSplash({ model, items, onDone, autoDismissMs = 3000 }: St
 
 	const defaultItems: StartupItem[] = items ?? [
 		{ label: "Plugin Registry", detail: "3 loaded" },
-		{ label: "LLM Router", detail: `${model} → primary` },
+		{ label: "LLM Router", detail: `${provider}/${model} → primary` },
 		{ label: "Memory Core", detail: "indexed" },
 		{ label: "Session Manager", detail: "0 active / 0 saved" },
 	];

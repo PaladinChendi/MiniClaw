@@ -6,7 +6,7 @@ import { Gateway, MemoryStore } from "@ebsclaw/gateway";
 import { render } from "ink";
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { parseArgs } from "./commands.ts";
-import { ConfigStore, type ProviderConfig } from "./config-store.ts";
+import { ConfigStore, type ProviderConfig, type ProviderType } from "./config-store.ts";
 import { TUIApp, type ChatMessage, type TUIState } from "./tui/app.tsx";
 import { SetupWizard } from "./tui/wizard.tsx";
 import { StartupSplash } from "./tui/splash.tsx";
@@ -19,7 +19,8 @@ async function buildChatFn(config: ProviderConfig): Promise<(messages: AgentMess
 	const baseUrl = config.baseUrl || undefined;
 	const model = config.model;
 
-	if (model.includes("claude")) {
+	// Anthropic native SDK
+	if (config.provider === "anthropic" || model.includes("claude")) {
 		const { default: Anthropic } = await import("@anthropic-ai/sdk");
 		const client = new Anthropic({ apiKey, baseURL: baseUrl });
 		return async (msgs: AgentMessage[]) => {
@@ -37,6 +38,30 @@ async function buildChatFn(config: ProviderConfig): Promise<(messages: AgentMess
 		};
 	}
 
+	// kcode — Anthropic messages format + custom header
+	if (config.provider === "kcode") {
+		const { default: Anthropic } = await import("@anthropic-ai/sdk");
+		const client = new Anthropic({
+			apiKey,
+			baseURL: baseUrl ?? "",
+			defaultHeaders: { "ksyun-code-type": "kscc-cli" },
+		});
+		return async (msgs: AgentMessage[]) => {
+			const system = msgs.find((m) => m.role === "system")?.content;
+			const userMsgs = msgs.filter((m) => m.role !== "system");
+			const lastUser = userMsgs.filter((m) => m.role === "user").pop();
+			const res = await client.messages.create({
+				model,
+				max_tokens: 4096,
+				messages: [{ role: "user", content: lastUser?.content ?? "" }],
+				...(system ? { system } : {}),
+			});
+			const text = res.content.find((b: any) => b.type === "text") as { type: "text"; text: string } | undefined;
+			return { role: "assistant", content: text?.text ?? "", timestamp: Date.now() };
+		};
+	}
+
+	// OpenAI-compatible (openai, deepseek, custom, etc.)
 	const { default: OpenAI } = await import("openai");
 	const client = new OpenAI({ apiKey, baseURL: baseUrl });
 	return async (msgs: AgentMessage[]) => {
@@ -103,7 +128,8 @@ function ChatScreen({ config, runtime, store }: { config: ProviderConfig; runtim
 
 	return React.createElement(TUIApp, {
 		state,
-		model: config.model,
+		provider: config.provider,
+				model: config.model,
 		sessionId,
 		tokenCount,
 		tokenPercent: Math.min(Math.floor((tokenCount / 8000) * 100), 100),
@@ -158,6 +184,7 @@ async function runTUI(mode?: string): Promise<void> {
 	const splashDone = new Promise<void>((resolve) => {
 		const { unmount } = render(
 			React.createElement(StartupSplash, {
+				provider: config.provider,
 				model: config.model,
 				onDone: () => {
 					unmount();

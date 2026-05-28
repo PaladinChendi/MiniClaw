@@ -3,7 +3,10 @@ import { dirname } from "path";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import YAML from "yaml";
 
+export type ProviderType = "anthropic" | "openai" | "kcode" | "custom";
+
 export interface ProviderConfig {
+	provider: ProviderType;
 	baseUrl: string;
 	apiKey: string;
 	model: string;
@@ -18,7 +21,12 @@ export class ConfigStore {
 
 	async save(config: ProviderConfig): Promise<void> {
 		await mkdir(dirname(this.path), { recursive: true });
-		const yaml = YAML.stringify({ baseUrl: config.baseUrl, apiKey: config.apiKey, model: config.model });
+		const yaml = YAML.stringify({
+			provider: config.provider,
+			baseUrl: config.baseUrl,
+			apiKey: config.apiKey,
+			model: config.model,
+		});
 		await writeFile(this.path, yaml, "utf-8");
 	}
 
@@ -27,6 +35,11 @@ export class ConfigStore {
 		const content = await readFile(this.path, "utf-8");
 		const parsed = YAML.parse(content) as Record<string, string> | null;
 		if (!parsed?.apiKey || !parsed?.model) return null;
-		return { baseUrl: parsed.baseUrl ?? "", apiKey: parsed.apiKey, model: parsed.model };
+		return {
+			provider: (parsed.provider as ProviderType) ?? "custom",
+			baseUrl: parsed.baseUrl ?? "",
+			apiKey: parsed.apiKey,
+			model: parsed.model,
+		};
 	}
 }
