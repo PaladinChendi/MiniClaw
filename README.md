@@ -33,6 +33,51 @@ Gateway (Daemon) → Plugin API → Extensions (Channels/Memory/Skills/RAG)
 | `ebsclaw tui --mode gateway` | Start TUI in Gateway mode (v1.1) |
 | `ebsclaw gateway start` | Start Gateway daemon |
 
+## 本地开发
+
+### 安装依赖
+
+```bash
+bun install
+```
+
+### 运行
+
+```bash
+# 启动交互式 TUI（默认嵌入式模式）
+bun run packages/cli/src/index.ts tui
+
+# 启动 Gateway 守护进程
+bun run packages/cli/src/index.ts gateway start
+
+# 查看帮助
+bun run packages/cli/src/index.ts help
+```
+
+首次运行会自动启动 Setup Wizard，引导配置 provider 和 API key，配置保存在 `~/.ebsclaw/config.yaml`。
+
+### 测试
+
+```bash
+# 跑全部测试
+bun test
+
+# 跑某个包的测试
+bun test --cwd packages/agent-runtime
+bun test --cwd extensions/memory
+
+# 跑单个测试文件
+bun test packages/agent-runtime/test/circuit-breaker.test.ts
+```
+
+### 代码检查
+
+```bash
+bun run lint        # Lint
+bun run lint:fix    # Lint 自动修复
+bun run typecheck   # 类型检查
+```
+
 ## License
 
 MIT

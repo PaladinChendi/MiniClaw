@@ -4,8 +4,9 @@ import { mkdir, readFile, writeFile } from "fs/promises";
 import YAML from "yaml";
 
 export interface ProviderConfig {
-	provider: string;
+	baseUrl: string;
 	apiKey: string;
+	model: string;
 }
 
 export class ConfigStore {
@@ -17,7 +18,7 @@ export class ConfigStore {
 
 	async save(config: ProviderConfig): Promise<void> {
 		await mkdir(dirname(this.path), { recursive: true });
-		const yaml = YAML.stringify({ provider: config.provider, apiKey: config.apiKey });
+		const yaml = YAML.stringify({ baseUrl: config.baseUrl, apiKey: config.apiKey, model: config.model });
 		await writeFile(this.path, yaml, "utf-8");
 	}
 
@@ -25,7 +26,7 @@ export class ConfigStore {
 		if (!existsSync(this.path)) return null;
 		const content = await readFile(this.path, "utf-8");
 		const parsed = YAML.parse(content) as Record<string, string> | null;
-		if (!parsed?.provider) return null;
-		return { provider: parsed.provider, apiKey: parsed.apiKey ?? "" };
+		if (!parsed?.apiKey || !parsed?.model) return null;
+		return { baseUrl: parsed.baseUrl ?? "", apiKey: parsed.apiKey, model: parsed.model };
 	}
 }
