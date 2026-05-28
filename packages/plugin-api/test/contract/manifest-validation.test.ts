@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { validateManifest } from "../../src/index.ts";
 
 describe("Manifest permissions validation", () => {
@@ -14,7 +14,12 @@ describe("Manifest permissions validation", () => {
 
 	it("rejects path traversal in fs permission", () => {
 		expect(() =>
-			validateManifest({ name: "traversal", version: "0.1.0", type: "channel", permissions: { fs: ["read:../../etc"] } }),
+			validateManifest({
+				name: "traversal",
+				version: "0.1.0",
+				type: "channel",
+				permissions: { fs: ["read:../../etc"] },
+			}),
 		).toThrow("path traversal detected");
 	});
 

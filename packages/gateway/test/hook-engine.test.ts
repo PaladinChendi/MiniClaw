@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { HookEngine } from "../src/hook-engine.ts";
 
 describe("HookEngine", () => {
@@ -15,12 +15,22 @@ describe("HookEngine", () => {
 	it("fires hooks in priority order", async () => {
 		const engine = new HookEngine();
 		const order: string[] = [];
-		engine.register("pre_egress", "low", async () => {
-			order.push("low");
-		}, { priority: 10 });
-		engine.register("pre_egress", "high", async () => {
-			order.push("high");
-		}, { priority: 1 });
+		engine.register(
+			"pre_egress",
+			"low",
+			async () => {
+				order.push("low");
+			},
+			{ priority: 10 },
+		);
+		engine.register(
+			"pre_egress",
+			"high",
+			async () => {
+				order.push("high");
+			},
+			{ priority: 1 },
+		);
 		await engine.fire("pre_egress", {});
 		expect(order).toEqual(["high", "low"]);
 	});

@@ -1,5 +1,5 @@
-import { describe, it, expect } from "bun:test";
-import { EbsclawError, UserActionError, RetryableError, CorruptDataError, FatalError } from "../../src/index.ts";
+import { describe, expect, it } from "bun:test";
+import { CorruptDataError, EbsclawError, FatalError, RetryableError, UserActionError } from "../../src/index.ts";
 
 describe("Error taxonomy subclasses", () => {
 	it("UserActionError has correct fields", () => {

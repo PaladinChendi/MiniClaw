@@ -1,12 +1,12 @@
-import { describe, it, expect } from "bun:test";
-import type { PluginContext, PluginManifest, SessionSnapshot, LLMOptions } from "../../src/index.ts";
+import { describe, expect, it } from "bun:test";
+import type { LLMOptions, PluginContext, PluginManifest, SessionSnapshot } from "../../src/index.ts";
 
 describe("Optional property safety", () => {
 	it("PluginContext destructuring ignores unknown fields", () => {
 		const ctx = {
 			logger: {} as any,
 			config: {},
-			callLLM: async () => ({} as any),
+			callLLM: async () => ({}) as any,
 			scheduleCron: () => {},
 			extra: "new",
 		} as PluginContext;

@@ -1,5 +1,5 @@
-import OpenAI from "openai";
 import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import OpenAI from "openai";
 
 export interface OpenAIProviderDeps {
 	chat?: { completions: { create: (params: any) => Promise<any> } };

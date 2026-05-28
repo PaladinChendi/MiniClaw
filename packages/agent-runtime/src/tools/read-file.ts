@@ -1,5 +1,5 @@
-import { readFile } from "fs/promises";
 import { resolve } from "path";
+import { readFile } from "fs/promises";
 import type { ToolDefinition, ToolExecutionContext } from "../types.ts";
 
 export class ReadFileTool {

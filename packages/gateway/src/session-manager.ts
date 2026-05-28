@@ -1,7 +1,7 @@
-import { writeFileAtomic } from "@ebsclaw/shared";
-import { readFile, readdir, unlink } from "fs/promises";
 import { existsSync } from "fs";
 import { join } from "path";
+import { writeFileAtomic } from "@ebsclaw/shared";
+import { readFile, readdir, unlink } from "fs/promises";
 import type { SessionState } from "./types.ts";
 
 export class SessionManager {

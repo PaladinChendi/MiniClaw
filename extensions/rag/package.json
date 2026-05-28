@@ -1,6 +1,6 @@
 {
-  "name": "@ebsclaw/rag",
-  "version": "0.1.0",
-  "type": "module",
-  "ebsclaw": { "type": "rag" }
+	"name": "@ebsclaw/rag",
+	"version": "0.1.0",
+	"type": "module",
+	"ebsclaw": { "type": "rag" }
 }

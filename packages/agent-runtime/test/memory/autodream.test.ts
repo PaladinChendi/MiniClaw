@@ -1,13 +1,17 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "bun:test";
-import { AutoDream } from "../../src/memory/autodream.ts";
+import { afterEach, beforeEach, describe, expect, it, vi } from "bun:test";
+import { join } from "path";
 import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
 import { mkdir, rm } from "fs/promises";
-import { join } from "path";
+import { AutoDream } from "../../src/memory/autodream.ts";
 
 const testDir = join(import.meta.dir, "__tmp_dream__");
 
-beforeEach(async () => { await mkdir(testDir, { recursive: true }); });
-afterEach(async () => { await rm(testDir, { recursive: true, force: true }); });
+beforeEach(async () => {
+	await mkdir(testDir, { recursive: true });
+});
+afterEach(async () => {
+	await rm(testDir, { recursive: true, force: true });
+});
 
 describe("AutoDream", () => {
 	it("orient stage gathers relevant memories", async () => {

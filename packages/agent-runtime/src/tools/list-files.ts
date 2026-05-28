@@ -1,5 +1,5 @@
-import { readdir, stat } from "fs/promises";
 import { resolve } from "path";
+import { readdir, stat } from "fs/promises";
 import type { ToolDefinition, ToolExecutionContext } from "../types.ts";
 
 export class ListFilesTool {

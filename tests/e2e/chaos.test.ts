@@ -1,15 +1,30 @@
-import { describe, it, expect, beforeAll, afterAll } from "bun:test";
-import { E2EHarness } from "./harness.ts";
+import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { join } from "path";
 import { mkdir, rm } from "fs/promises";
+import { E2EHarness } from "./harness.ts";
 
 const tmpBase = join(import.meta.dir, "__tmp_chaos__");
 
 describe("Chaos Scenarios", () => {
 	const scenarios = [
-		{ name: "missing config dir", setup: async () => { await mkdir(tmpBase, { recursive: true }); } },
-		{ name: "corrupted memory file", setup: async () => { await mkdir(tmpBase, { recursive: true }); } },
-		{ name: "concurrent writes", setup: async () => { await mkdir(tmpBase, { recursive: true }); } },
+		{
+			name: "missing config dir",
+			setup: async () => {
+				await mkdir(tmpBase, { recursive: true });
+			},
+		},
+		{
+			name: "corrupted memory file",
+			setup: async () => {
+				await mkdir(tmpBase, { recursive: true });
+			},
+		},
+		{
+			name: "concurrent writes",
+			setup: async () => {
+				await mkdir(tmpBase, { recursive: true });
+			},
+		},
 		{ name: "empty input", setup: async () => {} },
 		{ name: "very long input", setup: async () => {} },
 		{ name: "special characters input", setup: async () => {} },

@@ -1,5 +1,5 @@
-import { describe, it, expect } from "bun:test";
-import { readFileSync, existsSync, readdirSync } from "fs";
+import { describe, expect, it } from "bun:test";
+import { existsSync, readFileSync, readdirSync } from "fs";
 import { join } from "path";
 
 const root = import.meta.dir;
@@ -21,9 +21,7 @@ describe("Monorepo smoke test", () => {
 	it("all workspace packages have package.json", () => {
 		const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf-8"));
 		for (const ws of pkg.workspaces) {
-			const dirs = ws.endsWith("*")
-				? globDirs(ws)
-				: [join(root, ws)];
+			const dirs = ws.endsWith("*") ? globDirs(ws) : [join(root, ws)];
 			for (const dir of dirs) {
 				expect(existsSync(join(dir, "package.json"))).toBeTrue();
 			}
@@ -41,9 +39,7 @@ describe("Monorepo smoke test", () => {
 	});
 
 	it("qqbot manifest has status:implemented", () => {
-		const manifest = JSON.parse(
-			readFileSync(join(root, "extensions/channels/qqbot/ebsclaw.manifest.json"), "utf-8"),
-		);
+		const manifest = JSON.parse(readFileSync(join(root, "extensions/channels/qqbot/ebsclaw.manifest.json"), "utf-8"));
 		expect(manifest.status).toBe("implemented");
 	});
 });

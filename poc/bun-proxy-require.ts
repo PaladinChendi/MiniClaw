@@ -11,22 +11,22 @@ const allowedFs: string[] = [];
 const allowedNet: string[] = [];
 
 function createFsProxy(): any {
-  const realFs = require("fs");
-  return new Proxy(realFs, {
-    get(target, prop: string) {
-      const orig = target[prop];
-      if (typeof orig !== "function") return orig;
-      return (...args: any[]) => {
-        const pathArg = typeof args[0] === "string" ? args[0] : String(args[0]);
-        if (!allowedFs.some((p) => pathArg.startsWith(p))) {
-          console.log(`fs.${prop}(${pathArg}) BLOCKED`);
-          throw new Error(`PermissionDenied: fs.${prop}(${pathArg})`);
-        }
-        console.log(`fs.${prop}(${pathArg}) ALLOWED`);
-        return orig.apply(target, args);
-      };
-    },
-  });
+	const realFs = require("fs");
+	return new Proxy(realFs, {
+		get(target, prop: string) {
+			const orig = target[prop];
+			if (typeof orig !== "function") return orig;
+			return (...args: any[]) => {
+				const pathArg = typeof args[0] === "string" ? args[0] : String(args[0]);
+				if (!allowedFs.some((p) => pathArg.startsWith(p))) {
+					console.log(`fs.${prop}(${pathArg}) BLOCKED`);
+					throw new Error(`PermissionDenied: fs.${prop}(${pathArg})`);
+				}
+				console.log(`fs.${prop}(${pathArg}) ALLOWED`);
+				return orig.apply(target, args);
+			};
+		},
+	});
 }
 
 console.log("=== Bun Proxy require PoC ===");
@@ -35,17 +35,17 @@ console.log("Bun version:", Bun.version);
 // Approach 1: Direct Proxy on the fs object
 const fsProxy = createFsProxy();
 try {
-  fsProxy.readFileSync("/etc/hostname");
+	fsProxy.readFileSync("/etc/hostname");
 } catch (e: any) {
-  console.log("Proxy approach:", e.message?.includes("PermissionDenied") ? "WORKS" : "FAILS");
+	console.log("Proxy approach:", e.message?.includes("PermissionDenied") ? "WORKS" : "FAILS");
 }
 
 // Approach 2: Can we override require.cache or require.resolve?
 try {
-  const Module = require("module");
-  console.log("module hook available:", typeof Module._load);
+	const Module = require("module");
+	console.log("module hook available:", typeof Module._load);
 } catch {
-  console.log("module hook: NOT available (Bun doesn't expose Module._load)");
+	console.log("module hook: NOT available (Bun doesn't expose Module._load)");
 }
 
 // Approach 3: Worker thread isolation test

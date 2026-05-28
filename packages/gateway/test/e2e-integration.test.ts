@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { Gateway, MemoryStore, MemoryStoreHandle } from "../src/index.ts";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { join } from "path";
+import { SemanticSearch } from "@ebsclaw/agent-runtime/src/llm-router/semantic-search.ts";
 import { MemoryPlugin } from "@ebsclaw/agent-runtime/src/memory/memory-plugin.ts";
 import { RAGPlugin } from "@ebsclaw/agent-runtime/src/rag/rag-plugin.ts";
-import { SemanticSearch } from "@ebsclaw/agent-runtime/src/llm-router/semantic-search.ts";
 import { mkdir, rm, writeFile } from "fs/promises";
-import { join } from "path";
+import { Gateway, MemoryStore, MemoryStoreHandle } from "../src/index.ts";
 
 const testDir = join(import.meta.dir, "__tmp_e2e__");
 const docDir = join(testDir, "docs");
@@ -13,7 +13,9 @@ beforeEach(async () => {
 	await mkdir(testDir, { recursive: true });
 	await mkdir(docDir, { recursive: true });
 });
-afterEach(async () => { await rm(testDir, { recursive: true, force: true }); });
+afterEach(async () => {
+	await rm(testDir, { recursive: true, force: true });
+});
 
 describe("E2E integration: Memory + RAG + Search through Gateway", () => {
 	it("stores memory, indexes RAG docs, and searches both", async () => {

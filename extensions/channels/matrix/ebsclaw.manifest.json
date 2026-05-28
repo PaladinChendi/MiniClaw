@@ -1,8 +1,8 @@
 {
-  "name": "matrix",
-  "version": "0.1.0",
-  "type": "channel",
-  "displayName": "Matrix",
-  "status": "stub",
-  "permissions": { "fs": [], "net": [], "env": [] }
+	"name": "matrix",
+	"version": "0.1.0",
+	"type": "channel",
+	"displayName": "Matrix",
+	"status": "stub",
+	"permissions": { "fs": [], "net": [], "env": [] }
 }

@@ -1,8 +1,8 @@
 {
-  "name": "irc",
-  "version": "0.1.0",
-  "type": "channel",
-  "displayName": "Irc",
-  "status": "stub",
-  "permissions": { "fs": [], "net": [], "env": [] }
+	"name": "irc",
+	"version": "0.1.0",
+	"type": "channel",
+	"displayName": "Irc",
+	"status": "stub",
+	"permissions": { "fs": [], "net": [], "env": [] }
 }

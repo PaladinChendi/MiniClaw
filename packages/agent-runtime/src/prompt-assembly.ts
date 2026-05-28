@@ -34,11 +34,7 @@ export class PromptAssembler {
 		this.maxTokens = config.maxTokens ?? 128000;
 	}
 
-	assemble(
-		messages: AgentMessage[],
-		toolDefs: ToolDef[] = [],
-		memories: MemoryEntry[] = [],
-	): AssembledPrompt {
+	assemble(messages: AgentMessage[], toolDefs: ToolDef[] = [], memories: MemoryEntry[] = []): AssembledPrompt {
 		const parts: string[] = [this.baseSystemPrompt];
 
 		if (memories.length > 0) {

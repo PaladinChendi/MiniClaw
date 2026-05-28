@@ -1,7 +1,7 @@
-import type { Plugin, PluginManifest, PluginContext } from "@ebsclaw/plugin-api";
-import type { LoadedPlugin } from "./types.ts";
-import { readFileSync, existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { join } from "path";
+import type { Plugin, PluginContext, PluginManifest } from "@ebsclaw/plugin-api";
+import type { LoadedPlugin } from "./types.ts";
 
 export class PluginLoader {
 	async load(pluginDir: string): Promise<LoadedPlugin> {

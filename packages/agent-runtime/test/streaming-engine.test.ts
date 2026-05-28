@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { StreamingEngine } from "../src/streaming-engine.ts";
 import type { StreamChunk } from "../src/types.ts";
 

@@ -1,4 +1,4 @@
-import type { CircuitBreakerState, CircuitBreakerConfig } from "./types.ts";
+import type { CircuitBreakerConfig, CircuitBreakerState } from "./types.ts";
 
 const DEFAULT_CONFIG: CircuitBreakerConfig = {
 	halfOpenAfterMs: 600000,

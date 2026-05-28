@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { PluginRegistry } from "../src/plugin-registry.ts";
-import { PluginLoader } from "../src/plugin-loader.ts";
-import { mkdir, rm, writeFile } from "fs/promises";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { join } from "path";
-import type { Plugin, PluginContext, ChannelPlugin } from "@ebsclaw/plugin-api";
+import type { ChannelPlugin, Plugin, PluginContext } from "@ebsclaw/plugin-api";
+import { mkdir, rm, writeFile } from "fs/promises";
+import { PluginLoader } from "../src/plugin-loader.ts";
+import { PluginRegistry } from "../src/plugin-registry.ts";
 
 const tmpDir = join(import.meta.dir, "__tmp_plugin__");
 

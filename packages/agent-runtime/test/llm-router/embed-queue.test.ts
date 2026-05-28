@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "bun:test";
+import { beforeEach, describe, expect, it, vi } from "bun:test";
 import { EmbedQueue } from "../../src/llm-router/embed-queue.ts";
 
 describe("EmbedQueue", () => {

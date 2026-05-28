@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { SessionManager } from "../src/session-manager.ts";
-import { mkdir, rm, readFile, stat } from "fs/promises";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { join } from "path";
+import { mkdir, readFile, rm, stat } from "fs/promises";
+import { SessionManager } from "../src/session-manager.ts";
 
 const tmpDir = join(import.meta.dir, "__tmp_session__");
 

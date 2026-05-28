@@ -1,6 +1,6 @@
 {
-  "name": "@ebsclaw/skills",
-  "version": "0.1.0",
-  "type": "module",
-  "ebsclaw": { "type": "skill" }
+	"name": "@ebsclaw/skills",
+	"version": "0.1.0",
+	"type": "module",
+	"ebsclaw": { "type": "skill" }
 }

@@ -1,5 +1,5 @@
-import type { MemoryStore } from "./memory-store.ts";
 import type { MemoryFileEntry, MemoryIndexEntry } from "@ebsclaw/memory/types";
+import type { MemoryStore } from "./memory-store.ts";
 
 export class MemoryStoreHandle {
 	private store: MemoryStore;
@@ -16,7 +16,11 @@ export class MemoryStoreHandle {
 		return this.store.list();
 	}
 
-	create(_data: { content: string; type: import("@ebsclaw/plugin-api").MemoryType; scope?: "private" | "team" }): Promise<string> {
+	create(_data: {
+		content: string;
+		type: import("@ebsclaw/plugin-api").MemoryType;
+		scope?: "private" | "team";
+	}): Promise<string> {
 		throw new Error("MemoryStoreHandle is read-only; use PluginContext.store() to write");
 	}
 

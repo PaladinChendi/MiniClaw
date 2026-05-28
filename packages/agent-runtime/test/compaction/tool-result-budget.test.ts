@@ -1,7 +1,7 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { ToolResultBudget } from "../../src/compaction/tool-result-budget.ts";
-import type { AgentMessage } from "../../src/types.ts";
 import { DEFAULT_COMPACTION_CONFIG } from "../../src/compaction/types.ts";
+import type { AgentMessage } from "../../src/types.ts";
 
 describe("L1: ToolResultBudget", () => {
 	it("truncates tool results exceeding budget", () => {
@@ -19,9 +19,7 @@ describe("L1: ToolResultBudget", () => {
 
 		expect(result.applied).toBe(true);
 		expect(result.level).toBe(1);
-		expect(result.messages[0].content.length).toBeLessThanOrEqual(
-			DEFAULT_COMPACTION_CONFIG.toolResultBudget + 50,
-		);
+		expect(result.messages[0].content.length).toBeLessThanOrEqual(DEFAULT_COMPACTION_CONFIG.toolResultBudget + 50);
 	});
 
 	it("does not truncate tool results within budget", () => {

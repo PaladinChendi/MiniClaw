@@ -1,7 +1,7 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { TimeMicrocompact } from "../../src/compaction/time-microcompact.ts";
-import type { AgentMessage } from "../../src/types.ts";
 import { DEFAULT_COMPACTION_CONFIG } from "../../src/compaction/types.ts";
+import type { AgentMessage } from "../../src/types.ts";
 
 describe("L2: TimeMicrocompact", () => {
 	it("removes tool results older than threshold", () => {

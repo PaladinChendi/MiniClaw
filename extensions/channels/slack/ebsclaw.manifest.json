@@ -1,8 +1,8 @@
 {
-  "name": "slack",
-  "version": "0.1.0",
-  "type": "channel",
-  "displayName": "Slack",
-  "status": "stub",
-  "permissions": { "fs": [], "net": [], "env": [] }
+	"name": "slack",
+	"version": "0.1.0",
+	"type": "channel",
+	"displayName": "Slack",
+	"status": "stub",
+	"permissions": { "fs": [], "net": [], "env": [] }
 }

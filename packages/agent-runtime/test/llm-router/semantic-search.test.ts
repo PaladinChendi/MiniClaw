@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { SemanticSearch } from "../../src/llm-router/semantic-search.ts";
 
 describe("SemanticSearch", () => {

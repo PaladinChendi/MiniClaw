@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { Gateway } from "../src/index.ts";
-import type { Plugin, PluginContext, ChannelPlugin, InboundMessage, OutboundMessage } from "@ebsclaw/plugin-api";
-import { mkdir, rm } from "fs/promises";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { join } from "path";
+import type { ChannelPlugin, InboundMessage, OutboundMessage, Plugin, PluginContext } from "@ebsclaw/plugin-api";
+import { mkdir, rm } from "fs/promises";
+import { Gateway } from "../src/index.ts";
 
 const tmpDir = join(import.meta.dir, "__tmp_integration__");
 
@@ -87,9 +87,7 @@ describe("Integration: full message flow", () => {
 		await gw.start();
 
 		const session = await gw.sessionManager.create("persist-1");
-		await gw.sessionManager.updateMessages("persist-1", [
-			{ role: "user", content: "persist me" },
-		]);
+		await gw.sessionManager.updateMessages("persist-1", [{ role: "user", content: "persist me" }]);
 
 		// Create a new SessionManager to verify persistence
 		const { SessionManager } = await import("../src/session-manager.ts");

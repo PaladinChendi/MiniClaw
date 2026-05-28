@@ -1,7 +1,7 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { HistorySnip } from "../../src/compaction/history-snip.ts";
-import type { AgentMessage } from "../../src/types.ts";
 import { DEFAULT_COMPACTION_CONFIG } from "../../src/compaction/types.ts";
+import type { AgentMessage } from "../../src/types.ts";
 
 describe("L4: HistorySnip", () => {
 	it("removes oldest round-group when enough rounds exist", () => {

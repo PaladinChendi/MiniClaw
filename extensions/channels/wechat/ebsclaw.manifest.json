@@ -1,8 +1,8 @@
 {
-  "name": "wechat",
-  "version": "0.1.0",
-  "type": "channel",
-  "displayName": "Wechat",
-  "status": "stub",
-  "permissions": { "fs": [], "net": [], "env": [] }
+	"name": "wechat",
+	"version": "0.1.0",
+	"type": "channel",
+	"displayName": "Wechat",
+	"status": "stub",
+	"permissions": { "fs": [], "net": [], "env": [] }
 }

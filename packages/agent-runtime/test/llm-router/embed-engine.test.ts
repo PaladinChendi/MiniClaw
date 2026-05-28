@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "bun:test";
+import { describe, expect, it, vi } from "bun:test";
 import { EmbedEngine } from "../../src/llm-router/embed-engine.ts";
 
 describe("EmbedEngine fallback chain", () => {
@@ -16,7 +16,9 @@ describe("EmbedEngine fallback chain", () => {
 	it("falls back to API when WASM throws", async () => {
 		const apiEmbed = vi.fn(async (_text: string) => new Array(8).fill(0.2));
 		const engine = new EmbedEngine({
-			wasmEmbedFn: async () => { throw new Error("WASM not available"); },
+			wasmEmbedFn: async () => {
+				throw new Error("WASM not available");
+			},
 			apiEmbedFn: apiEmbed,
 		});
 		const result = await engine.embed("hello");
@@ -26,8 +28,12 @@ describe("EmbedEngine fallback chain", () => {
 
 	it("falls back to hash when both WASM and API fail", async () => {
 		const engine = new EmbedEngine({
-			wasmEmbedFn: async () => { throw new Error("WASM fail"); },
-			apiEmbedFn: async () => { throw new Error("API fail"); },
+			wasmEmbedFn: async () => {
+				throw new Error("WASM fail");
+			},
+			apiEmbedFn: async () => {
+				throw new Error("API fail");
+			},
 		});
 		const result = await engine.embed("hello");
 		expect(Array.isArray(result)).toBe(true);

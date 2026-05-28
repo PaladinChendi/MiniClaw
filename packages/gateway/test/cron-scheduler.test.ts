@@ -1,13 +1,18 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { CronScheduler } from "../src/cron-scheduler.ts";
 
 describe("CronScheduler", () => {
 	it("registers and runs a cron job", async () => {
 		const scheduler = new CronScheduler();
 		let count = 0;
-		scheduler.register("job1", "* * * * *", async () => {
-			count++;
-		}, { jitterMs: 0, minIntervalMs: 0, pluginName: "test" });
+		scheduler.register(
+			"job1",
+			"* * * * *",
+			async () => {
+				count++;
+			},
+			{ jitterMs: 0, minIntervalMs: 0, pluginName: "test" },
+		);
 		await scheduler.tryRun("job1");
 		expect(count).toBe(1);
 	});
@@ -31,9 +36,14 @@ describe("CronScheduler", () => {
 	it("respects min interval — skips if called too soon", async () => {
 		const scheduler = new CronScheduler();
 		let count = 0;
-		scheduler.register("frequent", "* * * * *", async () => {
-			count++;
-		}, { jitterMs: 0, minIntervalMs: 60000, pluginName: "test" });
+		scheduler.register(
+			"frequent",
+			"* * * * *",
+			async () => {
+				count++;
+			},
+			{ jitterMs: 0, minIntervalMs: 60000, pluginName: "test" },
+		);
 		await scheduler.tryRun("frequent");
 		expect(count).toBe(1);
 		await scheduler.tryRun("frequent");
@@ -49,9 +59,14 @@ describe("CronScheduler", () => {
 	it("unregister removes a job", async () => {
 		const scheduler = new CronScheduler();
 		let count = 0;
-		scheduler.register("temp", "* * * * *", async () => {
-			count++;
-		}, { jitterMs: 0, minIntervalMs: 0, pluginName: "test" });
+		scheduler.register(
+			"temp",
+			"* * * * *",
+			async () => {
+				count++;
+			},
+			{ jitterMs: 0, minIntervalMs: 0, pluginName: "test" },
+		);
 		scheduler.unregister("temp");
 		const result = await scheduler.tryRun("temp");
 		expect(result).toBe(false);

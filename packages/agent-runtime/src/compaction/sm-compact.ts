@@ -1,5 +1,5 @@
 import type { AgentMessage } from "../types.ts";
-import type { CompactionConfig, CompactionLevelResult, CompactionHookMessage } from "./types.ts";
+import type { CompactionConfig, CompactionHookMessage, CompactionLevelResult } from "./types.ts";
 
 export interface SMCompactDeps {
 	summarizeWithLLM: (messages: AgentMessage[]) => Promise<string>;

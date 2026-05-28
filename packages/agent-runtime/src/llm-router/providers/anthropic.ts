@@ -41,9 +41,7 @@ export class AnthropicProvider {
 		return {
 			text: textBlock?.type === "text" ? textBlock.text : "",
 			model: msg.model,
-			usage: msg.usage
-				? { inputTokens: msg.usage.input_tokens, outputTokens: msg.usage.output_tokens }
-				: undefined,
+			usage: msg.usage ? { inputTokens: msg.usage.input_tokens, outputTokens: msg.usage.output_tokens } : undefined,
 		};
 	}
 

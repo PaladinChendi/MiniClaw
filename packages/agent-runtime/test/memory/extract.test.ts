@@ -1,15 +1,19 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
-import { MemoryExtractor } from "../../src/memory/extract";
-import { mkdir, rm, readFile } from "fs/promises";
-import { join } from "path";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { existsSync } from "fs";
+import { join } from "path";
+import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { mkdir, readFile, rm } from "fs/promises";
+import { MemoryExtractor } from "../../src/memory/extract";
 
 const testDir = join(import.meta.dir, "__tmp_extract__");
 const memDir = join(testDir, "memories");
 
-beforeEach(async () => { await mkdir(testDir, { recursive: true }); });
-afterEach(async () => { await rm(testDir, { recursive: true, force: true }); });
+beforeEach(async () => {
+	await mkdir(testDir, { recursive: true });
+});
+afterEach(async () => {
+	await rm(testDir, { recursive: true, force: true });
+});
 
 describe("MemoryExtractor", () => {
 	it("extracts user preferences from conversation", async () => {
@@ -36,9 +40,7 @@ describe("MemoryExtractor", () => {
 		await store.init();
 		const extractor = new MemoryExtractor(store);
 
-		const messages = [
-			{ role: "user" as const, content: "Don't use semicolons, it's cleaner without them" },
-		];
+		const messages = [{ role: "user" as const, content: "Don't use semicolons, it's cleaner without them" }];
 
 		const ids = await extractor.extract(messages);
 		expect(ids.length).toBeGreaterThan(0);
@@ -51,9 +53,7 @@ describe("MemoryExtractor", () => {
 		await store.init();
 		const extractor = new MemoryExtractor(store);
 
-		const messages = [
-			{ role: "user" as const, content: "We're building a CLI tool called ebsclaw for AI agents" },
-		];
+		const messages = [{ role: "user" as const, content: "We're building a CLI tool called ebsclaw for AI agents" }];
 
 		const ids = await extractor.extract(messages);
 		expect(ids.length).toBeGreaterThan(0);
@@ -66,9 +66,7 @@ describe("MemoryExtractor", () => {
 		await store.init();
 		const extractor = new MemoryExtractor(store, { sessionDir: testDir });
 
-		const messages = [
-			{ role: "user" as const, content: "I like vim keybindings" },
-		];
+		const messages = [{ role: "user" as const, content: "I like vim keybindings" }];
 
 		await extractor.extract(messages);
 		const notesPath = join(testDir, "notes.md");

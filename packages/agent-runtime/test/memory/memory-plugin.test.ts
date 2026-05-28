@@ -1,13 +1,17 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "bun:test";
-import { MemoryPlugin } from "../../src/memory/memory-plugin.ts";
+import { afterEach, beforeEach, describe, expect, it, vi } from "bun:test";
+import { join } from "path";
 import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
 import { mkdir, rm } from "fs/promises";
-import { join } from "path";
+import { MemoryPlugin } from "../../src/memory/memory-plugin.ts";
 
 const testDir = join(import.meta.dir, "__tmp_memplugin__");
 
-beforeEach(async () => { await mkdir(testDir, { recursive: true }); });
-afterEach(async () => { await rm(testDir, { recursive: true, force: true }); });
+beforeEach(async () => {
+	await mkdir(testDir, { recursive: true });
+});
+afterEach(async () => {
+	await rm(testDir, { recursive: true, force: true });
+});
 
 describe("MemoryPlugin", () => {
 	it("stores and queries memories", async () => {

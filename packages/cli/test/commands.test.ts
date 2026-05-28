@@ -1,5 +1,5 @@
-import { describe, it, expect } from "bun:test";
-import { parseArgs, COMMANDS } from "../src/commands.ts";
+import { describe, expect, it } from "bun:test";
+import { COMMANDS, parseArgs } from "../src/commands.ts";
 
 describe("parseArgs", () => {
 	it("parses 'gateway start' command", () => {

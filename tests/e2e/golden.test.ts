@@ -1,12 +1,16 @@
-import { describe, it, expect, beforeAll, afterAll } from "bun:test";
-import { E2EHarness } from "./harness.ts";
+import { afterAll, beforeAll, describe, expect, it } from "bun:test";
 import { join } from "path";
 import { mkdir, rm } from "fs/promises";
+import { E2EHarness } from "./harness.ts";
 
 const tmpDir = join(import.meta.dir, "__tmp_golden__");
 
-beforeAll(async () => { await mkdir(tmpDir, { recursive: true }); });
-afterAll(async () => { await rm(tmpDir, { recursive: true, force: true }); });
+beforeAll(async () => {
+	await mkdir(tmpDir, { recursive: true });
+});
+afterAll(async () => {
+	await rm(tmpDir, { recursive: true, force: true });
+});
 
 const GOLDEN_CASES = [
 	{ input: "What is 2+2?", expectContains: "4" },

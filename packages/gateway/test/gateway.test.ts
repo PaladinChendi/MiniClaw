@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { Gateway } from "../src/index.ts";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { join } from "path";
 import type { Plugin, PluginContext } from "@ebsclaw/plugin-api";
 import { mkdir, rm } from "fs/promises";
-import { join } from "path";
+import { Gateway } from "../src/index.ts";
 
 const tmpDir = join(import.meta.dir, "__tmp_gateway__");
 

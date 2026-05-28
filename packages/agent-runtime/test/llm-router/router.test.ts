@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from "bun:test";
+import { describe, expect, it, vi } from "bun:test";
+import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
 import { AnthropicProvider } from "../../src/llm-router/providers/anthropic.ts";
 import { OpenAIProvider } from "../../src/llm-router/providers/openai.ts";
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
 
 describe("AnthropicProvider", () => {
 	it("converts LLMRequest to Anthropic format and returns LLMResponse", async () => {
@@ -53,10 +53,9 @@ describe("OpenAIProvider", () => {
 			usage: { prompt_tokens: 10, completion_tokens: 5 },
 		});
 
-		const provider = new OpenAIProvider(
-			{ apiKey: "sk-test-key", model: "gpt-4o", maxTokens: 4096 },
-			{ chat: { completions: { create: mockCreate } } } as any,
-		);
+		const provider = new OpenAIProvider({ apiKey: "sk-test-key", model: "gpt-4o", maxTokens: 4096 }, {
+			chat: { completions: { create: mockCreate } },
+		} as any);
 
 		const req: LLMRequest = {
 			prompt: "Say hello",
@@ -75,10 +74,9 @@ describe("OpenAIProvider", () => {
 			data: [{ embedding: new Array(3072).fill(0.05) }],
 		});
 
-		const provider = new OpenAIProvider(
-			{ apiKey: "sk-test-key", model: "gpt-4o", maxTokens: 4096 },
-			{ embeddings: { create: mockEmbed } } as any,
-		);
+		const provider = new OpenAIProvider({ apiKey: "sk-test-key", model: "gpt-4o", maxTokens: 4096 }, {
+			embeddings: { create: mockEmbed },
+		} as any);
 
 		const embedding = await provider.embed("test text", "text-embedding-3-large");
 		expect(embedding.length).toBe(3072);

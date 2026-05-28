@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { RAGPlugin } from "../../src/rag/rag-plugin.ts";
-import { mkdir, rm, writeFile } from "fs/promises";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { join } from "path";
+import { mkdir, rm, writeFile } from "fs/promises";
+import { RAGPlugin } from "../../src/rag/rag-plugin.ts";
 
 const testDir = join(import.meta.dir, "__tmp_rag__");
 const docDir = join(testDir, "docs");
@@ -10,7 +10,9 @@ beforeEach(async () => {
 	await mkdir(testDir, { recursive: true });
 	await mkdir(docDir, { recursive: true });
 });
-afterEach(async () => { await rm(testDir, { recursive: true, force: true }); });
+afterEach(async () => {
+	await rm(testDir, { recursive: true, force: true });
+});
 
 describe("RAGPlugin", () => {
 	it("indexes documents from a directory", async () => {

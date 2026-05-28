@@ -26,9 +26,7 @@ export class FallbackChain {
 				errors.push(err instanceof Error ? err : new Error(String(err)));
 			}
 		}
-		throw new Error(
-			`All providers failed: ${errors.map((e) => e.message).join("; ")}`,
-		);
+		throw new Error(`All providers failed: ${errors.map((e) => e.message).join("; ")}`);
 	}
 
 	async embed(text: string, model?: string): Promise<number[]> {
@@ -40,9 +38,7 @@ export class FallbackChain {
 				errors.push(err instanceof Error ? err : new Error(String(err)));
 			}
 		}
-		throw new Error(
-			`All providers failed for embed: ${errors.map((e) => e.message).join("; ")}`,
-		);
+		throw new Error(`All providers failed for embed: ${errors.map((e) => e.message).join("; ")}`);
 	}
 
 	hotSwap(name: string, replacement: ProviderLike): void {

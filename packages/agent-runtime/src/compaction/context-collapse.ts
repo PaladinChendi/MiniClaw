@@ -73,11 +73,7 @@ export class ContextCollapse {
 		projectView: string,
 		timestamp: string,
 	): string {
-		const parts: string[] = [
-			`## Context Collapse — ${timestamp}`,
-			"",
-			"### Stages",
-		];
+		const parts: string[] = [`## Context Collapse — ${timestamp}`, "", "### Stages"];
 
 		for (const s of stages) {
 			parts.push(`- **${s.stage}**: ${s.summary}`);

@@ -1,13 +1,17 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { join } from "path";
 import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
 import { MemoryStoreHandle } from "@ebsclaw/gateway/src/memory-store-handle";
 import { mkdir, rm } from "fs/promises";
-import { join } from "path";
 
 const testDir = join(import.meta.dir, "__tmp_handle__");
 
-beforeEach(async () => { await mkdir(testDir, { recursive: true }); });
-afterEach(async () => { await rm(testDir, { recursive: true, force: true }); });
+beforeEach(async () => {
+	await mkdir(testDir, { recursive: true });
+});
+afterEach(async () => {
+	await rm(testDir, { recursive: true, force: true });
+});
 
 describe("MemoryStoreHandle", () => {
 	it("read returns entry from underlying store", async () => {

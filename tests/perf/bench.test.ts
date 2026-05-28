@@ -1,9 +1,9 @@
-import { describe, it, expect } from "bun:test";
-import { MemoryStore } from "../../packages/gateway/src/memory-store.ts";
+import { describe, expect, it } from "bun:test";
+import { join } from "path";
+import { mkdir, rm } from "fs/promises";
 import { EmbedQueue } from "../../packages/agent-runtime/src/llm-router/embed-queue.ts";
 import { SemanticSearch } from "../../packages/agent-runtime/src/llm-router/semantic-search.ts";
-import { mkdir, rm } from "fs/promises";
-import { join } from "path";
+import { MemoryStore } from "../../packages/gateway/src/memory-store.ts";
 
 const benchDir = join(import.meta.dir, "__tmp_bench__");
 

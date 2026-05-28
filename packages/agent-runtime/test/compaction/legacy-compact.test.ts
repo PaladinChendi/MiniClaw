@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from "bun:test";
+import { describe, expect, it, vi } from "bun:test";
 import { LegacyCompact } from "../../src/compaction/legacy-compact.ts";
-import type { AgentMessage } from "../../src/types.ts";
 import { DEFAULT_COMPACTION_CONFIG } from "../../src/compaction/types.ts";
+import type { AgentMessage } from "../../src/types.ts";
 
 describe("L7: LegacyCompact", () => {
 	it("forks agent to produce full conversation summary", async () => {
@@ -39,9 +39,7 @@ describe("L7: LegacyCompact", () => {
 			sessionId: "s2",
 		});
 
-		const result = await l7.compact([
-			{ role: "user", content: "hi", timestamp: Date.now() },
-		]);
+		const result = await l7.compact([{ role: "user", content: "hi", timestamp: Date.now() }]);
 
 		expect(result.summary).toBe("legacy summary text");
 	});

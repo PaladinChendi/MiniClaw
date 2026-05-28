@@ -1,33 +1,31 @@
-import { describe, it, expect } from "bun:test";
-import {
-	EbsclawError,
-} from "../../src/index.ts";
+import { describe, expect, it } from "bun:test";
+import { EbsclawError } from "../../src/index.ts";
 import type {
-	Plugin,
-	PluginContext,
 	ChannelPlugin,
-	MemoryPlugin,
-	SkillPlugin,
-	RAGPlugin,
-	InboundMessage,
-	OutboundMessage,
-	MemoryQuery,
-	MemoryResult,
-	MemoryEntry,
-	MemoryType,
-	SkillDescriptor,
-	SkillContent,
+	CompactBoundary,
 	DocumentSource,
-	RAGQuery,
-	RAGResult,
+	ErrorCategory,
+	InboundMessage,
+	LLMOptions,
 	LLMRequest,
 	LLMResponse,
-	LLMOptions,
+	MemoryEntry,
+	MemoryPlugin,
+	MemoryQuery,
+	MemoryResult,
+	MemoryType,
+	OutboundMessage,
+	Plugin,
+	PluginContext,
 	PluginManifest,
 	PluginPermissions,
+	RAGPlugin,
+	RAGQuery,
+	RAGResult,
 	SessionSnapshot,
-	CompactBoundary,
-	ErrorCategory,
+	SkillContent,
+	SkillDescriptor,
+	SkillPlugin,
 } from "../../src/index.ts";
 
 describe("Plugin API backward compatibility", () => {

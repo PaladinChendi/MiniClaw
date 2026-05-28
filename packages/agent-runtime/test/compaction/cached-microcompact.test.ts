@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from "bun:test";
+import { describe, expect, it, vi } from "bun:test";
 import { CachedMicrocompact } from "../../src/compaction/cached-microcompact.ts";
-import type { AgentMessage } from "../../src/types.ts";
 import { DEFAULT_COMPACTION_CONFIG } from "../../src/compaction/types.ts";
+import type { AgentMessage } from "../../src/types.ts";
 
 describe("L3: CachedMicrocompact", () => {
 	it("deletes cached prefix tool results via API", () => {

@@ -1,13 +1,17 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it, vi } from "bun:test";
+import { join } from "path";
+import { mkdir, rm } from "fs/promises";
 import { Gateway } from "../src/index.ts";
 import { MemoryStore } from "../src/memory-store.ts";
-import { mkdir, rm } from "fs/promises";
-import { join } from "path";
 
 const testDir = join(import.meta.dir, "__tmp_gw_ctx__");
 
-beforeEach(async () => { await mkdir(testDir, { recursive: true }); });
-afterEach(async () => { await rm(testDir, { recursive: true, force: true }); });
+beforeEach(async () => {
+	await mkdir(testDir, { recursive: true });
+});
+afterEach(async () => {
+	await rm(testDir, { recursive: true, force: true });
+});
 
 describe("Gateway PluginContext extension", () => {
 	it("createPluginContext includes callPlugin method", async () => {

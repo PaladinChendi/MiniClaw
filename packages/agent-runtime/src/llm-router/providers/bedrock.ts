@@ -1,9 +1,7 @@
 import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
 
 export class BedrockProvider {
-	constructor(
-		private config: { apiKey: string; model: string; maxTokens: number; region: string },
-	) {}
+	constructor(private config: { apiKey: string; model: string; maxTokens: number; region: string }) {}
 
 	async chat(_req: LLMRequest, _signal?: AbortSignal): Promise<LLMResponse> {
 		throw new Error("Bedrock provider not yet implemented — use Anthropic or OpenAI in v1");

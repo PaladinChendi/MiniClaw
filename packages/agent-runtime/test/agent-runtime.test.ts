@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "bun:test";
+import { describe, expect, it, vi } from "bun:test";
 import { AgentRuntime } from "../src/agent-runtime.ts";
 import type { AgentMessage, ToolResult } from "../src/types.ts";
 
@@ -23,9 +23,7 @@ describe("AgentRuntime", () => {
 	it("completes a single-turn conversation", async () => {
 		const config = makeConfig();
 		const runtime = new AgentRuntime(config);
-		const result = await runtime.run([
-			{ role: "user", content: "Hello!", timestamp: Date.now() },
-		]);
+		const result = await runtime.run([{ role: "user", content: "Hello!", timestamp: Date.now() }]);
 		expect(result.length).toBeGreaterThan(1);
 		expect(result.some((m) => m.role === "assistant")).toBe(true);
 	});
@@ -38,9 +36,7 @@ describe("AgentRuntime", () => {
 				return {
 					role: "assistant" as const,
 					content: "Let me check.",
-					toolCalls: [
-						{ id: "tc1", name: "read_file", arguments: '{"path":"/tmp/test.txt"}' },
-					],
+					toolCalls: [{ id: "tc1", name: "read_file", arguments: '{"path":"/tmp/test.txt"}' }],
 					timestamp: Date.now(),
 				};
 			}
@@ -65,9 +61,7 @@ describe("AgentRuntime", () => {
 			],
 		});
 		const runtime = new AgentRuntime(config);
-		const result = await runtime.run([
-			{ role: "user", content: "Read the file", timestamp: Date.now() },
-		]);
+		const result = await runtime.run([{ role: "user", content: "Read the file", timestamp: Date.now() }]);
 
 		expect(chatFn).toHaveBeenCalledTimes(2);
 		expect(toolExecute).toHaveBeenCalledTimes(1);
@@ -94,7 +88,11 @@ describe("AgentRuntime", () => {
 		});
 		const runtime = new AgentRuntime(config);
 		await runtime.run([
-			{ role: "user", content: "A very long message that exceeds the tiny token budget we set for testing compaction", timestamp: Date.now() },
+			{
+				role: "user",
+				content: "A very long message that exceeds the tiny token budget we set for testing compaction",
+				timestamp: Date.now(),
+			},
 		]);
 
 		expect(compactFn).toHaveBeenCalled();
@@ -112,9 +110,7 @@ describe("AgentRuntime", () => {
 		const config = makeConfig({ chatFn });
 		const runtime = new AgentRuntime(config);
 		runtime.onStreamChunk((text: string) => chunks.push(text));
-		await runtime.run([
-			{ role: "user", content: "Hi", timestamp: Date.now() },
-		]);
+		await runtime.run([{ role: "user", content: "Hi", timestamp: Date.now() }]);
 
 		expect(chunks.length).toBeGreaterThanOrEqual(1);
 	});
@@ -126,9 +122,7 @@ describe("AgentRuntime", () => {
 			return {
 				role: "assistant" as const,
 				content: "Working...",
-				toolCalls: [
-					{ id: "tc1", name: "bash", arguments: '{"command":"sleep 10"}' },
-				],
+				toolCalls: [{ id: "tc1", name: "bash", arguments: '{"command":"sleep 10"}' }],
 				timestamp: Date.now(),
 			};
 		});

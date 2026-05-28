@@ -6,7 +6,8 @@ export class BashTool {
 	get definition(): ToolDefinition {
 		return {
 			name: "bash",
-			description: "Execute a bash command. Read-only by default — write commands are blocked unless readOnly is false.",
+			description:
+				"Execute a bash command. Read-only by default — write commands are blocked unless readOnly is false.",
 			parameters: {
 				type: "object",
 				properties: {

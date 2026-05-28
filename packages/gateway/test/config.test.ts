@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { loadConfig, DEFAULT_CONFIG } from "../src/config.ts";
-import { mkdir, rm, writeFile } from "fs/promises";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { join } from "path";
+import { mkdir, rm, writeFile } from "fs/promises";
+import { DEFAULT_CONFIG, loadConfig } from "../src/config.ts";
 
 const tmpDir = join(import.meta.dir, "__tmp_config__");
 

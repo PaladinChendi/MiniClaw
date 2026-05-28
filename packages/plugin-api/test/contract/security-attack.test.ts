@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { createEnvProxy } from "../../../shared/src/index.ts";
 
 describe("Security attack vectors", () => {
@@ -8,8 +8,8 @@ describe("Security attack vectors", () => {
 		const proxy = createEnvProxy(["__EBSCLAW_TEST_ALLOWED"]);
 		expect(proxy.__EBSCLAW_TEST_ALLOWED).toBe("visible");
 		expect((proxy as any).__EBSCLAW_TEST_SECRET).toBeUndefined();
-		delete process.env.__EBSCLAW_TEST_SECRET;
-		delete process.env.__EBSCLAW_TEST_ALLOWED;
+		process.env.__EBSCLAW_TEST_SECRET = undefined;
+		process.env.__EBSCLAW_TEST_ALLOWED = undefined;
 	});
 
 	it("env proxy hides undeclared keys from Object.keys", () => {
@@ -17,7 +17,7 @@ describe("Security attack vectors", () => {
 		const proxy = createEnvProxy([]);
 		const keys = Object.keys(proxy);
 		expect(keys).not.toContain("__EBSCLAW_TEST_ANOTHER");
-		delete process.env.__EBSCLAW_TEST_ANOTHER;
+		process.env.__EBSCLAW_TEST_ANOTHER = undefined;
 	});
 
 	it("env proxy returns undefined for unset whitelisted vars", () => {

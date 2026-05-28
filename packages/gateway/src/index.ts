@@ -1,13 +1,13 @@
-import type { GatewayMode, GatewayConfig } from "./types.ts";
-import type { Plugin, PluginManifest, PluginContext, LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
-import { SessionManager } from "./session-manager.ts";
-import { PluginRegistry } from "./plugin-registry.ts";
-import { HookEngine } from "./hook-engine.ts";
+import type { LLMRequest, LLMResponse, Plugin, PluginContext, PluginManifest } from "@ebsclaw/plugin-api";
+import { createStructuredLogger, hashVector } from "@ebsclaw/shared";
 import { CronScheduler } from "./cron-scheduler.ts";
 import { HeartbeatSystem } from "./heartbeat.ts";
-import { createStructuredLogger } from "@ebsclaw/shared";
-import { MemoryStore } from "./memory-store.ts";
+import { HookEngine } from "./hook-engine.ts";
 import { MemoryStoreHandle } from "./memory-store-handle.ts";
+import type { MemoryStore } from "./memory-store.ts";
+import { PluginRegistry } from "./plugin-registry.ts";
+import { SessionManager } from "./session-manager.ts";
+import type { GatewayConfig, GatewayMode } from "./types.ts";
 
 export { MemoryStore } from "./memory-store.ts";
 export { MemoryStoreHandle } from "./memory-store-handle.ts";
@@ -23,15 +23,6 @@ interface EmbedReq {
 	priority: string;
 	resolve: (emb: number[]) => void;
 	reject: (err: Error) => void;
-}
-
-function hashVector(text: string, dims = 64): number[] {
-	const vec = new Array(dims).fill(0);
-	for (let i = 0; i < text.length; i++) {
-		vec[i % dims] += text.charCodeAt(i);
-	}
-	const norm = Math.sqrt(vec.reduce((s, v) => s + v * v, 0)) || 1;
-	return vec.map((v) => v / norm);
 }
 
 export interface GatewayOpts {
@@ -92,7 +83,7 @@ export class Gateway {
 		this.memoryStore = store;
 	}
 
-	async embed(text: string, priority: string = "memory_search"): Promise<number[]> {
+	async embed(text: string, priority = "memory_search"): Promise<number[]> {
 		if (this.embedFn) {
 			return new Promise<number[]>((resolve, reject) => {
 				this.embedQueue.push({ text, priority, resolve, reject });
@@ -124,24 +115,28 @@ export class Gateway {
 
 	createPluginContext(pluginId: string, pluginConfig: Record<string, unknown>): PluginContext {
 		const logger = createStructuredLogger(pluginId, () => {});
-		const gw = this;
 		return {
 			logger,
 			config: pluginConfig,
 			callLLM: async (req: LLMRequest) => ({ text: "stub", model: req.model ?? "default" }) as LLMResponse,
 			scheduleCron: (spec: string, handler: () => Promise<void>) => {
-				this.cronScheduler.register(`${pluginId}-cron`, spec, handler, { jitterMs: 0, minIntervalMs: 0, pluginName: pluginId });
+				this.cronScheduler.register(`${pluginId}-cron`, spec, handler, {
+					jitterMs: 0,
+					minIntervalMs: 0,
+					pluginName: pluginId,
+				});
 			},
 			callPlugin: async (pluginName: string, method: string, args: Record<string, unknown>) => {
-				const entry = gw.pluginRegistry.get(pluginName);
+				const entry = this.pluginRegistry.get(pluginName);
 				if (!entry) throw new Error(`Plugin '${pluginName}' not found`);
 				const inst = entry.instance as any;
-				if (typeof inst[method] !== "function") throw new Error(`Method '${method}' not found on plugin '${pluginName}'`);
+				if (typeof inst[method] !== "function")
+					throw new Error(`Method '${method}' not found on plugin '${pluginName}'`);
 				return inst[method](args);
 			},
 			getStore: () => {
-				if (!gw.memoryStore) throw new Error("MemoryStore not configured");
-				return new MemoryStoreHandle(gw.memoryStore);
+				if (!this.memoryStore) throw new Error("MemoryStore not configured");
+				return new MemoryStoreHandle(this.memoryStore);
 			},
 		};
 	}

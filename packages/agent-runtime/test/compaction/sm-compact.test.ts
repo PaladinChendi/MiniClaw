@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from "bun:test";
+import { describe, expect, it, vi } from "bun:test";
 import { SMCompact } from "../../src/compaction/sm-compact.ts";
-import type { AgentMessage } from "../../src/types.ts";
 import { DEFAULT_COMPACTION_CONFIG } from "../../src/compaction/types.ts";
+import type { AgentMessage } from "../../src/types.ts";
 
 describe("L6: SMCompact", () => {
 	it("summarizes conversation via LLM and returns compacted messages", async () => {
@@ -37,9 +37,7 @@ describe("L6: SMCompact", () => {
 			sessionId: "s2",
 		});
 
-		const result = await l6.compact([
-			{ role: "user", content: "hi", timestamp: Date.now() },
-		]);
+		const result = await l6.compact([{ role: "user", content: "hi", timestamp: Date.now() }]);
 
 		expect(result.summary).toBe("brief summary");
 	});

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { ToolRegistry } from "../src/tool-execution.ts";
 import type { ToolDefinition, ToolExecutionContext } from "../src/types.ts";
 
@@ -48,7 +48,9 @@ describe("ToolRegistry", () => {
 	it("bash tool rejects write commands in readOnly mode", async () => {
 		const { BashTool } = await import("../src/tools/bash.ts");
 		const bash = new BashTool();
-		await expect(bash.execute({ command: "rm -rf /tmp/test" }, { ...mockCtx, readOnly: true })).rejects.toThrow("read-only");
+		await expect(bash.execute({ command: "rm -rf /tmp/test" }, { ...mockCtx, readOnly: true })).rejects.toThrow(
+			"read-only",
+		);
 	});
 
 	it("read_file tool reads existing file", async () => {
