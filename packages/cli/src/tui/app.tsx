@@ -62,7 +62,7 @@ function BulletList({ text, color }: { text: string; color: string }) {
 	return (
 		<Box flexDirection="column">
 			{lines.map((line, i) => (
-				<Box key={i}>
+				<Box key={`${i}-${line.slice(0, 10)}`}>
 					<Text color={color}>{i === 0 ? "• " : "  "}</Text>
 					<Text color="#ccc">{line}</Text>
 				</Box>
@@ -122,11 +122,17 @@ export function TUIApp({
 		<Box flexDirection="column">
 			{/* ── Header ── */}
 			<Box justifyContent="space-between" paddingX={1}>
-				<Text color={GREEN} bold>◆ ebsclaw</Text>
+				<Text color={GREEN} bold>
+					◆ ebsclaw
+				</Text>
 				{state === "error" ? (
-					<Text color={RED}>session: {shortSession} · ERROR · {tokenCount.toLocaleString()} tokens</Text>
+					<Text color={RED}>
+						session: {shortSession} · ERROR · {tokenCount.toLocaleString()} tokens
+					</Text>
 				) : (
-					<Text color={MID}>session: {shortSession} · {tokenCount.toLocaleString()} tokens · {tokenPercent}%</Text>
+					<Text color={MID}>
+						session: {shortSession} · {tokenCount.toLocaleString()} tokens · {tokenPercent}%
+					</Text>
 				)}
 				<Text color={CYAN}>{model}</Text>
 			</Box>
@@ -151,7 +157,9 @@ export function TUIApp({
 			<Box flexDirection="column" paddingX={1}>
 				{messages.length === 0 && state === "idle" ? (
 					<Box flexDirection="column" alignItems="center" paddingY={2}>
-						<Text color={GREEN} dimColor>◆</Text>
+						<Text color={GREEN} dimColor>
+							◆
+						</Text>
 						<Text color={MID}>新对话已就绪</Text>
 						<Text color={DIM}>输入自然语言开始，或使用 /command</Text>
 						<Text color={CYAN}>/help 查看所有命令</Text>
@@ -160,7 +168,8 @@ export function TUIApp({
 					messages.map((msg, i) => {
 						if (msg.role === "user") {
 							return (
-								<Box key={i} marginBottom={1}>
+								// biome-ignore lint/suspicious/noArrayIndexKey: append-only message list
+								<Box key={`msg-${i}`} marginBottom={1}>
 									<Text color={CYAN}>▸ </Text>
 									<Text color={LIGHT}>{msg.content}</Text>
 								</Box>
@@ -168,7 +177,8 @@ export function TUIApp({
 						}
 						if (msg.role === "tool") {
 							return (
-								<Box key={i} marginBottom={1}>
+								// biome-ignore lint/suspicious/noArrayIndexKey: append-only message list
+								<Box key={`msg-${i}`} marginBottom={1}>
 									<Text color={ORANGE}>• ⚡ {msg.toolName ?? "tool"}</Text>
 									<Text color={MID}> {msg.content}</Text>
 								</Box>
@@ -176,7 +186,8 @@ export function TUIApp({
 						}
 						// agent — bullet list, no box border
 						return (
-							<Box key={i} flexDirection="column" marginBottom={1}>
+							// biome-ignore lint/suspicious/noArrayIndexKey: append-only message list
+							<Box key={`msg-${i}`} flexDirection="column" marginBottom={1}>
 								<BulletList text={msg.content} color={GREEN} />
 							</Box>
 						);
@@ -227,7 +238,9 @@ export function TUIApp({
 				) : (
 					<Text color={DIM}>◆ ebsclaw v1.0.0-alpha</Text>
 				)}
-				<Text color={DIM}>{pluginCount} plugins · {memoryCount.toLocaleString()} memories · uptime {uptime}</Text>
+				<Text color={DIM}>
+					{pluginCount} plugins · {memoryCount.toLocaleString()} memories · uptime {uptime}
+				</Text>
 			</Box>
 		</Box>
 	);

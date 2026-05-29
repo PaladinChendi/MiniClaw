@@ -80,16 +80,16 @@ export function StartupSplash({ provider, model, items, onDone, autoDismissMs = 
 		};
 	}, [autoDismissMs, onDone]);
 
-	const statusText = phase === "ready"
-		? "● Gateway Daemon ready."
-		: "● Initializing Gateway Daemon...";
+	const statusText = phase === "ready" ? "● Gateway Daemon ready." : "● Initializing Gateway Daemon...";
 
 	return (
 		<Box flexDirection="column" alignItems="center" padding={1}>
 			{/* ASCII logo */}
 			<Box flexDirection="column" alignItems="center">
-				{LOGO.map((line, i) => (
-					<Text key={i} color={GREEN} bold>{line}</Text>
+				{LOGO.map((line) => (
+					<Text key={line} color={GREEN} bold>
+						{line}
+					</Text>
 				))}
 			</Box>
 
@@ -101,18 +101,17 @@ export function StartupSplash({ provider, model, items, onDone, autoDismissMs = 
 
 			{/* Status line */}
 			<Box marginTop={1}>
-				<Text color={GREEN}>{statusText}{blink ? "█" : " "}</Text>
+				<Text color={GREEN}>
+					{statusText}
+					{blink ? "█" : " "}
+				</Text>
 			</Box>
 
 			{/* Loading bar */}
 			<Box marginTop={1} gap={1}>
 				{Array.from({ length: BAR_COUNT }, (_, i) => (
-					<Text
-						key={i}
-						color={GREEN}
-						dimColor={barStep <= i}
-						bold={barStep === i}
-					>
+					// biome-ignore lint/suspicious/noArrayIndexKey: static bar elements
+					<Text key={`bar-${i}`} color={GREEN} dimColor={barStep <= i} bold={barStep === i}>
 						▎
 					</Text>
 				))}
@@ -121,15 +120,18 @@ export function StartupSplash({ provider, model, items, onDone, autoDismissMs = 
 			{/* Info items */}
 			<Box flexDirection="column" marginTop={1}>
 				{defaultItems.map((item, i) => (
-					<Text key={i} color={phase === "ready" ? DIM : MID}>
-						{item.label.padEnd(18)}<Text color={GREEN}> ✓</Text> {item.detail}
+					<Text key={item.label} color={phase === "ready" ? DIM : MID}>
+						{item.label.padEnd(18)}
+						<Text color={GREEN}> ✓</Text> {item.detail}
 					</Text>
 				))}
 			</Box>
 
 			{/* Corner decoration */}
 			<Box justifyContent="flex-end" width={48} marginTop={1}>
-				<Text color={GREEN} dimColor>█▀▄</Text>
+				<Text color={GREEN} dimColor>
+					█▀▄
+				</Text>
 			</Box>
 		</Box>
 	);

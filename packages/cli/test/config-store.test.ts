@@ -28,7 +28,12 @@ describe("ConfigStore", () => {
 
 	it("loads existing config from YAML file", async () => {
 		const store = new ConfigStore(configFile);
-		await store.save({ provider: "openai", baseUrl: "https://api.openai.com/v1", apiKey: "sk-openai", model: "gpt-4o" });
+		await store.save({
+			provider: "openai",
+			baseUrl: "https://api.openai.com/v1",
+			apiKey: "sk-openai",
+			model: "gpt-4o",
+		});
 
 		const loaded = await store.load();
 		expect(loaded!.provider).toBe("openai");

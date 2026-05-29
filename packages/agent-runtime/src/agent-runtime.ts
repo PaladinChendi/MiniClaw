@@ -13,10 +13,11 @@ import type {
 	ToolDefinition,
 	ToolExecutionContext,
 	ToolResult,
+	ToolSchema,
 } from "./types.ts";
 
 export interface AgentRuntimeConfig {
-	chatFn: (messages: AgentMessage[]) => Promise<AgentMessage>;
+	chatFn: (messages: AgentMessage[], tools?: ToolSchema[]) => Promise<AgentMessage>;
 	baseSystemPrompt: string;
 	tools?: ToolDefinition[];
 	compactionConfig?: Partial<CompactionConfig>;
@@ -96,7 +97,13 @@ export class AgentRuntime {
 				...assembled.messages,
 			];
 
-			const response = await this.chatFn(llmMessages);
+			const toolSchemas: ToolSchema[] = toolDefs.map((d) => ({
+				name: d.name,
+				description: d.description,
+				parameters: d.parameters,
+			}));
+
+			const response = await this.chatFn(llmMessages, toolSchemas);
 
 			this.onReplyFn?.(response.content);
 			this.streamingEngine.push({ type: "text", content: response.content });

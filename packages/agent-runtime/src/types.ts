@@ -65,6 +65,12 @@ export interface CompactionResult {
 	summary?: string;
 }
 
+export interface ToolSchema {
+	name: string;
+	description: string;
+	parameters: Record<string, unknown>;
+}
+
 export interface StreamChunk {
 	type: "text" | "tool_call" | "tool_result" | "done";
 	content: string;

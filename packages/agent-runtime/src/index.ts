@@ -53,6 +53,7 @@ export type {
 	ToolResult,
 	ToolDefinition,
 	ToolExecutionContext,
+	ToolSchema,
 	LLMProviderConfig,
 	AssembledPrompt,
 	CompactionResult,

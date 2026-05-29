@@ -1,0 +1,75 @@
+import { describe, expect, it, vi } from "bun:test";
+import { render } from "ink-testing-library";
+import { TUIApp } from "../../src/tui/app.tsx";
+
+describe("TUI State Machine", () => {
+	// TU-01: Renders idle state by default
+	it("TU-01: renders idle state with ebsclaw and ready message", () => {
+		const { lastFrame } = render(<TUIApp state="idle" />);
+		const output = lastFrame();
+		expect(output).toContain("ebsclaw");
+		expect(output).toContain("新对话已就绪");
+	});
+
+	// TU-02: Renders thinking state
+	it("TU-02: renders thinking state with processing indicator", () => {
+		const { lastFrame } = render(<TUIApp state="thinking" />);
+		const output = lastFrame();
+		expect(output).toContain("处理中");
+	});
+
+	// TU-03: Renders tool_call state
+	it("TU-03: renders tool_call state with tool name", () => {
+		const { lastFrame } = render(<TUIApp state="tool_call" toolName="bash" />);
+		const output = lastFrame();
+		expect(output).toContain("bash");
+	});
+
+	// TU-04: Renders compacting state
+	it("TU-04: renders compacting state with level info", () => {
+		const { lastFrame } = render(<TUIApp state="compacting" compactingLevel="L3 → L4" />);
+		const output = lastFrame();
+		expect(output).toContain("COMPACTING");
+	});
+
+	// TU-05: Renders error state
+	it("TU-05: renders error state with error message", () => {
+		const { lastFrame } = render(<TUIApp state="error" errorMessage="API failed" />);
+		const output = lastFrame();
+		expect(output).toContain("API failed");
+	});
+
+	// TU-06: Renders messages correctly
+	it("TU-06: renders user and agent messages", () => {
+		const { lastFrame } = render(
+			<TUIApp
+				state="idle"
+				messages={[
+					{ role: "user", content: "hello" },
+					{ role: "agent", content: "hi there" },
+				]}
+			/>,
+		);
+		const output = lastFrame();
+		expect(output).toContain("hello");
+		expect(output).toContain("hi there");
+	});
+
+	// TU-07: Exit callback prop is passed through
+	it("TU-07: accepts onExit callback prop", () => {
+		const onExit = vi.fn();
+		const { lastFrame } = render(<TUIApp state="idle" onExit={onExit} />);
+		// ink-testing-library cannot easily simulate keypress events,
+		// but we verify the component renders without error when onExit is provided
+		const output = lastFrame();
+		expect(output).toContain("ebsclaw");
+		expect(onExit).not.toHaveBeenCalled();
+	});
+
+	// TU-08: Idle with messages shows waiting indicator
+	it("TU-08: idle state with messages shows waiting indicator", () => {
+		const { lastFrame } = render(<TUIApp state="idle" messages={[{ role: "user", content: "test" }]} />);
+		const output = lastFrame();
+		expect(output).toContain("等待输入");
+	});
+});
