@@ -85,27 +85,27 @@ export function StartupSplash({ provider, model, items, onDone, autoDismissMs = 
 		: "● Initializing Gateway Daemon...";
 
 	return (
-		<Box flexDirection="column" padding={1}>
+		<Box flexDirection="column" alignItems="center" padding={1}>
 			{/* ASCII logo */}
-			<Box flexDirection="column" paddingLeft={1}>
+			<Box flexDirection="column" alignItems="center">
 				{LOGO.map((line, i) => (
 					<Text key={i} color={GREEN} bold>{line}</Text>
 				))}
 			</Box>
 
 			{/* Subtitle & version */}
-			<Box flexDirection="column" paddingLeft={2} marginTop={1}>
+			<Box flexDirection="column" alignItems="center" marginTop={1}>
 				<Text color={CYAN}>AI Agent Platform · Plugin-First</Text>
 				<Text color={DIM}>v1.0.0-alpha · Bun {typeof Bun !== "undefined" ? Bun.version : "1.3"} · TypeScript</Text>
 			</Box>
 
 			{/* Status line */}
-			<Box paddingLeft={2} marginTop={1}>
+			<Box marginTop={1}>
 				<Text color={GREEN}>{statusText}{blink ? "█" : " "}</Text>
 			</Box>
 
 			{/* Loading bar */}
-			<Box paddingLeft={2} marginTop={1} gap={1}>
+			<Box marginTop={1} gap={1}>
 				{Array.from({ length: BAR_COUNT }, (_, i) => (
 					<Text
 						key={i}
@@ -119,7 +119,7 @@ export function StartupSplash({ provider, model, items, onDone, autoDismissMs = 
 			</Box>
 
 			{/* Info items */}
-			<Box flexDirection="column" paddingLeft={2} marginTop={1}>
+			<Box flexDirection="column" marginTop={1}>
 				{defaultItems.map((item, i) => (
 					<Text key={i} color={phase === "ready" ? DIM : MID}>
 						{item.label.padEnd(18)}<Text color={GREEN}> ✓</Text> {item.detail}
@@ -128,7 +128,7 @@ export function StartupSplash({ provider, model, items, onDone, autoDismissMs = 
 			</Box>
 
 			{/* Corner decoration */}
-			<Box marginTop={1} justifyContent="flex-end" paddingRight={2}>
+			<Box justifyContent="flex-end" width={48} marginTop={1}>
 				<Text color={GREEN} dimColor>█▀▄</Text>
 			</Box>
 		</Box>
