@@ -40,13 +40,13 @@ describe("TUI State Machine", () => {
 	});
 
 	// TU-06: Renders messages correctly
-	it("TU-06: renders user and agent messages", () => {
+	it("TU-06: renders user and assistant text messages", () => {
 		const { lastFrame } = render(
 			<TUIApp
 				state="idle"
 				messages={[
-					{ role: "user", content: "hello" },
-					{ role: "agent", content: "hi there" },
+					{ type: "user_text", content: "hello" },
+					{ type: "assistant_text", content: "hi there" },
 				]}
 			/>,
 		);
@@ -68,7 +68,7 @@ describe("TUI State Machine", () => {
 
 	// TU-08: Idle with messages shows waiting indicator
 	it("TU-08: idle state with messages shows waiting indicator", () => {
-		const { lastFrame } = render(<TUIApp state="idle" messages={[{ role: "user", content: "test" }]} />);
+		const { lastFrame } = render(<TUIApp state="idle" messages={[{ type: "user_text", content: "test" }]} />);
 		const output = lastFrame();
 		expect(output).toContain("等待输入");
 	});

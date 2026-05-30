@@ -1050,8 +1050,8 @@ describe("Multi-Tool E2E — Callbacks & Message Verification", () => {
 		runtime.onReply(onReplyFn);
 		await runtime.run([makeUserMsg()]);
 
-		expect(onReplyFn).toHaveBeenCalledTimes(4);
-		expect(replyContents).toEqual(["Assistant round 1", "Assistant round 2", "Assistant round 3", "Final answer."]);
+		expect(onReplyFn).toHaveBeenCalledTimes(1); // only final text (no tool calls)
+		expect(replyContents).toEqual(["Final answer."]); // intermediate text now comes via onToolCallStart
 	});
 
 	it("MT-23: onToolCall for parallel calls", async () => {

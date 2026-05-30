@@ -40,6 +40,7 @@ export interface ToolExecutionContext {
 	workingDir: string;
 	readOnly: boolean;
 	enqueueReply: (content: string) => void;
+	signal?: AbortSignal;
 }
 
 export interface LLMProviderConfig {

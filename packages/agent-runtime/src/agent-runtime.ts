@@ -17,7 +17,7 @@ import type {
 } from "./types.ts";
 
 export interface AgentRuntimeConfig {
-	chatFn: (messages: AgentMessage[], tools?: ToolSchema[]) => Promise<AgentMessage>;
+	chatFn: (messages: AgentMessage[], tools?: ToolSchema[], signal?: AbortSignal) => Promise<AgentMessage>;
 	baseSystemPrompt: string;
 	tools?: ToolDefinition[];
 	compactionConfig?: Partial<CompactionConfig>;
@@ -41,6 +41,8 @@ export class AgentRuntime {
 	private onReplyFn: ((text: string) => void) | null = null;
 	private onStreamChunkFn: ((text: string) => void) | null = null;
 	private onToolCallFn: ((call: ToolCall, result: ToolResult) => void) | null = null;
+	private onToolCallStartFn: ((call: ToolCall, text: string) => void) | null = null;
+	private onCompactFn: ((summary: string, tokensFreed: number) => void) | null = null;
 
 	constructor(config: AgentRuntimeConfig) {
 		this.chatFn = config.chatFn;
@@ -74,6 +76,14 @@ export class AgentRuntime {
 		this.onToolCallFn = fn;
 	}
 
+	onToolCallStart(fn: (call: ToolCall, text: string) => void): void {
+		this.onToolCallStartFn = fn;
+	}
+
+	onCompact(fn: (summary: string, tokensFreed: number) => void): void {
+		this.onCompactFn = fn;
+	}
+
 	async run(messages: AgentMessage[], options?: { signal?: AbortSignal }): Promise<AgentMessage[]> {
 		let currentMessages = [...messages];
 
@@ -103,9 +113,11 @@ export class AgentRuntime {
 				parameters: d.parameters,
 			}));
 
-			const response = await this.chatFn(llmMessages, toolSchemas);
+			const response = await this.chatFn(llmMessages, toolSchemas, options?.signal);
 
-			this.onReplyFn?.(response.content);
+			if (!response.toolCalls || response.toolCalls.length === 0) {
+				this.onReplyFn?.(response.content);
+			}
 			this.streamingEngine.push({ type: "text", content: response.content });
 
 			currentMessages.push(response);
@@ -122,6 +134,7 @@ export class AgentRuntime {
 				}
 
 				this.streamingEngine.push({ type: "tool_call", content: call.name, toolCall: call });
+				this.onToolCallStartFn?.(call, call === response.toolCalls[0] ? response.content : "");
 
 				const ctx: ToolExecutionContext = {
 					sessionId: this.sessionId,
@@ -130,6 +143,7 @@ export class AgentRuntime {
 					enqueueReply: (content: string) => {
 						this.onReplyFn?.(content);
 					},
+					signal: options?.signal,
 				};
 
 				let resultContent: string;
@@ -167,6 +181,7 @@ export class AgentRuntime {
 		if (this.compactFn) {
 			const result = await this.compactFn(messages);
 			if (result.applied && result.summary) {
+				this.onCompactFn?.(result.summary, result.tokensFreed);
 				return [{ role: "system", content: result.summary, timestamp: Date.now() }, ...messages.slice(-1)];
 			}
 			return messages;

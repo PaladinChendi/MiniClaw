@@ -1,7 +1,9 @@
 import { Box, Text, useApp, useInput } from "ink";
 import React, { useEffect, useState } from "react";
+import { MessageRenderer } from "./MessageRenderer.tsx";
+import type { RichMessage } from "./messages.ts";
 
-// ── Color palette (from mockup-v1) ──
+// ── Color palette ──
 const GREEN = "#00ff41";
 const CYAN = "#00d4ff";
 const ORANGE = "#ffaa00";
@@ -31,12 +33,6 @@ function HRule() {
 // ── Types ──
 export type TUIState = "idle" | "thinking" | "tool_call" | "compacting" | "error";
 
-export interface ChatMessage {
-	role: "user" | "agent" | "tool";
-	content: string;
-	toolName?: string;
-}
-
 export interface TUIAppProps {
 	state: TUIState;
 	provider?: string;
@@ -51,24 +47,12 @@ export interface TUIAppProps {
 	compactingLevel?: string;
 	errorMessage?: string;
 	fallbackActive?: boolean;
-	messages?: ChatMessage[];
+	messages?: RichMessage[];
 	onSubmit?: (text: string) => void;
 	onExit?: () => void;
-}
-
-// ── Render multiline text as bullet list ──
-function BulletList({ text, color }: { text: string; color: string }) {
-	const lines = text.split("\n");
-	return (
-		<Box flexDirection="column">
-			{lines.map((line, i) => (
-				<Box key={`${i}-${line.slice(0, 10)}`}>
-					<Text color={color}>{i === 0 ? "• " : "  "}</Text>
-					<Text color="#ccc">{line}</Text>
-				</Box>
-			))}
-		</Box>
-	);
+	onToggleThinking?: () => void;
+	onToggleSummary?: () => void;
+	onAbort?: () => void;
 }
 
 export function TUIApp({
@@ -87,6 +71,9 @@ export function TUIApp({
 	messages = [],
 	onSubmit,
 	onExit,
+	onToggleThinking,
+	onToggleSummary,
+	onAbort,
 }: TUIAppProps) {
 	const { exit } = useApp();
 	const [input, setInput] = useState("");
@@ -94,7 +81,21 @@ export function TUIApp({
 	const shortSession = sessionId.slice(0, 4);
 
 	useInput((ch, key) => {
-		if (state === "thinking" || state === "compacting") return;
+		if (state === "thinking" || state === "compacting" || state === "tool_call") {
+			if (key.escape) {
+				onAbort?.();
+				return;
+			}
+			if (ch === "t" && onToggleThinking) {
+				onToggleThinking();
+				return;
+			}
+			if (ch === "e" && onToggleSummary) {
+				onToggleSummary();
+				return;
+			}
+			return;
+		}
 
 		if (key.escape) {
 			onExit?.();
@@ -111,6 +112,15 @@ export function TUIApp({
 		}
 		if (key.backspace || key.delete) {
 			setInput((v) => v.slice(0, -1));
+			return;
+		}
+		// Toggle keys
+		if (ch === "t" && onToggleThinking) {
+			onToggleThinking();
+			return;
+		}
+		if (ch === "e" && onToggleSummary) {
+			onToggleSummary();
 			return;
 		}
 		if (ch && !key.ctrl && !key.meta) {
@@ -165,33 +175,12 @@ export function TUIApp({
 						<Text color={CYAN}>/help 查看所有命令</Text>
 					</Box>
 				) : (
-					messages.map((msg, i) => {
-						if (msg.role === "user") {
-							return (
-								// biome-ignore lint/suspicious/noArrayIndexKey: append-only message list
-								<Box key={`msg-${i}`} marginBottom={1}>
-									<Text color={CYAN}>▸ </Text>
-									<Text color={LIGHT}>{msg.content}</Text>
-								</Box>
-							);
-						}
-						if (msg.role === "tool") {
-							return (
-								// biome-ignore lint/suspicious/noArrayIndexKey: append-only message list
-								<Box key={`msg-${i}`} marginBottom={1}>
-									<Text color={ORANGE}>• ⚡ {msg.toolName ?? "tool"}</Text>
-									<Text color={MID}> {msg.content}</Text>
-								</Box>
-							);
-						}
-						// agent — bullet list, no box border
-						return (
-							// biome-ignore lint/suspicious/noArrayIndexKey: append-only message list
-							<Box key={`msg-${i}`} flexDirection="column" marginBottom={1}>
-								<BulletList text={msg.content} color={GREEN} />
-							</Box>
-						);
-					})
+					messages.map((msg, i) => (
+						// biome-ignore lint/suspicious/noArrayIndexKey: append-only message list
+						<Box key={`rich-msg-${i}`}>
+							<MessageRenderer message={msg} />
+						</Box>
+					))
 				)}
 
 				{/* ── Status line inside body ── */}
@@ -227,7 +216,7 @@ export function TUIApp({
 				) : state === "error" ? (
 					<Text color={DIM}>Enter 发送 · Esc 退出 · /compact 强制压缩</Text>
 				) : (
-					<Text color={DIM}>Enter 发送 · Esc 退出 · /help 命令</Text>
+					<Text color={DIM}>Enter 发送 · Esc 退出 · t 思考 · e 摘要 · /help 命令</Text>
 				)}
 			</Box>
 

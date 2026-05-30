@@ -299,11 +299,11 @@ describe("AgentRuntime - Unit", () => {
 
 		await runtime.run([makeUserMessage()]);
 
-		// onReply should be called for each assistant message content
+		// onReply only fires for final text (responses without tool calls)
 		expect(onReplyFn).toHaveBeenCalled();
 		const replyContents = onReplyFn.mock.calls.map((c: string[]) => c[0]);
-		expect(replyContents).toContain("I'll use the tool.");
 		expect(replyContents).toContain("Final answer.");
+		expect(replyContents).not.toContain("I'll use the tool.");
 
 		// onStreamChunk should be called at least once
 		expect(onStreamChunkFn).toHaveBeenCalled();
