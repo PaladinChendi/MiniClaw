@@ -1,134 +1,129 @@
-import { Box, Text, useApp } from "ink";
-import React, { useEffect, useState } from "react";
+import { Box, Text } from "ink";
+import React, { useEffect, useRef, useState } from "react";
 
 // ── Color palette ──
 const GREEN = "#00ff41";
 const CYAN = "#00d4ff";
-const ORANGE = "#ffaa00";
-const RED = "#ff4444";
 const DIM = "#444";
 const MID = "#666";
 const BORDER = "#1a3a1a";
 
-// ── ASCII logo ──
+// ── Pixel creature (cute chunky mascot) ──
 const LOGO = [
-	" ███████╗██╗     ██╗██████╗",
-	" ██╔════╝██║     ██║██╔══██╗",
-	" █████╗  ██║     ██║██████╔╝",
-	" ██╔══╝  ██║     ██║██╔══██╗",
-	" ██║     ███████╗██║██████╔╝",
-	" ╚═╝     ╚══════╝╚═╝╚═════╝",
+	" ██        ██ ",
+	"██████████████",
+	"██████████████",
+	"██    ██    ██",
+	"██    ██    ██",
+	"██    ██    ██",
+	"██████████████",
+	"██████████████",
+	"██████████████",
+	"  ████  ████  ",
 ];
 
-// ── Loading bar animation ──
-const BAR_COUNT = 5;
-
-function useLoadingBar(interval = 200) {
-	const [active, setActive] = useState(0);
-	useEffect(() => {
-		const id = setInterval(() => setActive((a) => (a + 1) % (BAR_COUNT + 3)), interval);
-		return () => clearInterval(id);
-	}, [interval]);
-	return active;
-}
-
-// ── Blink animation ──
-function useBlink(interval = 1000) {
-	const [on, setOn] = useState(true);
-	useEffect(() => {
-		const id = setInterval(() => setOn((v) => !v), interval);
-		return () => clearInterval(id);
-	}, [interval]);
-	return on;
-}
-
-// ── Startup info items ──
-interface StartupItem {
+// ── Init step ──
+export interface InitStep {
 	label: string;
-	detail: string;
+	task: () => Promise<void>;
 }
 
 export interface StartupSplashProps {
 	provider: string;
 	model: string;
-	items?: StartupItem[];
+	initSteps: InitStep[];
 	onDone?: () => void;
-	autoDismissMs?: number;
+	minDisplayMs?: number;
 }
 
-export function StartupSplash({ provider, model, items, onDone, autoDismissMs = 3000 }: StartupSplashProps) {
-	const { exit } = useApp();
-	const blink = useBlink();
-	const barStep = useLoadingBar(200);
-	const [phase, setPhase] = useState<"loading" | "ready">("loading");
+export function StartupSplash({
+	provider,
+	model,
+	initSteps,
+	onDone,
+	minDisplayMs = 1200,
+}: StartupSplashProps) {
+	const mountTime = useRef(Date.now());
+	const [completed, setCompleted] = useState<Set<number>>(new Set());
+	const [running, setRunning] = useState(0);
+	const doneRef = useRef(false);
 
-	const defaultItems: StartupItem[] = items ?? [
-		{ label: "Plugin Registry", detail: "3 loaded" },
-		{ label: "LLM Router", detail: `${provider}/${model} → primary` },
-		{ label: "Memory Core", detail: "indexed" },
-		{ label: "Session Manager", detail: "0 active / 0 saved" },
-	];
+	const summaryLine = `${provider}/${model} → primary`;
 
+	// Execute init steps sequentially
 	useEffect(() => {
-		const readyTimer = setTimeout(() => setPhase("ready"), autoDismissMs * 0.6);
-		const doneTimer = setTimeout(() => {
-			onDone?.();
-		}, autoDismissMs);
-		return () => {
-			clearTimeout(readyTimer);
-			clearTimeout(doneTimer);
-		};
-	}, [autoDismissMs, onDone]);
+		let cancelled = false;
 
-	const statusText = phase === "ready" ? "● Gateway Daemon ready." : "● Initializing Gateway Daemon...";
+		(async () => {
+			for (let i = 0; i < initSteps.length; i++) {
+				if (cancelled) return;
+				setRunning(i);
+				try {
+					await initSteps[i].task();
+				} catch {
+					// Step error — continue to next step
+				}
+				if (cancelled) return;
+				setCompleted((prev) => new Set(prev).add(i));
+			}
+
+			// All steps done — respect minDisplayMs
+			if (cancelled) return;
+			const elapsed = Date.now() - mountTime.current;
+			const remaining = Math.max(0, minDisplayMs - elapsed);
+
+			const fireDone = () => {
+				if (doneRef.current) return;
+				doneRef.current = true;
+				onDone?.();
+			};
+
+			if (remaining > 0) {
+				setTimeout(fireDone, remaining);
+			} else {
+				fireDone();
+			}
+		})();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [initSteps, minDisplayMs, onDone]);
 
 	return (
-		<Box flexDirection="column" alignItems="center" padding={1}>
-			{/* ASCII logo */}
-			<Box flexDirection="column" alignItems="center">
-				{LOGO.map((line) => (
-					<Text key={line} color={GREEN} bold>
-						{line}
-					</Text>
-				))}
-			</Box>
+		<Box flexDirection="column" padding={1}>
+			{LOGO.map((line, i) => (
+				<Text key={i} color={GREEN} bold>
+					{line}
+				</Text>
+			))}
 
-			{/* Subtitle & version */}
-			<Box flexDirection="column" alignItems="center" marginTop={1}>
+			<Box flexDirection="column" marginTop={1}>
 				<Text color={CYAN}>AI Agent Platform · Plugin-First</Text>
 				<Text color={DIM}>v1.0.0-alpha · Bun {typeof Bun !== "undefined" ? Bun.version : "1.3"} · TypeScript</Text>
 			</Box>
 
-			{/* Status line */}
-			<Box marginTop={1}>
-				<Text color={GREEN}>
-					{statusText}
-					{blink ? "█" : " "}
-				</Text>
-			</Box>
-
-			{/* Loading bar */}
-			<Box marginTop={1} gap={1}>
-				{Array.from({ length: BAR_COUNT }, (_, i) => (
-					// biome-ignore lint/suspicious/noArrayIndexKey: static bar elements
-					<Text key={`bar-${i}`} color={GREEN} dimColor={barStep <= i} bold={barStep === i}>
-						▎
-					</Text>
-				))}
-			</Box>
-
-			{/* Info items */}
 			<Box flexDirection="column" marginTop={1}>
-				{defaultItems.map((item, i) => (
-					<Text key={item.label} color={phase === "ready" ? DIM : MID}>
-						{item.label.padEnd(18)}
-						<Text color={GREEN}> ✓</Text> {item.detail}
-					</Text>
-				))}
+				{initSteps.map((step, i) => {
+					const isDone = completed.has(i);
+					const isNow = running === i && !isDone;
+					return (
+						<Text key={step.label} color={MID}>
+							{step.label.padEnd(18)}
+							{isDone ? (
+								<Text color={GREEN}> ✓</Text>
+							) : isNow ? (
+								<Text color={CYAN}> ◌</Text>
+							) : (
+								<Text color={DIM}> ○</Text>
+							)}
+							{i === 2 ? ` ${summaryLine}` : ""}
+						</Text>
+					);
+				})}
 			</Box>
 
-			{/* Corner decoration */}
-			<Box justifyContent="flex-end" width={48} marginTop={1}>
+			<Box marginTop={1}>
 				<Text color={GREEN} dimColor>
 					█▀▄
 				</Text>
