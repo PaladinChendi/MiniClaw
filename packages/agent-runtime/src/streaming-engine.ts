@@ -75,4 +75,11 @@ export class StreamingEngine {
 		this.buffer = "";
 		return text;
 	}
+
+	reset(): void {
+		this.buffer = "";
+		this.finishedPromise = new Promise<void>((resolve) => {
+			this.resolveFinish = resolve;
+		});
+	}
 }

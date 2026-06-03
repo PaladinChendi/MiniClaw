@@ -1,4 +1,6 @@
 export { CircuitBreaker } from "./circuit-breaker.ts";
+export { buildChatFn, toAnthropicApiMsgs } from "./chat-fn.ts";
+export type { ChatFnConfig } from "./chat-fn.ts";
 export { LLMRouter } from "./llm-router/index.ts";
 export { FallbackChain } from "./llm-router/fallback-chain.ts";
 export type { ProviderLike } from "./llm-router/fallback-chain.ts";

@@ -1,6 +1,6 @@
 import { homedir } from "os";
 import { join } from "path";
-import type { AgentRuntime, AgentMessage, ToolSchema } from "@ebsclaw/agent-runtime";
+import { buildChatFn, type AgentRuntime, type AgentMessage, type ToolSchema } from "@ebsclaw/agent-runtime";
 import { Gateway, MemoryStore } from "@ebsclaw/gateway";
 import { render, Box } from "ink";
 import React, { useState, useCallback, useRef, useEffect } from "react";
@@ -13,170 +13,6 @@ import { SetupWizard } from "./tui/wizard.tsx";
 
 const CONFIG_DIR = join(homedir(), ".ebsclaw");
 const CONFIG_PATH = join(CONFIG_DIR, "config.yaml");
-
-function toAnthropicApiMsgs(msgs: AgentMessage[]): any[] {
-	const filtered = msgs.filter((m) => m.role !== "system");
-	const result: any[] = [];
-	for (const m of filtered) {
-		if (m.role === "tool" && m.toolCallId) {
-			const last = result[result.length - 1];
-			if (last?.role === "user" && Array.isArray(last.content)) {
-				last.content.push({ type: "tool_result", tool_use_id: m.toolCallId, content: m.content });
-			} else {
-				result.push({
-					role: "user",
-					content: [{ type: "tool_result", tool_use_id: m.toolCallId, content: m.content }],
-				});
-			}
-		} else if (m.role === "assistant" && m.toolCalls?.length) {
-			const content: any[] = [];
-			if (m.content) content.push({ type: "text", text: m.content });
-			for (const tc of m.toolCalls) {
-				content.push({ type: "tool_use", id: tc.id, name: tc.name, input: JSON.parse(tc.arguments) });
-			}
-			result.push({ role: "assistant", content });
-		} else {
-			result.push({ role: m.role as "user" | "assistant", content: m.content });
-		}
-	}
-	return result;
-}
-
-async function buildChatFn(
-	config: ProviderConfig,
-): Promise<(messages: AgentMessage[], tools?: ToolSchema[], signal?: AbortSignal) => Promise<AgentMessage>> {
-	const apiKey = config.apiKey;
-	const baseUrl = config.baseUrl || undefined;
-	const model = config.model;
-
-	if (config.provider === "anthropic") {
-		const { default: Anthropic } = await import("@anthropic-ai/sdk");
-		const client = new Anthropic({ apiKey, baseURL: baseUrl });
-		return async (msgs: AgentMessage[], tools?: ToolSchema[], signal?: AbortSignal) => {
-			const system = msgs.find((m) => m.role === "system")?.content;
-			const apiMsgs = toAnthropicApiMsgs(msgs);
-			const apiTools = tools?.map((t) => ({
-				name: t.name,
-				description: t.description,
-				input_schema: { type: "object" as const, ...t.parameters },
-			}));
-			const res = await client.messages.create(
-				{
-					model,
-					max_tokens: 4096,
-					messages: apiMsgs,
-					...(system ? { system } : {}),
-					...(apiTools?.length ? { tools: apiTools } : {}),
-				},
-				signal ? { signal } : {},
-			);
-			const textBlock = res.content.find((b: any) => b.type === "text");
-			const toolUseBlocks = res.content.filter((b: any) => b.type === "tool_use");
-			return {
-				role: "assistant" as const,
-				content: (textBlock as any)?.text ?? "",
-				toolCalls: toolUseBlocks.map((b: any) => ({
-					id: b.id,
-					name: b.name,
-					arguments: JSON.stringify(b.input),
-				})),
-				timestamp: Date.now(),
-			};
-		};
-	}
-
-	if (config.provider === "kcode") {
-		const endpoint = `${(baseUrl || "").replace(/\/$/, "")}/messages`;
-		return async (msgs: AgentMessage[], tools?: ToolSchema[], signal?: AbortSignal) => {
-			const system = msgs.find((m) => m.role === "system")?.content;
-			const apiMsgs = toAnthropicApiMsgs(msgs);
-			const apiTools = tools?.map((t) => ({
-				name: t.name,
-				description: t.description,
-				input_schema: { type: "object" as const, ...t.parameters },
-			}));
-			const res = await fetch(endpoint, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${apiKey}`,
-					"ksyun-code-type": "kscc-cli",
-				},
-				body: JSON.stringify({
-					model,
-					max_tokens: 4096,
-					messages: apiMsgs,
-					...(system ? { system } : {}),
-					...(apiTools?.length ? { tools: apiTools } : {}),
-				}),
-				signal,
-			});
-			if (!res.ok) {
-				const err = await res.text();
-				throw new Error(`${res.status} ${err}`);
-			}
-			const data = (await res.json()) as any;
-			const textBlock = data.content?.find((b: any) => b.type === "text");
-			const toolUseBlocks = (data.content ?? []).filter((b: any) => b.type === "tool_use");
-			return {
-				role: "assistant" as const,
-				content: (textBlock as any)?.text ?? "",
-				toolCalls: toolUseBlocks.map((b: any) => ({
-					id: b.id,
-					name: b.name,
-					arguments: JSON.stringify(b.input),
-				})),
-				timestamp: Date.now(),
-			};
-		};
-	}
-
-	// OpenAI-compatible (openai, deepseek, custom, etc.)
-	const { default: OpenAI } = await import("openai");
-	const client = new OpenAI({ apiKey, baseURL: baseUrl });
-	return async (msgs: AgentMessage[], tools?: ToolSchema[], signal?: AbortSignal) => {
-		const apiMsgs: any[] = msgs.map((m) => {
-			if (m.role === "tool" && m.toolCallId) {
-				return { role: "tool" as const, content: m.content, tool_call_id: m.toolCallId };
-			}
-			if (m.role === "assistant" && m.toolCalls?.length) {
-				return {
-					role: "assistant" as const,
-					content: m.content || null,
-					tool_calls: m.toolCalls.map((tc) => ({
-						id: tc.id,
-						type: "function" as const,
-						function: { name: tc.name, arguments: tc.arguments },
-					})),
-				};
-			}
-			return { role: m.role as "system" | "user" | "assistant", content: m.content };
-		});
-		const apiTools = tools?.map((t) => ({
-			type: "function" as const,
-			function: { name: t.name, description: t.description, parameters: t.parameters },
-		}));
-		const res = await client.chat.completions.create(
-			{
-				model,
-				messages: apiMsgs,
-				...(apiTools?.length ? { tools: apiTools } : {}),
-			},
-			signal ? { signal } : {},
-		);
-		const choice = res.choices[0];
-		return {
-			role: "assistant" as const,
-			content: choice?.message?.content ?? "",
-			toolCalls: (choice?.message?.tool_calls ?? []).map((tc: any) => ({
-				id: tc.id,
-				name: tc.function.name,
-				arguments: tc.function.arguments,
-			})),
-			timestamp: Date.now(),
-		};
-	};
-}
 
 function ChatScreen({
 	config,
@@ -194,6 +30,7 @@ function ChatScreen({
 	const startTime = useRef(Date.now());
 	const conversationHistory = useRef<AgentMessage[]>([]);
 	const abortRef = useRef<AbortController | null>(null);
+	const runningRef = useRef(false);
 
 	useEffect(() => {
 		runtime.onReply((text) => {
@@ -253,11 +90,13 @@ function ChatScreen({
 
 	const handleSubmit = useCallback(
 		async (text: string) => {
+			if (runningRef.current) return;
 			if (text === "exit" || text === "quit") {
 				onExit();
 				return;
 			}
 
+			runningRef.current = true;
 			setMessages((prev) => [...prev, { type: "user_text", content: text }]);
 			setState("thinking");
 			setErrorMessage(undefined);
@@ -280,15 +119,20 @@ function ChatScreen({
 					await store.create({ content: lastAssistantText.content, type: "feedback" });
 				}
 			} catch (err) {
-				if (ac.signal.aborted) return;
+				if (ac.signal.aborted) {
+					runningRef.current = false;
+					return;
+				}
 				const msg = err instanceof Error ? err.message : String(err);
 				setMessages((prev) => [...prev, { type: "system_text", content: `Error: ${msg}` }]);
 				setErrorMessage(msg);
 				setState("error");
+				runningRef.current = false;
 				return;
 			}
 
 			abortRef.current = null;
+			runningRef.current = false;
 			setState("idle");
 		},
 		[runtime, store, onExit],
@@ -358,6 +202,7 @@ async function runTUI(mode?: string): Promise<void> {
 	const { waitUntilExit } = render(
 		React.createElement(function AppShell() {
 			const [ready, setReady] = useState(false);
+			const handleDone = React.useCallback(() => setReady(true), []);
 
 			const initSteps = React.useMemo<InitStep[]>(
 				() => [
@@ -402,7 +247,7 @@ async function runTUI(mode?: string): Promise<void> {
 							initCtx.runtime = new AR({
 								chatFn: initCtx.chatFn as any,
 								baseSystemPrompt:
-									"You are ebsclaw, a helpful AI assistant. You have tools to read files, list directories, and execute bash commands. Use them when the user asks about files or system operations.",
+									"You are ebsclaw, a helpful AI assistant. You have tools: bash (execute commands), read_file (read file contents), list_files (list directory contents).\n\nRules:\n1. Use tools when the user asks about files or system operations.\n2. After receiving tool results, ALWAYS respond with a text summary of the outcome. Do NOT make additional tool calls unless the user's request genuinely requires more actions.\n3. If a tool call fails, explain the error and suggest alternatives - do not retry the same command.",
 								tools: initCtx.tools as any[],
 								workingDir: process.cwd(),
 							});
@@ -419,7 +264,8 @@ async function runTUI(mode?: string): Promise<void> {
 					provider: config.provider,
 					model: config.model,
 					initSteps,
-					onDone: () => setReady(true),
+					onDone: handleDone,
+					collapsed: ready,
 				}),
 				ready
 					? React.createElement(ChatScreen, {
@@ -456,15 +302,106 @@ async function runGatewayStart(configPath?: string): Promise<void> {
 		config: gatewayConfig,
 	});
 	gw.setMemoryStore(store);
+
+	// Load provider config and inject chatFn into Gateway
+	const providerConfig = await new ConfigStore(CONFIG_PATH).load();
+	if (providerConfig) {
+		const chatFn = await buildChatFn(providerConfig);
+		gw.setChatFn(chatFn);
+	}
+
 	await gw.start();
 
-	console.log(`ebsclaw gateway started (mode: ${gw.mode})`);
-	console.log("Press Ctrl+C to stop");
-
-	process.on("SIGINT", async () => {
-		await gw.stop();
-		process.exit(0);
+	// Server main loop runs inside GatewayServer.start()
+	// Keep process alive until gateway stops
+	await new Promise<void>((resolve) => {
+		const check = setInterval(() => {
+			if (!gw.isRunning) {
+				clearInterval(check);
+				resolve();
+			}
+		}, 1000);
 	});
+}
+
+async function runHeadless(prompt?: string, configPath?: string): Promise<void> {
+	const configStore = new ConfigStore(configPath ?? CONFIG_PATH);
+	const config = await configStore.load();
+	if (!config) {
+		process.stderr.write("No configuration found. Run `ebsclaw tui` to set up.\n");
+		process.exit(1);
+	}
+
+	let userPrompt = prompt;
+	if (!userPrompt && !process.stdin.isTTY) {
+		userPrompt = await new Promise<string>((resolve, reject) => {
+			let data = "";
+			process.stdin.setEncoding("utf-8");
+			process.stdin.on("data", (chunk: string) => { data += chunk; });
+			process.stdin.on("end", () => resolve(data.trim()));
+			process.stdin.on("error", reject);
+		});
+	}
+	if (!userPrompt) {
+		process.stderr.write("No prompt provided. Usage: ebsclaw headless <prompt>  OR  echo <prompt> | ebsclaw headless\n");
+		process.exit(1);
+	}
+
+	const chatFn = await buildChatFn(config);
+	const { BashTool, ReadFileTool, ListFilesTool, AgentRuntime: AR } = await import("@ebsclaw/agent-runtime");
+	const tools = [new BashTool().definition, new ReadFileTool().definition, new ListFilesTool().definition];
+
+	const runtime = new AR({
+		chatFn,
+		baseSystemPrompt:
+			"You are ebsclaw, a helpful AI assistant. You have tools: bash (execute commands), read_file (read file contents), list_files (list directory contents).\n\nRules:\n1. Use tools when the user asks about files or system operations.\n2. After receiving tool results, ALWAYS respond with a text summary of the outcome. Do NOT make additional tool calls unless the user's request genuinely requires more actions.\n3. If a tool call fails, explain the error and suggest alternatives - do not retry the same command.",
+		tools,
+		workingDir: process.cwd(),
+	});
+
+	runtime.onStreamChunk((text) => {
+		process.stdout.write(text);
+	});
+
+	runtime.onToolCallStart((call, text) => {
+		if (text.trim()) {
+			process.stdout.write("\n" + text + "\n");
+		}
+		process.stdout.write(`\n[tool:${call.name}] ${call.arguments}\n`);
+	});
+
+	runtime.onToolCall((call, result) => {
+		const tag = result.isError ? "error" : "result";
+		const content = result.content.length > 2000
+			? result.content.slice(0, 2000) + "\n... (truncated)"
+			: result.content;
+		process.stdout.write(`[tool:${tag}:${call.name}]\n${content}\n`);
+	});
+
+	const ac = new AbortController();
+	let sigintCount = 0;
+	const onSigint = () => {
+		sigintCount++;
+		if (sigintCount >= 2) process.exit(130);
+		process.stderr.write("\nInterrupted. Press Ctrl+C again to force exit.\n");
+		ac.abort();
+	};
+	process.on("SIGINT", onSigint);
+
+	const messages: AgentMessage[] = [
+		{ role: "user", content: userPrompt, timestamp: Date.now() },
+	];
+
+	try {
+		await runtime.run(messages, { signal: ac.signal });
+		process.stdout.write("\n");
+	} catch (err) {
+		if (ac.signal.aborted) process.exit(130);
+		process.stderr.write(`Error: ${err instanceof Error ? err.message : String(err)}\n`);
+		process.exit(1);
+	} finally {
+		process.removeListener("SIGINT", onSigint);
+	}
 }
 
 function showHelp(): void {
@@ -473,9 +410,21 @@ function showHelp(): void {
 Usage:
   ebsclaw tui              Start interactive TUI (default, embedded mode)
   ebsclaw tui --mode gateway  Connect to gateway daemon (v1.1)
+  ebsclaw headless <prompt>  Run agent non-interactively, output to stdout
+  ebsclaw headless            Read prompt from stdin (pipe-friendly)
   ebsclaw gateway start    Start gateway daemon
   ebsclaw gateway start --config <path>  Start with config file
   ebsclaw help             Show this help
+
+Headless mode:
+  Accepts prompt as a CLI argument or via stdin.
+  Output is plain text to stdout; tool calls appear as [tool:...] lines.
+  Exit code 0 on success, 1 on error, 130 on SIGINT.
+
+  Examples:
+    ebsclaw headless "list files in /tmp"
+    echo "list files" | ebsclaw headless
+    cat prompt.txt | ebsclaw headless
 
 Configuration:
   ${CONFIG_PATH}
@@ -489,6 +438,9 @@ async function main(): Promise<void> {
 	switch (parsed.command) {
 		case "tui":
 			await runTUI(parsed.mode);
+			break;
+		case "headless":
+			await runHeadless(parsed.prompt, parsed.configPath);
 			break;
 		case "gateway-start":
 			await runGatewayStart(parsed.configPath);

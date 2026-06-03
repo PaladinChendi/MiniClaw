@@ -17,62 +17,46 @@ function parseInline(text: string): React.ReactNode[] {
 	const nodes: React.ReactNode[] = [];
 	// Split on **bold**, `code`, [link](url)
 	const regex = /(\*\*(.+?)\*\*|`([^`]+)`|\[([^\]]+)\]\(([^)]+)\))/g;
-	let last = 0;
+	let lastIndex = 0;
 	let match: RegExpExecArray | null;
-	let key = 0;
-	// biome-ignore lint/suspicious/noAssignInExpressions: standard regex exec loop pattern
+
 	while ((match = regex.exec(text)) !== null) {
-		if (match.index > last) {
-			nodes.push(text.slice(last, match.index));
+		if (match.index > lastIndex) {
+			nodes.push(text.slice(lastIndex, match.index));
 		}
 		if (match[2]) {
+			// **bold**
 			nodes.push(
-				<Text key={`b-${key}`} bold color={LIGHT}>
+				<Text key={`b-${match.index}`} bold color={LIGHT}>
 					{match[2]}
 				</Text>,
 			);
 		} else if (match[3]) {
+			// `code`
 			nodes.push(
-				<Text key={`c-${key}`} color={CYAN} backgroundColor="#111">
-					{" "}
-					{match[3]}{" "}
+				<Text key={`c-${match.index}`} color={CYAN} backgroundColor="#111">
+					{match[3]}
 				</Text>,
 			);
 		} else if (match[4] && match[5]) {
+			// [link](url)
 			nodes.push(
-				<Text key={`l-${key}`} color={CYAN} underline>
+				<Text key={`l-${match.index}`} color={CYAN} underline>
 					{match[4]}
 				</Text>,
 			);
 		}
-		last = match.index + match[0].length;
-		key++;
+		lastIndex = match.index + match[0].length;
 	}
-	if (last < text.length) {
-		nodes.push(text.slice(last));
+	if (lastIndex < text.length) {
+		nodes.push(text.slice(lastIndex));
 	}
-	return nodes;
-}
-
-function CodeBlock({ code }: { code: string }) {
-	return (
-		<Box flexDirection="column" marginTop={0} marginBottom={0}>
-			<Text color={DIM}>┌{"─".repeat(46)}</Text>
-			{code.split("\n").map((line, i) => (
-				// biome-ignore lint/suspicious/noArrayIndexKey: static code lines, order never changes
-				<Box key={`cl-${i}`}>
-					<Text color={DIM}>│ </Text>
-					<Text color={CYAN}>{line}</Text>
-				</Box>
-			))}
-			<Text color={DIM}>└{"─".repeat(46)}</Text>
-		</Box>
-	);
+	return nodes.length > 0 ? nodes : [text];
 }
 
 export function Markdown({ children }: MarkdownProps) {
-	const blocks: React.ReactNode[] = [];
 	const lines = children.split("\n");
+	const blocks: React.ReactNode[] = [];
 	let i = 0;
 	let key = 0;
 
@@ -80,15 +64,24 @@ export function Markdown({ children }: MarkdownProps) {
 		const line = lines[i];
 
 		// Fenced code block
-		if (line.trimStart().startsWith("```")) {
+		if (line.startsWith("```")) {
+			const lang = line.slice(3).trim();
 			const codeLines: string[] = [];
 			i++;
-			while (i < lines.length && !lines[i].trimStart().startsWith("```")) {
+			while (i < lines.length && !lines[i].startsWith("```")) {
 				codeLines.push(lines[i]);
 				i++;
 			}
-			blocks.push(<CodeBlock key={`cb-${key}`} code={codeLines.join("\n")} />);
 			i++; // skip closing ```
+			const code = codeLines.join("\n");
+			blocks.push(
+				<Box key={`code-${key}`} flexDirection="column" borderStyle="single" borderColor={DIM} paddingX={1}>
+					{lang && (
+						<Text color={MID}>{lang}</Text>
+					)}
+					<Text color={CYAN}>{code}</Text>
+				</Box>,
+			);
 			key++;
 			continue;
 		}
@@ -130,13 +123,11 @@ export function Markdown({ children }: MarkdownProps) {
 			const indent = line.match(/^(\s*)/)?.[1].length ?? 0;
 			const content = line.replace(/^\s*[-*] /, "");
 			blocks.push(
-				<Box key={`li-${key}`}>
-					<Text>
-						{" ".repeat(indent)}
-						<Text color={GREEN}>• </Text>
-						{parseInline(content)}
-					</Text>
-				</Box>,
+				<Text key={`li-${key}`}>
+					{" ".repeat(indent)}
+					<Text color={GREEN}>• </Text>
+					{parseInline(content)}
+				</Text>,
 			);
 			i++;
 			key++;
@@ -150,13 +141,11 @@ export function Markdown({ children }: MarkdownProps) {
 			const num = numMatch?.[1] ?? "1";
 			const content = line.replace(/^\s*\d+\. /, "");
 			blocks.push(
-				<Box key={`ol-${key}`}>
-					<Text>
-						{" ".repeat(indent)}
-						<Text color={GREEN}>{num}. </Text>
-						{parseInline(content)}
-					</Text>
-				</Box>,
+				<Text key={`ol-${key}`}>
+					{" ".repeat(indent)}
+					<Text color={GREEN}>{num}. </Text>
+					{parseInline(content)}
+				</Text>,
 			);
 			i++;
 			key++;

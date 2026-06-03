@@ -155,8 +155,6 @@ function AssistantText({ content }: { content: string }) {
 		<Box flexDirection="column" marginBottom={1}>
 			<Box>
 				<Text color={GREEN}>● </Text>
-			</Box>
-			<Box marginLeft={2}>
 				<Markdown>{content}</Markdown>
 			</Box>
 		</Box>

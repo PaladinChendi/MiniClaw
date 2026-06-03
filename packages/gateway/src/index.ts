@@ -1,4 +1,5 @@
 import type { LLMRequest, LLMResponse, Plugin, PluginContext, PluginManifest } from "@ebsclaw/plugin-api";
+import type { AgentMessage } from "@ebsclaw/agent-runtime";
 import { createStructuredLogger, hashVector } from "@ebsclaw/shared";
 import { CronScheduler } from "./cron-scheduler.ts";
 import { HeartbeatSystem } from "./heartbeat.ts";
@@ -44,6 +45,8 @@ export class Gateway {
 	private embedFn: ((text: string) => Promise<number[]>) | null = null;
 	private processing = false;
 	private memoryStore: MemoryStore | null = null;
+	private _chatFn: ((messages: AgentMessage[], tools?: any[], signal?: AbortSignal) => Promise<AgentMessage>) | null = null;
+	public activeConversations = new Map<string, AgentMessage[]>();
 
 	constructor(opts: GatewayOpts) {
 		this.sessionDir = opts.sessionDir;
@@ -68,9 +71,19 @@ export class Gateway {
 
 	async start(): Promise<void> {
 		this.isRunning = true;
+		if (this.config.gateway.mode === "gateway") {
+			const { GatewayServer } = await import("./server.ts");
+			const server = new GatewayServer(this, this.config);
+			await server.start();
+			this._server = server;
+		}
 	}
 
 	async stop(): Promise<void> {
+		if (this._server) {
+			await this._server.stop();
+			this._server = null;
+		}
 		await this.pluginRegistry.destroyAll();
 		this.isRunning = false;
 	}
@@ -81,6 +94,14 @@ export class Gateway {
 
 	setMemoryStore(store: MemoryStore): void {
 		this.memoryStore = store;
+	}
+
+	setChatFn(fn: (messages: AgentMessage[], tools?: any[], signal?: AbortSignal) => Promise<AgentMessage>): void {
+		this._chatFn = fn;
+	}
+
+	get chatFn() {
+		return this._chatFn;
 	}
 
 	async embed(text: string, priority = "memory_search"): Promise<number[]> {
@@ -147,6 +168,16 @@ export class Gateway {
 
 	async egress(channelId: string, msg: import("@ebsclaw/plugin-api").OutboundMessage): Promise<void> {
 		await this.hookEngine.fire("pre_egress", { channelId, msg });
+	}
+
+	async dispatchInboundMessage(sessionId: string, content: string, sendBack: (msg: any) => void): Promise<void> {
+		const { dispatchInboundMessage: dispatch } = await import("./agent-dispatch.ts");
+		return dispatch(this, sessionId, content, sendBack);
+	}
+
+	async dispatchAgentRunFromGateway(request: any): Promise<any> {
+		const { dispatchAgentRunFromGateway: dispatch } = await import("./agent-dispatch.ts");
+		return dispatch(this, request);
 	}
 
 	async registerPlugin(manifest: PluginManifest, instance: Plugin, dir: string): Promise<boolean> {

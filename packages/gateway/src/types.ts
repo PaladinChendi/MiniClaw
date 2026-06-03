@@ -17,6 +17,7 @@ export interface GatewayConfig {
 	};
 	auth: {
 		trustAll: boolean;
+		token?: string;
 	};
 }
 

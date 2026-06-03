@@ -85,11 +85,29 @@ export class AgentRuntime {
 	}
 
 	async run(messages: AgentMessage[], options?: { signal?: AbortSignal }): Promise<AgentMessage[]> {
+		this.streamingEngine.reset();
 		let currentMessages = [...messages];
+		const recentToolCalls: string[] = [];
+		let iterationCount = 0;
+		const softBudget = this.maxIterations;
+		let toolCallCount = 0;
 
-		for (let i = 0; i < this.maxIterations; i++) {
+		while (true) {
 			if (options?.signal?.aborted) {
 				throw new Error("Aborted");
+			}
+
+			// Soft budget: inject system message nudging agent to finish
+			if (iterationCount === softBudget) {
+				currentMessages.push({
+					role: "system",
+					content: "You have exceeded the iteration budget. Provide a final text summary. Do not make any more tool calls.",
+					timestamp: Date.now(),
+				});
+			}
+			// Hard break: exceeded budget + 1
+			if (iterationCount > softBudget) {
+				break;
 			}
 
 			currentMessages = await this.maybeCompact(currentMessages);
@@ -113,7 +131,10 @@ export class AgentRuntime {
 				parameters: d.parameters,
 			}));
 
-			const response = await this.chatFn(llmMessages, toolSchemas, options?.signal);
+			// After first tool call, disable tools on subsequent calls to force text-only response
+			const effectiveToolSchemas = toolCallCount > 0 ? [] : toolSchemas;
+
+			const response = await this.chatFn(llmMessages, effectiveToolSchemas, options?.signal);
 
 			if (!response.toolCalls || response.toolCalls.length === 0) {
 				this.onReplyFn?.(response.content);
@@ -127,6 +148,8 @@ export class AgentRuntime {
 				this.streamingEngine.end();
 				return currentMessages;
 			}
+
+			toolCallCount++;
 
 			for (const call of response.toolCalls) {
 				if (options?.signal?.aborted) {
@@ -166,7 +189,28 @@ export class AgentRuntime {
 					toolCallId: call.id,
 					timestamp: Date.now(),
 				});
+				recentToolCalls.push(call.name + ":" + call.arguments.slice(0, 120));
 			}
+
+			// After executing tool calls, inject a user message forcing text-only response
+			currentMessages.push({
+				role: "user",
+				content: "Please summarize the tool results above. Do not make any more tool calls.",
+				timestamp: Date.now(),
+			});
+
+			// Repetition detection: 2 identical consecutive tool calls
+			if (recentToolCalls.length >= 2) {
+				const last2 = recentToolCalls.slice(-2);
+				if (last2[0] === last2[1]) {
+					this.onReplyFn?.("[Loop detected] Repeated tool call detected, terminating.");
+					this.streamingEngine.push({ type: "done", content: "" });
+				this.streamingEngine.end();
+				return currentMessages;
+				}
+			}
+
+			iterationCount++;
 		}
 
 		this.streamingEngine.push({ type: "done", content: "" });

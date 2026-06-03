@@ -20,100 +20,122 @@ const LOGO = [
 ];
 
 // ── Init step ──
-export interface InitStep {
+interface InitStep {
 	label: string;
 	task: () => Promise<void>;
 }
 
-export interface StartupSplashProps {
+interface SplashProps {
 	provider: string;
 	model: string;
 	initSteps: InitStep[];
-	onDone?: () => void;
-	minDisplayMs?: number;
+	onDone: () => void;
+	collapsed?: boolean;
 }
 
-export function StartupSplash({
-	provider,
-	model,
-	initSteps,
-	onDone,
-	minDisplayMs = 1200,
-}: StartupSplashProps) {
-	const mountTime = useRef(Date.now());
-	const [completed, setCompleted] = useState<Set<number>>(new Set());
-	const [running, setRunning] = useState(0);
-	const doneRef = useRef(false);
+export function StartupSplash({ provider, model, initSteps, onDone, collapsed }: SplashProps) {
+	const [stepStates, setStepStates] = useState<Array<"pending" | "running" | "done">>(
+		() => initSteps.map(() => "pending"),
+	);
+	const [summaryLine, setSummaryLine] = useState("");
+	const startTime = useRef(Date.now());
+	const [finished, setFinished] = useState(false);
+	const minDisplayMs = 1200;
 
-	const summaryLine = `${provider}/${model} → primary`;
-
-	// Execute init steps sequentially
 	useEffect(() => {
 		let cancelled = false;
 
-		(async () => {
+		async function runSteps() {
 			for (let i = 0; i < initSteps.length; i++) {
 				if (cancelled) return;
-				setRunning(i);
+				setStepStates((prev) => {
+					const next = [...prev];
+					next[i] = "running";
+					return next;
+				});
 				try {
 					await initSteps[i].task();
 				} catch {
-					// Step error — continue to next step
+					// swallow — step still transitions to done
 				}
 				if (cancelled) return;
-				setCompleted((prev) => new Set(prev).add(i));
+				setStepStates((prev) => {
+					const next = [...prev];
+					next[i] = "done";
+					return next;
+				});
 			}
 
-			// All steps done — respect minDisplayMs
-			if (cancelled) return;
-			const elapsed = Date.now() - mountTime.current;
+			const elapsed = Date.now() - startTime.current;
 			const remaining = Math.max(0, minDisplayMs - elapsed);
-
-			const fireDone = () => {
-				if (doneRef.current) return;
-				doneRef.current = true;
-				onDone?.();
-			};
-
 			if (remaining > 0) {
-				setTimeout(fireDone, remaining);
-			} else {
-				fireDone();
+				await new Promise((r) => setTimeout(r, remaining));
 			}
-		})();
+			if (cancelled) return;
+			setSummaryLine(`${provider}/${model} -> primary`);
+			setFinished(true);
+			onDone();
+		}
 
+		runSteps();
 		return () => {
 			cancelled = true;
 		};
-	}, [initSteps, minDisplayMs, onDone]);
+	}, []);
 
+	// Collapsed mode: compact summary only
+	if (collapsed) {
+		return (
+			<Box flexDirection="column" marginBottom={1}>
+				<Box>
+					<Text color={GREEN} bold>
+						ebsclaw
+					</Text>
+					<Text color={DIM}> v1.0.0-alpha · </Text>
+					<Text color={CYAN}>{provider}/{model}</Text>
+					<Text color={DIM}> · {initSteps.length} modules loaded</Text>
+				</Box>
+				<Text color={BORDER}>──────────────────────────────</Text>
+			</Box>
+		);
+	}
+
+	// Full splash
 	return (
-		<Box flexDirection="column" padding={1}>
-			{LOGO.map((line, i) => (
-				<Text key={i} color={GREEN} bold>
-					{line}
+		<Box flexDirection="column" alignItems="center" paddingY={1}>
+			<Box flexDirection="column" alignItems="center">
+				{LOGO.map((line, i) => (
+					<Text key={i} color={GREEN}>
+						{line}
+					</Text>
+				))}
+			</Box>
+			<Box marginTop={1}>
+				<Text color={GREEN} bold>
+					ebsclaw
 				</Text>
-			))}
-
-			<Box flexDirection="column" marginTop={1}>
-				<Text color={CYAN}>AI Agent Platform · Plugin-First</Text>
-				<Text color={DIM}>v1.0.0-alpha · Bun {typeof Bun !== "undefined" ? Bun.version : "1.3"} · TypeScript</Text>
+				<Text color={DIM}> v1.0.0-alpha </Text>
+				<Text color={DIM}>
+					. Bun {Bun.version} . TypeScript
+				</Text>
+			</Box>
+			<Box>
+				<Text color={MID}>AI Agent Platform . Plugin-First</Text>
 			</Box>
 
-			<Box flexDirection="column" marginTop={1}>
+			<Box flexDirection="column" marginTop={1} width={40}>
 				{initSteps.map((step, i) => {
-					const isDone = completed.has(i);
-					const isNow = running === i && !isDone;
+					const state = stepStates[i];
 					return (
-						<Text key={step.label} color={MID}>
-							{step.label.padEnd(18)}
-							{isDone ? (
+						<Text key={i}>
+							{state === "done" ? (
 								<Text color={GREEN}> ✓</Text>
-							) : isNow ? (
+							) : state === "running" ? (
 								<Text color={CYAN}> ◌</Text>
 							) : (
 								<Text color={DIM}> ○</Text>
 							)}
+							<Text> {step.label}</Text>
 							{i === 2 ? ` ${summaryLine}` : ""}
 						</Text>
 					);
