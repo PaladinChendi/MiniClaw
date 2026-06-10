@@ -14,16 +14,16 @@ const MID = "#666";
 const LIGHT = "#aaa";
 const BORDER = "#1a3a1a";
 
-// ── Pulse animation ──
-const PULSE_FRAMES = ["◐", "◓", "◑", "◒"];
+// ── Braille spinner ──
+const BRAILLE_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
-function usePulse(interval = 300) {
+function usePulse(interval = 80) {
 	const [frame, setFrame] = useState(0);
 	React.useEffect(() => {
-		const id = setInterval(() => setFrame((f) => (f + 1) % PULSE_FRAMES.length), interval);
+		const id = setInterval(() => setFrame((f) => (f + 1) % BRAILLE_FRAMES.length), interval);
 		return () => clearInterval(id);
 	}, [interval]);
-	return PULSE_FRAMES[frame];
+	return BRAILLE_FRAMES[frame];
 }
 
 // ── User message renderers ──

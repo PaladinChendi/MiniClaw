@@ -13,16 +13,16 @@ const MID = "#666";
 const LIGHT = "#aaa";
 const BORDER = "#1a3a1a";
 
-// ── Pulse animation ──
-const PULSE_FRAMES = ["◐", "◓", "◑", "◒"];
+// ── Braille spinner ──
+const BRAILLE_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
-function usePulse(interval = 300) {
+function usePulse(interval = 80) {
 	const [frame, setFrame] = useState(0);
 	useEffect(() => {
-		const id = setInterval(() => setFrame((f) => (f + 1) % PULSE_FRAMES.length), interval);
+		const id = setInterval(() => setFrame((f) => (f + 1) % BRAILLE_FRAMES.length), interval);
 		return () => clearInterval(id);
 	}, [interval]);
-	return PULSE_FRAMES[frame];
+	return BRAILLE_FRAMES[frame];
 }
 
 // ── Horizontal rule ──
@@ -73,7 +73,7 @@ export function TUIApp({
 }: TUIAppProps) {
 	const { exit } = useApp();
 	const [input, setInput] = useState("");
-	const pulse = usePulse(state === "thinking" ? 150 : 300);
+	const pulse = usePulse(80);
 	const shortSession = sessionId.slice(0, 4);
 
 	useInput((ch, key) => {
