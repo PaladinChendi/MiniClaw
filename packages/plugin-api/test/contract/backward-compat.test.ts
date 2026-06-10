@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { EbsclawError } from "../../src/index.ts";
+import { MiniclawError } from "../../src/index.ts";
 import type {
 	ChannelPlugin,
 	CompactBoundary,
@@ -223,8 +223,8 @@ describe("Error taxonomy", () => {
 		expect(categories.length).toBe(4);
 	});
 
-	it("EbsclawError has required fields", () => {
-		const err = new EbsclawError("test", "retryable", true);
+	it("MiniclawError has required fields", () => {
+		const err = new MiniclawError("test", "retryable", true);
 		expect(err.message).toBe("test");
 		expect(err.category).toBe("retryable");
 		expect(err.recoverable).toBe(true);

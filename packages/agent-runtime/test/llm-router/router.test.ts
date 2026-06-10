@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "bun:test";
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 import { AnthropicProvider } from "../../src/llm-router/providers/anthropic.ts";
 import { OpenAIProvider } from "../../src/llm-router/providers/openai.ts";
 

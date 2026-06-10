@@ -1,4 +1,4 @@
-import type { AgentMessage, ToolSchema } from "@ebsclaw/agent-runtime";
+import type { AgentMessage, ToolSchema } from "@miniclaw/agent-runtime";
 import type { Gateway } from "./index.ts";
 import type { WSOutbound } from "./ws-protocol.ts";
 import type { AgentRunRequest, AgentRunResponse } from "./rpc-handler.ts";
@@ -61,7 +61,7 @@ async function runEmbeddedPiAgent(
 
 	let runtime = runtimeCache.get(sessionId);
 	if (!runtime) {
-		const { AgentRuntime: AR, BashTool, ReadFileTool, ListFilesTool } = await import("@ebsclaw/agent-runtime");
+		const { AgentRuntime: AR, BashTool, ReadFileTool, ListFilesTool } = await import("@miniclaw/agent-runtime");
 
 		if (sharedToolDefs.length === 0) {
 			sharedToolDefs.push(new BashTool().definition, new ReadFileTool().definition, new ListFilesTool().definition);
@@ -70,7 +70,7 @@ async function runEmbeddedPiAgent(
 		runtime = new AR({
 			chatFn,
 			baseSystemPrompt:
-				"You are ebsclaw, a helpful AI assistant. You have tools: bash (execute commands), read_file (read file contents), list_files (list directory contents).\n\nRules:\n1. Use tools when the user asks about files or system operations.\n2. After receiving tool results, ALWAYS respond with a text summary of the outcome. Do NOT make additional tool calls unless the user's request genuinely requires more actions.\n3. If a tool call fails, explain the error and suggest alternatives — do not retry the same command.",
+				"You are miniclaw, a helpful AI assistant. You have tools: bash (execute commands), read_file (read file contents), list_files (list directory contents).\n\nRules:\n1. Use tools when the user asks about files or system operations.\n2. After receiving tool results, ALWAYS respond with a text summary of the outcome. Do NOT make additional tool calls unless the user's request genuinely requires more actions.\n3. If a tool call fails, explain the error and suggest alternatives — do not retry the same command.",
 			tools: sharedToolDefs,
 			workingDir: process.cwd(),
 		});

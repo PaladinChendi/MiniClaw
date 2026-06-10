@@ -1,4 +1,4 @@
-import type { ToolCall, ToolResult } from "@ebsclaw/agent-runtime";
+import type { ToolCall, ToolResult } from "@miniclaw/agent-runtime";
 import { Box, Text } from "ink";
 import React, { useState } from "react";
 import { Markdown } from "./Markdown.tsx";
@@ -161,29 +161,6 @@ function AssistantText({ content }: { content: string }) {
 	);
 }
 
-function AssistantThinking({ content, expanded: initialExpanded }: { content: string; expanded?: boolean }) {
-	const [expanded, setExpanded] = useState(initialExpanded ?? false);
-	return (
-		<Box flexDirection="column" marginBottom={1}>
-			<Box>
-				<Text color={DIM} bold>
-					{expanded ? "▾" : "▸"} Thinking
-				</Text>
-				<Text color={DIM}> (press t to toggle)</Text>
-			</Box>
-			{expanded && (
-				<Box marginLeft={2} flexDirection="column">
-					<Text color={DIM}>{content}</Text>
-				</Box>
-			)}
-		</Box>
-	);
-}
-
-function AssistantRedactedThinking() {
-	return null;
-}
-
 function ToolStatusIcon({ status }: { status: ToolUseStatus }) {
 	if (status === "running") {
 		const pulse = usePulse(150);
@@ -264,24 +241,6 @@ function CompactBoundary() {
 	);
 }
 
-function CompactSummary({ content, expanded: initialExpanded }: { content: string; expanded?: boolean }) {
-	const [expanded, setExpanded] = useState(initialExpanded ?? false);
-	return (
-		<Box flexDirection="column" marginBottom={1}>
-			<Box>
-				<Text color={GREEN}>● </Text>
-				<Text color={MID}>{expanded ? "Full summary" : "Compact summary"}</Text>
-				{!expanded && <Text color={CYAN}> (press e to expand)</Text>}
-			</Box>
-			{expanded && (
-				<Box marginLeft={2}>
-					<Text color={LIGHT}>{content}</Text>
-				</Box>
-			)}
-		</Box>
-	);
-}
-
 // ── Main dispatcher ──
 
 export function MessageRenderer({ message }: { message: RichMessage }) {
@@ -312,10 +271,6 @@ export function MessageRenderer({ message }: { message: RichMessage }) {
 		// Assistant
 		case "assistant_text":
 			return <AssistantText content={message.content} />;
-		case "assistant_thinking":
-			return <AssistantThinking content={message.content} expanded={message.expanded} />;
-		case "assistant_redacted_thinking":
-			return <AssistantRedactedThinking />;
 		case "assistant_tool_use":
 			return (
 				<AssistantToolUse
@@ -330,7 +285,5 @@ export function MessageRenderer({ message }: { message: RichMessage }) {
 			return <SystemText content={message.content} />;
 		case "compact_boundary":
 			return <CompactBoundary />;
-		case "compact_summary":
-			return <CompactSummary content={message.content} expanded={message.expanded} />;
 	}
 }

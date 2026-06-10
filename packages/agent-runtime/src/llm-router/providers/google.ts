@@ -1,4 +1,4 @@
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 
 export class GoogleProvider {
 	constructor(private config: { apiKey: string; model: string; maxTokens: number }) {}

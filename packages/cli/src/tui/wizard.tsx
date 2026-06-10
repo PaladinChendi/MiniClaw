@@ -158,7 +158,7 @@ export function SetupWizard({ step: initialStep = 0, configStore, onComplete }: 
 						{" "}
 						运行{" "}
 						<Text color={GREEN} bold>
-							ebsclaw tui
+							miniclaw tui
 						</Text>{" "}
 						启动
 					</Text>
@@ -218,7 +218,7 @@ export function SetupWizard({ step: initialStep = 0, configStore, onComplete }: 
 			value: baseUrlInput,
 			masked: false,
 		},
-		{ label: "API Key", required: true, hint: "密钥存储于 ~/.ebsclaw/config.yaml", value: apiKeyInput, masked: true },
+		{ label: "API Key", required: true, hint: "密钥存储于 ~/.miniclaw/config.yaml", value: apiKeyInput, masked: true },
 		{
 			label: "Model",
 			required: true,

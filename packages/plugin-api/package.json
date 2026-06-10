@@ -1,5 +1,5 @@
 {
-	"name": "@ebsclaw/plugin-api",
+	"name": "@miniclaw/plugin-api",
 	"version": "0.1.0",
 	"type": "module",
 	"main": "src/index.ts",

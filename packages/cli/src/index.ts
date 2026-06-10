@@ -1,7 +1,7 @@
 import { homedir } from "os";
 import { join } from "path";
-import { buildChatFn, type AgentRuntime, type AgentMessage, type ToolSchema } from "@ebsclaw/agent-runtime";
-import { Gateway, MemoryStore } from "@ebsclaw/gateway";
+import { buildChatFn, type AgentRuntime, type AgentMessage, type ToolSchema } from "@miniclaw/agent-runtime";
+import { Gateway, MemoryStore } from "@miniclaw/gateway";
 import { render, Box } from "ink";
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { parseArgs } from "./commands.ts";
@@ -11,7 +11,7 @@ import type { RichMessage } from "./tui/messages.ts";
 import { StartupSplash, type InitStep } from "./tui/splash.tsx";
 import { SetupWizard } from "./tui/wizard.tsx";
 
-const CONFIG_DIR = join(homedir(), ".ebsclaw");
+const CONFIG_DIR = join(homedir(), ".miniclaw");
 const CONFIG_PATH = join(CONFIG_DIR, "config.yaml");
 
 function ChatScreen({
@@ -66,7 +66,6 @@ function ChatScreen({
 			setMessages((prev) => [
 				...prev,
 				{ type: "compact_boundary" as const },
-				{ type: "compact_summary" as const, content: summary },
 			]);
 		});
 	}, [runtime]);
@@ -138,18 +137,6 @@ function ChatScreen({
 		[runtime, store, onExit],
 	);
 
-	const handleToggleThinking = useCallback(() => {
-		setMessages((prev) =>
-			prev.map((msg) => (msg.type === "assistant_thinking" ? { ...msg, expanded: !msg.expanded } : msg)),
-		);
-	}, []);
-
-	const handleToggleSummary = useCallback(() => {
-		setMessages((prev) =>
-			prev.map((msg) => (msg.type === "compact_summary" ? { ...msg, expanded: !msg.expanded } : msg)),
-		);
-	}, []);
-
 	return React.createElement(TUIApp, {
 		state,
 		provider: config.provider,
@@ -165,8 +152,6 @@ function ChatScreen({
 		onSubmit: handleSubmit,
 		onExit,
 		onAbort: handleAbort,
-		onToggleThinking: handleToggleThinking,
-		onToggleSummary: handleToggleSummary,
 		errorMessage,
 	});
 }
@@ -185,7 +170,7 @@ async function runTUI(mode?: string): Promise<void> {
 		await waitUntilExit();
 		const newConfig = await configStore.load();
 		if (!newConfig) {
-			console.error("Setup incomplete. Run `ebsclaw tui` again.");
+			console.error("Setup incomplete. Run `miniclaw tui` again.");
 			return;
 		}
 		config = newConfig;
@@ -209,7 +194,7 @@ async function runTUI(mode?: string): Promise<void> {
 					{
 						label: "Memory Core",
 						task: async () => {
-							const { MemoryStore: MS } = await import("@ebsclaw/gateway");
+							const { MemoryStore: MS } = await import("@miniclaw/gateway");
 							const sessionDir = join(CONFIG_DIR, "sessions");
 							const s = new MS(sessionDir);
 							await s.init();
@@ -219,7 +204,7 @@ async function runTUI(mode?: string): Promise<void> {
 					{
 						label: "Session Manager",
 						task: async () => {
-							const { Gateway: GW } = await import("@ebsclaw/gateway");
+							const { Gateway: GW } = await import("@miniclaw/gateway");
 							const sessionDir = join(CONFIG_DIR, "sessions");
 							const gw = new GW({ sessionDir });
 							gw.setMemoryStore(initCtx.store as MemoryStore);
@@ -236,18 +221,18 @@ async function runTUI(mode?: string): Promise<void> {
 					{
 						label: "Plugin Registry",
 						task: async () => {
-							const { BashTool, ReadFileTool, ListFilesTool } = await import("@ebsclaw/agent-runtime");
+							const { BashTool, ReadFileTool, ListFilesTool } = await import("@miniclaw/agent-runtime");
 							initCtx.tools = [new BashTool().definition, new ReadFileTool().definition, new ListFilesTool().definition];
 						},
 					},
 					{
 						label: "Agent Runtime",
 						task: async () => {
-							const { AgentRuntime: AR } = await import("@ebsclaw/agent-runtime");
+							const { AgentRuntime: AR } = await import("@miniclaw/agent-runtime");
 							initCtx.runtime = new AR({
 								chatFn: initCtx.chatFn as any,
 								baseSystemPrompt:
-									"You are ebsclaw, a helpful AI assistant. You have tools: bash (execute commands), read_file (read file contents), list_files (list directory contents).\n\nRules:\n1. Use tools when the user asks about files or system operations.\n2. After receiving tool results, ALWAYS respond with a text summary of the outcome. Do NOT make additional tool calls unless the user's request genuinely requires more actions.\n3. If a tool call fails, explain the error and suggest alternatives - do not retry the same command.",
+									"You are miniclaw, a helpful AI assistant. You have tools: bash (execute commands), read_file (read file contents), list_files (list directory contents).\n\nRules:\n1. Use tools when the user asks about files or system operations.\n2. After receiving tool results, ALWAYS respond with a text summary of the outcome. Do NOT make additional tool calls unless the user's request genuinely requires more actions.\n3. If a tool call fails, explain the error and suggest alternatives - do not retry the same command.",
 								tools: initCtx.tools as any[],
 								workingDir: process.cwd(),
 							});
@@ -328,7 +313,7 @@ async function runHeadless(prompt?: string, configPath?: string): Promise<void> 
 	const configStore = new ConfigStore(configPath ?? CONFIG_PATH);
 	const config = await configStore.load();
 	if (!config) {
-		process.stderr.write("No configuration found. Run `ebsclaw tui` to set up.\n");
+		process.stderr.write("No configuration found. Run `miniclaw tui` to set up.\n");
 		process.exit(1);
 	}
 
@@ -343,18 +328,18 @@ async function runHeadless(prompt?: string, configPath?: string): Promise<void> 
 		});
 	}
 	if (!userPrompt) {
-		process.stderr.write("No prompt provided. Usage: ebsclaw headless <prompt>  OR  echo <prompt> | ebsclaw headless\n");
+		process.stderr.write("No prompt provided. Usage: miniclaw headless <prompt>  OR  echo <prompt> | miniclaw headless\n");
 		process.exit(1);
 	}
 
 	const chatFn = await buildChatFn(config);
-	const { BashTool, ReadFileTool, ListFilesTool, AgentRuntime: AR } = await import("@ebsclaw/agent-runtime");
+	const { BashTool, ReadFileTool, ListFilesTool, AgentRuntime: AR } = await import("@miniclaw/agent-runtime");
 	const tools = [new BashTool().definition, new ReadFileTool().definition, new ListFilesTool().definition];
 
 	const runtime = new AR({
 		chatFn,
 		baseSystemPrompt:
-			"You are ebsclaw, a helpful AI assistant. You have tools: bash (execute commands), read_file (read file contents), list_files (list directory contents).\n\nRules:\n1. Use tools when the user asks about files or system operations.\n2. After receiving tool results, ALWAYS respond with a text summary of the outcome. Do NOT make additional tool calls unless the user's request genuinely requires more actions.\n3. If a tool call fails, explain the error and suggest alternatives - do not retry the same command.",
+			"You are miniclaw, a helpful AI assistant. You have tools: bash (execute commands), read_file (read file contents), list_files (list directory contents).\n\nRules:\n1. Use tools when the user asks about files or system operations.\n2. After receiving tool results, ALWAYS respond with a text summary of the outcome. Do NOT make additional tool calls unless the user's request genuinely requires more actions.\n3. If a tool call fails, explain the error and suggest alternatives - do not retry the same command.",
 		tools,
 		workingDir: process.cwd(),
 	});
@@ -405,16 +390,16 @@ async function runHeadless(prompt?: string, configPath?: string): Promise<void> 
 }
 
 function showHelp(): void {
-	console.log(`ebsclaw — AI agent framework
+	console.log(`miniclaw — AI agent framework
 
 Usage:
-  ebsclaw tui              Start interactive TUI (default, embedded mode)
-  ebsclaw tui --mode gateway  Connect to gateway daemon (v1.1)
-  ebsclaw headless <prompt>  Run agent non-interactively, output to stdout
-  ebsclaw headless            Read prompt from stdin (pipe-friendly)
-  ebsclaw gateway start    Start gateway daemon
-  ebsclaw gateway start --config <path>  Start with config file
-  ebsclaw help             Show this help
+  miniclaw tui              Start interactive TUI (default, embedded mode)
+  miniclaw tui --mode gateway  Connect to gateway daemon (v1.1)
+  miniclaw headless <prompt>  Run agent non-interactively, output to stdout
+  miniclaw headless            Read prompt from stdin (pipe-friendly)
+  miniclaw gateway start    Start gateway daemon
+  miniclaw gateway start --config <path>  Start with config file
+  miniclaw help             Show this help
 
 Headless mode:
   Accepts prompt as a CLI argument or via stdin.
@@ -422,9 +407,9 @@ Headless mode:
   Exit code 0 on success, 1 on error, 130 on SIGINT.
 
   Examples:
-    ebsclaw headless "list files in /tmp"
-    echo "list files" | ebsclaw headless
-    cat prompt.txt | ebsclaw headless
+    miniclaw headless "list files in /tmp"
+    echo "list files" | miniclaw headless
+    cat prompt.txt | miniclaw headless
 
 Configuration:
   ${CONFIG_PATH}

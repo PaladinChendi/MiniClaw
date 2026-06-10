@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a feature for ebsclaw
+about: Suggest a feature for MiniClaw
 ---
 
 **Problem**: 

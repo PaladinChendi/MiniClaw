@@ -1,5 +1,5 @@
 {
-	"name": "@ebsclaw/channel-qqbot",
+	"name": "@miniclaw/channel-qqbot",
 	"version": "0.1.0",
 	"type": "module",
 	"main": "src/index.ts",
@@ -8,10 +8,10 @@
 		"typecheck": "tsc --noEmit",
 		"test": "bun test"
 	},
-	"ebsclaw": { "type": "channel", "manifest": "ebsclaw.manifest.json" },
+	"miniclaw": { "type": "channel", "manifest": "miniclaw.manifest.json" },
 	"devDependencies": {
-		"@ebsclaw/plugin-api": "workspace:*",
-		"@ebsclaw/shared": "workspace:*",
+		"@miniclaw/plugin-api": "workspace:*",
+		"@miniclaw/shared": "workspace:*",
 		"@types/node": "^25.9.1",
 		"@types/bun": "^1.3.14",
 		"typescript": "^5.6.0"

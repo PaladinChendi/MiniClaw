@@ -16,7 +16,7 @@ const GOLDEN_CASES = [
 	{ input: "What is 2+2?", expectContains: "4" },
 	{ input: "I prefer vim keybindings", expectContains: "vim" },
 	{ input: "Don't use semicolons in JS", expectContains: "semicolon" },
-	{ input: "We're building ebsclaw for AI agents", expectContains: "ebsclaw" },
+	{ input: "We're building miniclaw for AI agents", expectContains: "miniclaw" },
 	{ input: "Hello, how are you?", expectContains: "" },
 ];
 

@@ -6,7 +6,7 @@
 
 **Architecture:** Ink renders a React tree inside the terminal. The `<App>` component manages global state via hooks. Embedded mode reuses Gateway logic without network layer. Components are pure functional React components. Terminal width adaptation uses a `useTerminalSize` hook that listens for resize events.
 
-**Tech Stack:** TypeScript 5.x, React 18, Ink 4.x, Bun 1.3+, @ebsclaw/gateway, @ebsclaw/plugin-api, chalk for ANSI colors
+**Tech Stack:** TypeScript 5.x, React 18, Ink 4.x, Bun 1.3+, @miniclaw/gateway, @miniclaw/plugin-api, chalk for ANSI colors
 
 ---
 
@@ -61,12 +61,12 @@ packages/tui/
 `packages/tui/package.json`:
 ```json
 {
-  "name": "@ebsclaw/tui",
+  "name": "@miniclaw/tui",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
   "bin": {
-    "ebsclaw": "src/index.ts"
+    "miniclaw": "src/index.ts"
   },
   "scripts": {
     "dev": "bun run src/index.ts",
@@ -78,9 +78,9 @@ packages/tui/
     "ink-text-input": "^5.0.1",
     "react": "^18.2.0",
     "chalk": "^5.3.0",
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*",
-    "@ebsclaw/gateway": "workspace:*"
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*",
+    "@miniclaw/gateway": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
@@ -111,7 +111,7 @@ packages/tui/
 `packages/tui/test/theme.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { theme, breakpoint, detectScanlineSupport } from "@ebsclaw/tui/theme";
+import { theme, breakpoint, detectScanlineSupport } from "@miniclaw/tui/theme";
 
 describe("Theme constants", () => {
   it("exports all color tokens", () => {
@@ -147,8 +147,8 @@ describe("Theme constants", () => {
 
 - [ ] **Step 4: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun install && bun test packages/tui/test/theme.test.ts`
-Expected: FAIL -- `@ebsclaw/tui/theme` not found
+Run: `cd /mnt/d/miniclaw && bun install && bun test packages/tui/test/theme.test.ts`
+Expected: FAIL -- `@miniclaw/tui/theme` not found
 
 - [ ] **Step 5: Implement theme.ts**
 
@@ -204,7 +204,7 @@ export function detectScanlineSupport(): boolean {
 
 - [ ] **Step 6: Run theme tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/theme.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/theme.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 7: Commit**
@@ -227,7 +227,7 @@ git commit -m "feat(tui): add package skeleton with Neon Cyberpunk theme constan
 `packages/tui/test/hooks/use-terminal-size.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { computeLayout, LayoutConfig } from "@ebsclaw/tui/hooks/use-terminal-size";
+import { computeLayout, LayoutConfig } from "@miniclaw/tui/hooks/use-terminal-size";
 
 describe("computeLayout", () => {
   it("compact mode: single column, no status bar plugins", () => {
@@ -259,7 +259,7 @@ describe("computeLayout", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/hooks/use-terminal-size.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/hooks/use-terminal-size.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement useTerminalSize hook**
@@ -313,7 +313,7 @@ export function useTerminalSize(): LayoutConfig {
 
 - [ ] **Step 4: Run useTerminalSize tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/hooks/use-terminal-size.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/hooks/use-terminal-size.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -336,7 +336,7 @@ git commit -m "feat(tui): add useTerminalSize hook with layout adaptation"
 `packages/tui/test/components/top-bar.test.tsx`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { renderTopBar } from "@ebsclaw/tui/components/top-bar";
+import { renderTopBar } from "@miniclaw/tui/components/top-bar";
 
 describe("TopBar", () => {
   it("renders logo, session, tokens, percent, model in full mode", () => {
@@ -348,7 +348,7 @@ describe("TopBar", () => {
       mode: "full",
       cols: 80,
     });
-    expect(lines).toContain("ebsclaw");
+    expect(lines).toContain("miniclaw");
     expect(lines).toContain("s-001");
     expect(lines).toContain("1.2k");
     expect(lines).toContain("24.7%");
@@ -364,7 +364,7 @@ describe("TopBar", () => {
       mode: "compact",
       cols: 40,
     });
-    expect(lines).toContain("ebsclaw");
+    expect(lines).toContain("miniclaw");
     expect(lines).toContain("gpt-4o");
     // Session and percent should be omitted in compact
     expect(lines).not.toContain("24.7%");
@@ -374,7 +374,7 @@ describe("TopBar", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/top-bar.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/top-bar.test.tsx`
 Expected: FAIL
 
 - [ ] **Step 3: Implement TopBar**
@@ -384,7 +384,7 @@ Expected: FAIL
 import chalk from "chalk";
 import type { LayoutMode } from "../theme";
 
-const logo = chalk.hex("#00ff41").bold("ebsclaw");
+const logo = chalk.hex("#00ff41").bold("miniclaw");
 
 function formatTokens(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -431,7 +431,7 @@ export function TopBar(props: TopBarProps) {
 
 - [ ] **Step 4: Run TopBar tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/top-bar.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/top-bar.test.tsx`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -456,7 +456,7 @@ git commit -m "feat(tui): add TopBar with logo, session, tokens, model display"
 `packages/tui/test/components/message-flow.test.tsx`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { renderMessageItem, renderToolCallItem } from "@ebsclaw/tui/components/message-item";
+import { renderMessageItem, renderToolCallItem } from "@miniclaw/tui/components/message-item";
 
 describe("MessageItem rendering", () => {
   it("user message has cyan border (#00d4ff)", () => {
@@ -483,7 +483,7 @@ describe("ToolCallItem rendering", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/message-flow.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/message-flow.test.tsx`
 Expected: FAIL
 
 - [ ] **Step 3: Implement MessageItem**
@@ -602,7 +602,7 @@ export function MessageFlow({ items }: { items: TimelineItem[] }) {
 
 - [ ] **Step 5: Run message flow tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/message-flow.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/message-flow.test.tsx`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -626,7 +626,7 @@ git commit -m "feat(tui): add MessageFlow, MessageItem (colored borders), and To
 `packages/tui/test/commands.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { parseCommand, COMMANDS } from "@ebsclaw/tui/hooks/use-input";
+import { parseCommand, COMMANDS } from "@miniclaw/tui/hooks/use-input";
 
 describe("parseCommand", () => {
   it("parses /compact as compact command", () => {
@@ -680,7 +680,7 @@ describe("COMMANDS registry", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/commands.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/commands.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement use-input hook and command parsing**
@@ -702,7 +702,7 @@ export const COMMANDS: CommandDef[] = [
   { name: "memory", description: "Show full-screen memory overlay" },
   { name: "status", description: "Show gateway and plugin status" },
   { name: "config", description: "Open configuration panel" },
-  { name: "exit", description: "Exit ebsclaw TUI" },
+  { name: "exit", description: "Exit miniclaw TUI" },
 ];
 
 const COMMAND_NAMES = new Set(COMMANDS.map((c) => c.name));
@@ -787,7 +787,7 @@ export function InputLineComponent({ value, isActive }: { value: string; isActiv
 
 - [ ] **Step 5: Run command tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/commands.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/commands.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -810,7 +810,7 @@ git commit -m "feat(tui): add input line with slash command parsing and history 
 `packages/tui/test/components/status-bar.test.tsx`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { renderStatusBar } from "@ebsclaw/tui/components/status-bar";
+import { renderStatusBar } from "@miniclaw/tui/components/status-bar";
 
 describe("StatusBar", () => {
   it("shows plugins, memories, uptime in full mode", () => {
@@ -840,7 +840,7 @@ describe("StatusBar", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/status-bar.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/status-bar.test.tsx`
 Expected: FAIL
 
 - [ ] **Step 3: Implement StatusBar**
@@ -896,7 +896,7 @@ export function StatusBar(props: StatusBarProps) {
 
 - [ ] **Step 4: Run status bar tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/status-bar.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/status-bar.test.tsx`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -920,8 +920,8 @@ git commit -m "feat(tui): add StatusBar with plugins, memories, uptime display"
 `packages/tui/test/components/error-compact.test.tsx`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { renderErrorStrip } from "@ebsclaw/tui/components/error-strip";
-import { renderCompactingBar } from "@ebsclaw/tui/components/compacting-bar";
+import { renderErrorStrip } from "@miniclaw/tui/components/error-strip";
+import { renderCompactingBar } from "@miniclaw/tui/components/compacting-bar";
 
 describe("ErrorStrip", () => {
   it("renders 429 rate-limit error with red text", () => {
@@ -971,7 +971,7 @@ describe("CompactingBar", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/error-compact.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/error-compact.test.tsx`
 Expected: FAIL
 
 - [ ] **Step 3: Implement ErrorStrip**
@@ -1040,7 +1040,7 @@ export function CompactingBar(props: CompactingBarProps) {
 
 - [ ] **Step 5: Run error/compact tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/error-compact.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/error-compact.test.tsx`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -1064,8 +1064,8 @@ git commit -m "feat(tui): add ErrorStrip (auto-fade 3s) and CompactingBar (neon 
 `packages/tui/test/components/overlays.test.tsx`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { renderHelpOverlay } from "@ebsclaw/tui/components/help-overlay";
-import { renderMemoryOverlay } from "@ebsclaw/tui/components/memory-overlay";
+import { renderHelpOverlay } from "@miniclaw/tui/components/help-overlay";
+import { renderMemoryOverlay } from "@miniclaw/tui/components/memory-overlay";
 
 describe("HelpOverlay", () => {
   it("renders all 6 commands with descriptions", () => {
@@ -1078,9 +1078,9 @@ describe("HelpOverlay", () => {
     expect(lines).toContain("/exit");
   });
 
-  it("has ebsclaw branding", () => {
+  it("has miniclaw branding", () => {
     const lines = renderHelpOverlay();
-    expect(lines).toContain("ebsclaw");
+    expect(lines).toContain("miniclaw");
   });
 });
 
@@ -1104,7 +1104,7 @@ describe("MemoryOverlay", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/overlays.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/overlays.test.tsx`
 Expected: FAIL
 
 - [ ] **Step 3: Implement HelpOverlay**
@@ -1116,7 +1116,7 @@ import { COMMANDS } from "../hooks/use-input";
 
 export function renderHelpOverlay(): string {
   const lines: string[] = [];
-  lines.push(chalk.hex("#00ff41").bold("  ebsclaw — Help"));
+  lines.push(chalk.hex("#00ff41").bold("  miniclaw — Help"));
   lines.push(chalk.hex("#555555")("  ──────────────────────────────"));
   lines.push("");
 
@@ -1146,7 +1146,7 @@ export function HelpOverlay() {
 `packages/tui/src/components/memory-overlay.tsx`:
 ```typescript
 import chalk from "chalk";
-import type { MemoryType } from "@ebsclaw/plugin-api";
+import type { MemoryType } from "@miniclaw/plugin-api";
 
 export interface MemoryOverlayEntry {
   name: string;
@@ -1156,7 +1156,7 @@ export interface MemoryOverlayEntry {
 
 export function renderMemoryOverlay(entries: MemoryOverlayEntry[]): string {
   const lines: string[] = [];
-  lines.push(chalk.hex("#00ff41").bold("  ebsclaw — Memories"));
+  lines.push(chalk.hex("#00ff41").bold("  miniclaw — Memories"));
   lines.push(chalk.hex("#555555")("  ──────────────────────────────"));
   lines.push("");
 
@@ -1201,7 +1201,7 @@ export function MemoryOverlay({ entries }: { entries: MemoryOverlayEntry[] }) {
 
 - [ ] **Step 5: Run overlay tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/overlays.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/overlays.test.tsx`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -1226,8 +1226,8 @@ git commit -m "feat(tui): add HelpOverlay and MemoryOverlay full-screen overlays
 `packages/tui/test/components/setup-wizard.test.tsx`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { renderSetupStep } from "@ebsclaw/tui/components/setup-wizard";
-import { renderChannelList } from "@ebsclaw/tui/components/channel-selector";
+import { renderSetupStep } from "@miniclaw/tui/components/setup-wizard";
+import { renderChannelList } from "@miniclaw/tui/components/channel-selector";
 
 describe("Setup Wizard", () => {
   it("Step 1 renders LLM provider selection", () => {
@@ -1274,7 +1274,7 @@ describe("Channel Selector", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/setup-wizard.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/setup-wizard.test.tsx`
 Expected: FAIL
 
 - [ ] **Step 3: Implement SetupWizard**
@@ -1293,7 +1293,7 @@ export interface SetupStepProps {
 
 export function renderSetupStep(props: SetupStepProps): string {
   const lines: string[] = [];
-  lines.push(chalk.hex("#00ff41").bold("  ebsclaw — Setup Wizard"));
+  lines.push(chalk.hex("#00ff41").bold("  miniclaw — Setup Wizard"));
   lines.push(chalk.hex("#555555")("  ──────────────────────────────"));
   lines.push("");
 
@@ -1385,7 +1385,7 @@ export function ChannelSelector({
 `packages/tui/src/hooks/use-session.ts`:
 ```typescript
 import { useState, useCallback } from "react";
-import type { MemoryType } from "@ebsclaw/plugin-api";
+import type { MemoryType } from "@miniclaw/plugin-api";
 
 export type AppState = "idle" | "generating" | "compacting" | "error" | "empty";
 
@@ -1510,7 +1510,7 @@ export function useSession() {
 
 - [ ] **Step 6: Run setup wizard tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/setup-wizard.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/setup-wizard.test.tsx`
 Expected: ALL PASS
 
 - [ ] **Step 7: Commit**
@@ -1533,7 +1533,7 @@ git commit -m "feat(tui): add 2-step setup wizard, channel selector (stubs greye
 `packages/tui/test/components/scanline.test.tsx`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { renderScanline } from "@ebsclaw/tui/components/scanline";
+import { renderScanline } from "@miniclaw/tui/components/scanline";
 
 describe("Scanline", () => {
   it("returns empty string when terminal does not support truecolor", () => {
@@ -1561,7 +1561,7 @@ describe("Scanline", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/scanline.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/scanline.test.tsx`
 Expected: FAIL
 
 - [ ] **Step 3: Implement Scanline**
@@ -1604,7 +1604,7 @@ export function Scanline({ supported, width, height }: { supported: boolean; wid
 
 - [ ] **Step 4: Run scanline tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/components/scanline.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/components/scanline.test.tsx`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -1628,7 +1628,7 @@ git commit -m "feat(tui): add scanline effect component with truecolor auto-dete
 `packages/tui/test/app.test.tsx`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { computeAppLayout } from "@ebsclaw/tui/app";
+import { computeAppLayout } from "@miniclaw/tui/app";
 
 describe("App layout computation", () => {
   it("empty state shows setup wizard when no provider configured", () => {
@@ -1700,7 +1700,7 @@ describe("App layout computation", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/app.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/app.test.tsx`
 Expected: FAIL
 
 - [ ] **Step 3: Implement App component**
@@ -1835,7 +1835,7 @@ export function App() {
 ```typescript
 #!/usr/bin/env bun
 /**
- * ebsclaw TUI entry point
+ * miniclaw TUI entry point
  *
  * Runs in Embedded mode by default (reuses Gateway logic, no network layer).
  * Gateway mode (--mode gateway) connects via WS RPC (v1.1).
@@ -1859,7 +1859,7 @@ if (import.meta.main) {
 
 - [ ] **Step 5: Run App tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/tui/test/app.test.tsx`
+Run: `cd /mnt/d/miniclaw && bun test packages/tui/test/app.test.tsx`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -1881,15 +1881,15 @@ git commit -m "feat(tui): add root App component with layout computation and TUI
 `tests/integration/tui-render.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { computeAppLayout } from "@ebsclaw/tui/app";
-import { renderTopBar } from "@ebsclaw/tui/components/top-bar";
-import { renderStatusBar } from "@ebsclaw/tui/components/status-bar";
-import { renderHelpOverlay } from "@ebsclaw/tui/components/help-overlay";
-import { renderMemoryOverlay } from "@ebsclaw/tui/components/memory-overlay";
-import { renderErrorStrip } from "@ebsclaw/tui/components/error-strip";
-import { renderCompactingBar } from "@ebsclaw/tui/components/compacting-bar";
-import { renderSetupStep } from "@ebsclaw/tui/components/setup-wizard";
-import { renderChannelList } from "@ebsclaw/tui/components/channel-selector";
+import { computeAppLayout } from "@miniclaw/tui/app";
+import { renderTopBar } from "@miniclaw/tui/components/top-bar";
+import { renderStatusBar } from "@miniclaw/tui/components/status-bar";
+import { renderHelpOverlay } from "@miniclaw/tui/components/help-overlay";
+import { renderMemoryOverlay } from "@miniclaw/tui/components/memory-overlay";
+import { renderErrorStrip } from "@miniclaw/tui/components/error-strip";
+import { renderCompactingBar } from "@miniclaw/tui/components/compacting-bar";
+import { renderSetupStep } from "@miniclaw/tui/components/setup-wizard";
+import { renderChannelList } from "@miniclaw/tui/components/channel-selector";
 
 describe("TUI full render pipeline", () => {
   it("renders all components without throwing for a configured session", () => {
@@ -1986,7 +1986,7 @@ describe("TUI full render pipeline", () => {
 
 - [ ] **Step 2: Run TUI integration test**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/integration/tui-render.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/integration/tui-render.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 3: Commit**

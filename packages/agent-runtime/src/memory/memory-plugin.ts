@@ -1,7 +1,7 @@
-import type { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
-import type { MemoryPlugin as IMemoryPlugin, MemoryEntry, MemoryQuery, MemoryResult } from "@ebsclaw/plugin-api";
-import type { PluginContext } from "@ebsclaw/plugin-api";
-import { keywordScore } from "@ebsclaw/shared";
+import type { MemoryStore } from "@miniclaw/gateway/src/memory-store";
+import type { MemoryPlugin as IMemoryPlugin, MemoryEntry, MemoryQuery, MemoryResult } from "@miniclaw/plugin-api";
+import type { PluginContext } from "@miniclaw/plugin-api";
+import { keywordScore } from "@miniclaw/shared";
 import { AutoDream } from "./autodream.ts";
 import { MemoryExtractor } from "./extract.ts";
 

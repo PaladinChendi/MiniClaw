@@ -1,4 +1,4 @@
-# ebsclaw Performance Contracts
+# MiniClaw Performance Contracts
 
 Per D8/D39: Three deployment tiers with distinct latency budgets.
 

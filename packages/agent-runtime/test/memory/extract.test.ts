@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { existsSync } from "fs";
 import { join } from "path";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import { mkdir, readFile, rm } from "fs/promises";
 import { MemoryExtractor } from "../../src/memory/extract";
 
@@ -53,7 +53,7 @@ describe("MemoryExtractor", () => {
 		await store.init();
 		const extractor = new MemoryExtractor(store);
 
-		const messages = [{ role: "user" as const, content: "We're building a CLI tool called ebsclaw for AI agents" }];
+		const messages = [{ role: "user" as const, content: "We're building a CLI tool called miniclaw for AI agents" }];
 
 		const ids = await extractor.extract(messages);
 		expect(ids.length).toBeGreaterThan(0);

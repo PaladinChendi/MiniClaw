@@ -1,4 +1,4 @@
-# ebsclaw TODOS
+# MiniClaw TODOS
 
 ## v1 Blockers (Phase 0 必须产出)
 - [ ] Plugin API .d.ts 类型定义（生命周期+Channel+Memory+Skill+RAG接口）
@@ -10,7 +10,7 @@
 - [ ] SessionSnapshot 序列化格式定义（含大小上限+原子写入策略）
 - [ ] 结构化日志格式规范（JSON，含pluginId/traceId/level/ts/msg，禁止日志输出API key）
 - [ ] 插件manifest权限白名单schema + 运行时Proxy拦截require('fs'/'net')
-- [ ] ebsclaw add --ignore-scripts + manifest.buildCommand 安装流程  [已删除ebsclaw add命令，但--ignore-scripts逻辑作为bun install默认参数保留]
+- [ ] miniclaw add --ignore-scripts + manifest.buildCommand 安装流程  [已删除miniclaw add命令，但--ignore-scripts逻辑作为bun install默认参数保留]
 - [ ] API key 环境变量引用语法（${VAR}）+ process.env Proxy 限制
 - [ ] 通道manifest统一格式（含displayName+status:stub|implemented，供向导列出）
 - [ ] RAG插件接口设计（DocumentSource类型+RAGQuery/RAGResult，按需加载机制：skill调用时才初始化indexer/retriever）

@@ -16,7 +16,7 @@ export interface QQOutbound {
 	msg_type: number;
 }
 
-import type { InboundMessage } from "@ebsclaw/plugin-api";
+import type { InboundMessage } from "@miniclaw/plugin-api";
 
 export class QQBotAPI {
 	private config: QQBotAPIConfig;

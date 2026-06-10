@@ -32,14 +32,14 @@ describe("Monorepo smoke test", () => {
 		const stubs = ["slack", "discord", "telegram", "wechat", "feishu", "matrix", "irc"];
 		for (const name of stubs) {
 			const manifest = JSON.parse(
-				readFileSync(join(root, "extensions/channels", name, "ebsclaw.manifest.json"), "utf-8"),
+				readFileSync(join(root, "extensions/channels", name, "miniclaw.manifest.json"), "utf-8"),
 			);
 			expect(manifest.status).toBe("stub");
 		}
 	});
 
 	it("qqbot manifest has status:implemented", () => {
-		const manifest = JSON.parse(readFileSync(join(root, "extensions/channels/qqbot/ebsclaw.manifest.json"), "utf-8"));
+		const manifest = JSON.parse(readFileSync(join(root, "extensions/channels/qqbot/miniclaw.manifest.json"), "utf-8"));
 		expect(manifest.status).toBe("implemented");
 	});
 });

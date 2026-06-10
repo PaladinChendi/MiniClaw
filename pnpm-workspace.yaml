@@ -1,0 +1,8 @@
+packages:
+  - "packages/*"
+  - "extensions/channels/*"
+  - "extensions/memory"
+  - "extensions/skills"
+  - "extensions/rag"
+allowBuilds:
+  '@biomejs/biome': true

@@ -1,4 +1,4 @@
-import type { ToolCall, ToolResult } from "@ebsclaw/agent-runtime";
+import type { ToolCall, ToolResult } from "@miniclaw/agent-runtime";
 
 // ── User messages ──
 
@@ -77,16 +77,6 @@ export interface AssistantTextMessage {
 	content: string;
 }
 
-export interface AssistantThinkingMessage {
-	type: "assistant_thinking";
-	content: string;
-	expanded?: boolean;
-}
-
-export interface AssistantRedactedThinkingMessage {
-	type: "assistant_redacted_thinking";
-}
-
 export type ToolUseStatus = "running" | "done" | "error";
 
 export interface AssistantToolUseMessage {
@@ -108,12 +98,6 @@ export interface CompactBoundaryMessage {
 	type: "compact_boundary";
 }
 
-export interface CompactSummaryMessage {
-	type: "compact_summary";
-	content: string;
-	expanded?: boolean;
-}
-
 // ── Union types ──
 
 export type UserMessage =
@@ -129,12 +113,8 @@ export type UserMessage =
 	| UserPlanMessage
 	| UserMemoryInputMessage;
 
-export type AssistantMessage =
-	| AssistantTextMessage
-	| AssistantThinkingMessage
-	| AssistantRedactedThinkingMessage
-	| AssistantToolUseMessage;
+export type AssistantMessage = AssistantTextMessage | AssistantToolUseMessage;
 
-export type SystemMessage = SystemTextMessage | CompactBoundaryMessage | CompactSummaryMessage;
+export type SystemMessage = SystemTextMessage | CompactBoundaryMessage;
 
 export type RichMessage = UserMessage | AssistantMessage | SystemMessage;

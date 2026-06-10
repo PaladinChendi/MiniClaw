@@ -1,5 +1,5 @@
-import type { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
-import type { MemoryFileEntry } from "@ebsclaw/memory/types";
+import type { MemoryStore } from "@miniclaw/gateway/src/memory-store";
+import type { MemoryFileEntry } from "@miniclaw/memory/types";
 
 export interface AutoDreamResult {
 	stages: string[];

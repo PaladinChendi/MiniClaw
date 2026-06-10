@@ -1,4 +1,4 @@
-import { hashVector } from "@ebsclaw/shared";
+import { hashVector } from "@miniclaw/shared";
 
 export interface SearchResult {
 	id: string;

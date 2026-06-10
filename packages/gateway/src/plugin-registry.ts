@@ -1,4 +1,4 @@
-import type { Plugin, PluginContext, PluginManifest } from "@ebsclaw/plugin-api";
+import type { Plugin, PluginContext, PluginManifest } from "@miniclaw/plugin-api";
 import type { LoadedPlugin } from "./types.ts";
 
 export class PluginRegistry {

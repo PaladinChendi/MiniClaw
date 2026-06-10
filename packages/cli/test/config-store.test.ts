@@ -5,7 +5,7 @@ import { mkdir, readFile, rm } from "fs/promises";
 import { ConfigStore } from "../src/config-store.ts";
 
 const testDir = join(import.meta.dir, "__tmp_config__");
-const configFile = join(testDir, "ebsclaw.yaml");
+const configFile = join(testDir, "miniclaw.yaml");
 
 beforeEach(async () => {
 	await mkdir(testDir, { recursive: true });

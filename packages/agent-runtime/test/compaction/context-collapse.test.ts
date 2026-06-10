@@ -40,7 +40,7 @@ describe("L5: ContextCollapse", () => {
 		];
 
 		const l5 = new ContextCollapse(DEFAULT_COMPACTION_CONFIG, {
-			projectView: () => "Project: ebsclaw\nFiles: 42 TypeScript files",
+			projectView: () => "Project: miniclaw\nFiles: 42 TypeScript files",
 		});
 
 		const result = l5.compact(messages);
@@ -50,7 +50,7 @@ describe("L5: ContextCollapse", () => {
 		expect(result.messages).toHaveLength(1);
 		expect(result.messages[0].role).toBe("system");
 		expect(result.messages[0].content).toContain("Context Collapse");
-		expect(result.messages[0].content).toContain("ebsclaw");
+		expect(result.messages[0].content).toContain("miniclaw");
 	});
 
 	it("includes summary field", () => {

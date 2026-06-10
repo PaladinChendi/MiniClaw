@@ -1,8 +1,8 @@
 import { existsSync } from "fs";
 import { extname, join } from "path";
-import type { DocumentSource, RAGPlugin as IRAGPlugin, RAGQuery, RAGResult } from "@ebsclaw/plugin-api";
-import type { PluginContext } from "@ebsclaw/plugin-api";
-import { keywordScore } from "@ebsclaw/shared";
+import type { DocumentSource, RAGPlugin as IRAGPlugin, RAGQuery, RAGResult } from "@miniclaw/plugin-api";
+import type { PluginContext } from "@miniclaw/plugin-api";
+import { keywordScore } from "@miniclaw/shared";
 import { readFile, readdir, stat } from "fs/promises";
 
 export interface RAGPluginOpts {

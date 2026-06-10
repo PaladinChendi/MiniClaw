@@ -4,13 +4,13 @@ import type { AgentMessage } from "../src/types.ts";
 
 describe("PromptAssembler", () => {
 	it("assembles system prompt with base instructions", () => {
-		const assembler = new PromptAssembler({ baseSystemPrompt: "You are ebsclaw." });
+		const assembler = new PromptAssembler({ baseSystemPrompt: "You are miniclaw." });
 		const result = assembler.assemble([], []);
-		expect(result.systemPrompt).toContain("You are ebsclaw.");
+		expect(result.systemPrompt).toContain("You are miniclaw.");
 	});
 
 	it("injects memory entries into system prompt", () => {
-		const assembler = new PromptAssembler({ baseSystemPrompt: "You are ebsclaw." });
+		const assembler = new PromptAssembler({ baseSystemPrompt: "You are miniclaw." });
 		const memories = [
 			{ content: "User prefers Chinese", type: "user" as const, relevanceScore: 0.9 },
 			{ content: "Project uses Bun", type: "project" as const, relevanceScore: 0.8 },
@@ -21,7 +21,7 @@ describe("PromptAssembler", () => {
 	});
 
 	it("injects tool descriptions into system prompt", () => {
-		const assembler = new PromptAssembler({ baseSystemPrompt: "You are ebsclaw." });
+		const assembler = new PromptAssembler({ baseSystemPrompt: "You are miniclaw." });
 		const toolDefs = [
 			{ name: "bash", description: "Run a bash command", parameters: {} },
 			{ name: "read_file", description: "Read file contents", parameters: {} },
@@ -32,7 +32,7 @@ describe("PromptAssembler", () => {
 	});
 
 	it("estimates tokens using 4 chars per token heuristic", () => {
-		const assembler = new PromptAssembler({ baseSystemPrompt: "You are ebsclaw." });
+		const assembler = new PromptAssembler({ baseSystemPrompt: "You are miniclaw." });
 		const messages: AgentMessage[] = [{ role: "user", content: "hello world test", timestamp: Date.now() }];
 		const result = assembler.assemble(messages, [], []);
 		expect(result.estimatedTokens).toBeGreaterThan(0);

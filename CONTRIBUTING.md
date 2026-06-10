@@ -3,8 +3,8 @@
 ## Development Setup
 
 ```bash
-git clone https://github.com/user/ebsclaw.git
-cd ebsclaw
+git clone https://github.com/user/miniclaw.git
+cd miniclaw
 bun install
 bun test
 ```
@@ -24,5 +24,5 @@ bun test
 
 ## Plugin Development
 
-See `docs/cc-to-ebsclaw-mapping.md` for CC→ebsclaw concept mapping.
-v1 does not support `ebsclaw add` — plugins are built-in only.
+See `docs/cc-to-miniclaw-mapping.md` for CC→MiniClaw concept mapping.
+v1 does not support `miniclaw add` — plugins are built-in only.

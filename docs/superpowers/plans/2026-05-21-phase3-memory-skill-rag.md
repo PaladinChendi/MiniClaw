@@ -6,7 +6,7 @@
 
 **Architecture:** MemoryStore is a Gateway subsystem (CRUD, disk persistence, NOT exposed as Plugin API). MemoryPlugin is an extension that reads raw data via MemoryStoreHandle (read-only) and writes through Plugin API `store()`. Semantic search uses local ONNX WASM embedding with LLM Router batch reranking and a fallback chain. RAG uses an initialization mutex so concurrent skill triggers only initialize once.
 
-**Tech Stack:** TypeScript 5.x, Bun 1.3+, onnxruntime-web (WASM), @ebsclaw/plugin-api, @ebsclaw/shared, bun test
+**Tech Stack:** TypeScript 5.x, Bun 1.3+, onnxruntime-web (WASM), @miniclaw/plugin-api, @miniclaw/shared, bun test
 
 ---
 
@@ -54,7 +54,7 @@ extensions/rag/test/
 `extensions/memory/test/memory-store.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
 
@@ -124,14 +124,14 @@ describe("MemoryStore", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/memory-store.test.ts`
-Expected: FAIL -- `@ebsclaw/gateway` module not found or MemoryStore not exported
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/memory-store.test.ts`
+Expected: FAIL -- `@miniclaw/gateway` module not found or MemoryStore not exported
 
 - [ ] **Step 3: Create memory-specific types**
 
 `extensions/memory/src/types.ts`:
 ```typescript
-import type { MemoryType } from "@ebsclaw/plugin-api";
+import type { MemoryType } from "@miniclaw/plugin-api";
 
 export interface MemoryFileEntry {
   id: string;
@@ -175,19 +175,19 @@ export const MAX_INDEX_BYTES = 25 * 1024; // 25KB
 import { readFile, writeFile, mkdir, readdir, unlink, stat, rename } from "fs/promises";
 import { existsSync } from "fs";
 import { join } from "path";
-import { writeFileAtomic, cleanupTempFiles } from "@ebsclaw/shared";
-import type { MemoryType } from "@ebsclaw/plugin-api";
+import { writeFileAtomic, cleanupTempFiles } from "@miniclaw/shared";
+import type { MemoryType } from "@miniclaw/plugin-api";
 import type {
   MemoryFileEntry,
   MemoryFileFrontmatter,
   MemoryIndexEntry,
-} from "@ebsclaw/memory/types";
+} from "@miniclaw/memory/types";
 import {
   MEMORY_DIR,
   MEMORY_INDEX_FILE,
   MAX_INDEX_LINES,
   MAX_INDEX_BYTES,
-} from "@ebsclaw/memory/types";
+} from "@miniclaw/memory/types";
 
 function generateId(): string {
   return `mem_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -365,7 +365,7 @@ export class MemoryStore {
 `packages/gateway/package.json`:
 ```json
 {
-  "name": "@ebsclaw/gateway",
+  "name": "@miniclaw/gateway",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
@@ -374,9 +374,9 @@ export class MemoryStore {
     "test": "bun test"
   },
   "dependencies": {
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*",
-    "@ebsclaw/memory": "workspace:*"
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*",
+    "@miniclaw/memory": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.0"
@@ -387,15 +387,15 @@ export class MemoryStore {
 Update `extensions/memory/package.json`:
 ```json
 {
-  "name": "@ebsclaw/memory",
+  "name": "@miniclaw/memory",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/types.ts",
-  "ebsclaw": { "type": "memory" },
+  "miniclaw": { "type": "memory" },
   "dependencies": {
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*"
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.0"
@@ -405,7 +405,7 @@ Update `extensions/memory/package.json`:
 
 - [ ] **Step 6: Run MemoryStore tests**
 
-Run: `cd /mnt/d/ebsclaw && bun install && bun test extensions/memory/test/memory-store.test.ts`
+Run: `cd /mnt/d/miniclaw && bun install && bun test extensions/memory/test/memory-store.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 7: Commit**
@@ -428,8 +428,8 @@ git commit -m "feat(gateway,memory): add MemoryStore subsystem with CRUD, YAML f
 `extensions/memory/test/memory-store-handle.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
-import { MemoryStoreHandle } from "@ebsclaw/gateway/src/memory-store-handle";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
+import { MemoryStoreHandle } from "@miniclaw/gateway/src/memory-store-handle";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
 
@@ -470,7 +470,7 @@ describe("MemoryStoreHandle", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/memory-store-handle.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/memory-store-handle.test.ts`
 Expected: FAIL -- `MemoryStoreHandle` not found
 
 - [ ] **Step 3: Implement MemoryStoreHandle**
@@ -478,7 +478,7 @@ Expected: FAIL -- `MemoryStoreHandle` not found
 `packages/gateway/src/memory-store-handle.ts`:
 ```typescript
 import type { MemoryStore } from "./memory-store";
-import type { MemoryFileEntry, MemoryIndexEntry } from "@ebsclaw/memory/types";
+import type { MemoryFileEntry, MemoryIndexEntry } from "@miniclaw/memory/types";
 
 /**
  * Read-only handle for MemoryPlugin.
@@ -495,7 +495,7 @@ export class MemoryStoreHandle {
     return this.store.list();
   }
 
-  async create(_data: { content: string; type: import("@ebsclaw/plugin-api").MemoryType; scope?: "private" | "team" }): Promise<string> {
+  async create(_data: { content: string; type: import("@miniclaw/plugin-api").MemoryType; scope?: "private" | "team" }): Promise<string> {
     throw new Error("MemoryStoreHandle is read-only — use Plugin API store() to write");
   }
 
@@ -511,7 +511,7 @@ export class MemoryStoreHandle {
 
 - [ ] **Step 4: Run MemoryStoreHandle tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/memory-store-handle.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/memory-store-handle.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -534,8 +534,8 @@ git commit -m "feat(gateway): add MemoryStoreHandle with read-only constraint pe
 `extensions/memory/test/search.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { SemanticSearch } from "@ebsclaw/memory/search";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { SemanticSearch } from "@miniclaw/memory/search";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
 
@@ -590,15 +590,15 @@ describe("SemanticSearch", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/search.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/search.test.ts`
 Expected: FAIL -- `SemanticSearch` not found
 
 - [ ] **Step 3: Implement SemanticSearch**
 
 `extensions/memory/src/search.ts`:
 ```typescript
-import type { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
-import type { MemoryQuery, MemoryResult, MemoryType } from "@ebsclaw/plugin-api";
+import type { MemoryStore } from "@miniclaw/gateway/src/memory-store";
+import type { MemoryQuery, MemoryResult, MemoryType } from "@miniclaw/plugin-api";
 import type { MemoryFileEntry, MemoryIndexEntry } from "./types";
 
 export type CallLLMFn = (req: {
@@ -771,7 +771,7 @@ function parseRerankResponse(text: string): Array<{ index: number; score: number
 
 - [ ] **Step 4: Run search tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/search.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/search.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -794,8 +794,8 @@ git commit -m "feat(memory): add semantic search with embed+rerank and keyword f
 `extensions/memory/test/extract.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { MemoryExtractor } from "@ebsclaw/memory/extract";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { MemoryExtractor } from "@miniclaw/memory/extract";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import { mkdir, rm, readFile } from "fs/promises";
 import { join } from "path";
 
@@ -869,16 +869,16 @@ describe("MemoryExtractor", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/extract.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/extract.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement MemoryExtractor**
 
 `extensions/memory/src/extract.ts`:
 ```typescript
-import type { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
-import type { MemoryType } from "@ebsclaw/plugin-api";
-import { writeFileAtomic } from "@ebsclaw/shared";
+import type { MemoryStore } from "@miniclaw/gateway/src/memory-store";
+import type { MemoryType } from "@miniclaw/plugin-api";
+import { writeFileAtomic } from "@miniclaw/shared";
 import { mkdir } from "fs/promises";
 import { join } from "path";
 import type { CallLLMFn } from "./search";
@@ -978,7 +978,7 @@ function parseExtractResponse(text: string): ExtractItem[] {
 
 - [ ] **Step 4: Run extract tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/extract.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/extract.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -1001,8 +1001,8 @@ git commit -m "feat(memory): add fire-and-forget memory extraction with persiste
 `extensions/memory/test/autodream.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { AutoDream } from "@ebsclaw/memory/autodream";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { AutoDream } from "@miniclaw/memory/autodream";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
 
@@ -1085,14 +1085,14 @@ describe("AutoDream", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/autodream.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/autodream.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement AutoDream**
 
 `extensions/memory/src/autodream.ts`:
 ```typescript
-import type { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import type { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import type { CallLLMFn } from "./search";
 
 export interface AutoDreamConfig {
@@ -1155,7 +1155,7 @@ export class AutoDream {
 
 - [ ] **Step 4: Run AutoDream tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/autodream.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/autodream.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -1178,8 +1178,8 @@ git commit -m "feat(memory): add AutoDream 4-stage consolidation cron (orient→
 `extensions/memory/test/memory-plugin.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { MemoryPlugin } from "@ebsclaw/memory";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { MemoryPlugin } from "@miniclaw/memory";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
 
@@ -1232,7 +1232,7 @@ describe("MemoryPlugin", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/memory-plugin.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/memory-plugin.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement MemoryPlugin**
@@ -1246,8 +1246,8 @@ import type {
   MemoryEntry,
   MemoryQuery,
   MemoryResult,
-} from "@ebsclaw/plugin-api";
-import type { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+} from "@miniclaw/plugin-api";
+import type { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import type { CallLLMFn } from "./search";
 import { SemanticSearch } from "./search";
 import { MemoryExtractor } from "./extract";
@@ -1315,12 +1315,12 @@ export type { CallLLMFn } from "./search";
 
 - [ ] **Step 4: Run MemoryPlugin tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/memory-plugin.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/memory-plugin.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Run all memory tests together**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -1344,7 +1344,7 @@ git commit -m "feat(memory): add MemoryPlugin glue with search, extract, autodre
 `extensions/skills/test/skill-plugin.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { SkillPlugin } from "@ebsclaw/skills";
+import { SkillPlugin } from "@miniclaw/skills";
 import { mkdir, rm, writeFile } from "fs/promises";
 import { join } from "path";
 
@@ -1408,7 +1408,7 @@ describe("SkillPlugin", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/skills/test/skill-plugin.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/skills/test/skill-plugin.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement SkillLoader**
@@ -1417,7 +1417,7 @@ Expected: FAIL
 ```typescript
 import { readdir, readFile } from "fs/promises";
 import { join } from "path";
-import type { SkillDescriptor, SkillContent } from "@ebsclaw/plugin-api";
+import type { SkillDescriptor, SkillContent } from "@miniclaw/plugin-api";
 
 interface SkillManifest {
   id: string;
@@ -1513,7 +1513,7 @@ import type {
   SkillPlugin as ISkillPlugin,
   SkillDescriptor,
   SkillContent,
-} from "@ebsclaw/plugin-api";
+} from "@miniclaw/plugin-api";
 import { SkillLoader } from "./loader";
 
 export class SkillPlugin implements ISkillPlugin {
@@ -1551,14 +1551,14 @@ export { SkillLoader } from "./loader";
 `extensions/skills/package.json`:
 ```json
 {
-  "name": "@ebsclaw/skills",
+  "name": "@miniclaw/skills",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "ebsclaw": { "type": "skill" },
+  "miniclaw": { "type": "skill" },
   "dependencies": {
-    "@ebsclaw/plugin-api": "workspace:*"
+    "@miniclaw/plugin-api": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.0"
@@ -1568,7 +1568,7 @@ export { SkillLoader } from "./loader";
 
 - [ ] **Step 6: Run SkillPlugin tests**
 
-Run: `cd /mnt/d/ebsclaw && bun install && bun test extensions/skills/test/skill-plugin.test.ts`
+Run: `cd /mnt/d/miniclaw && bun install && bun test extensions/skills/test/skill-plugin.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 7: Commit**
@@ -1595,7 +1595,7 @@ git commit -m "feat(skills): add SkillPlugin with SKILL.md manifest discovery an
 `extensions/rag/test/init-mutex.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { InitMutex } from "@ebsclaw/rag/init-mutex";
+import { InitMutex } from "@miniclaw/rag/init-mutex";
 
 describe("InitMutex", () => {
   it("first caller runs initializer, second waits on same Promise", async () => {
@@ -1660,7 +1660,7 @@ describe("InitMutex", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/rag/test/init-mutex.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/rag/test/init-mutex.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement InitMutex**
@@ -1691,7 +1691,7 @@ export class InitMutex<T> {
 
 - [ ] **Step 4: Run init-mutex tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/rag/test/init-mutex.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/rag/test/init-mutex.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Write failing RAG plugin test**
@@ -1699,7 +1699,7 @@ Expected: ALL PASS
 `extensions/rag/test/rag-plugin.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { RAGPlugin } from "@ebsclaw/rag";
+import { RAGPlugin } from "@miniclaw/rag";
 import { mkdir, rm, writeFile } from "fs/promises";
 import { join } from "path";
 
@@ -1763,7 +1763,7 @@ describe("RAGPlugin", () => {
 
 - [ ] **Step 6: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/rag/test/rag-plugin.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/rag/test/rag-plugin.test.ts`
 Expected: FAIL
 
 - [ ] **Step 7: Implement DocumentIndexer**
@@ -1772,8 +1772,8 @@ Expected: FAIL
 ```typescript
 import { readFile, readdir, stat } from "fs/promises";
 import { join } from "path";
-import { writeFileAtomic } from "@ebsclaw/shared";
-import type { DocumentSource } from "@ebsclaw/plugin-api";
+import { writeFileAtomic } from "@miniclaw/shared";
+import type { DocumentSource } from "@miniclaw/plugin-api";
 
 export interface IndexedChunk {
   id: string;
@@ -1858,7 +1858,7 @@ export class DocumentIndexer {
 `extensions/rag/src/retriever.ts`:
 ```typescript
 import type { IndexedChunk } from "./indexer";
-import type { RAGQuery, RAGResult } from "@ebsclaw/plugin-api";
+import type { RAGQuery, RAGResult } from "@miniclaw/plugin-api";
 
 export class QueryRetriever {
   private chunks: IndexedChunk[];
@@ -1902,7 +1902,7 @@ import type {
   DocumentSource,
   RAGQuery,
   RAGResult,
-} from "@ebsclaw/plugin-api";
+} from "@miniclaw/plugin-api";
 import { InitMutex } from "./init-mutex";
 import { DocumentIndexer } from "./indexer";
 import { QueryRetriever } from "./retriever";
@@ -1957,15 +1957,15 @@ export { QueryRetriever } from "./retriever";
 `extensions/rag/package.json`:
 ```json
 {
-  "name": "@ebsclaw/rag",
+  "name": "@miniclaw/rag",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "ebsclaw": { "type": "rag" },
+  "miniclaw": { "type": "rag" },
   "dependencies": {
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*"
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.0"
@@ -1975,7 +1975,7 @@ export { QueryRetriever } from "./retriever";
 
 - [ ] **Step 11: Run all RAG tests**
 
-Run: `cd /mnt/d/ebsclaw && bun install && bun test extensions/rag/test/`
+Run: `cd /mnt/d/miniclaw && bun install && bun test extensions/rag/test/`
 Expected: ALL PASS
 
 - [ ] **Step 12: Commit**
@@ -1998,7 +1998,7 @@ git commit -m "feat(rag): add RAG plugin with init mutex, document indexer, and 
 `packages/gateway/test/embed-queue.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { EmbedPriorityQueue, EmbedPriority } from "@ebsclaw/gateway/src/embed-queue";
+import { EmbedPriorityQueue, EmbedPriority } from "@miniclaw/gateway/src/embed-queue";
 
 describe("EmbedPriorityQueue", () => {
   it("processes session chat before memory search before RAG", async () => {
@@ -2040,7 +2040,7 @@ describe("EmbedPriorityQueue", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/embed-queue.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/embed-queue.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement EmbedPriorityQueue**
@@ -2089,7 +2089,7 @@ export class EmbedPriorityQueue {
 
 - [ ] **Step 4: Run embed queue tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/embed-queue.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/embed-queue.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -2112,7 +2112,7 @@ git commit -m "feat(gateway): add embed priority queue per D43 (session > memory
 `extensions/memory/test/onnx-embed.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { createEmbedFn } from "@ebsclaw/memory/onnx-embed";
+import { createEmbedFn } from "@miniclaw/memory/onnx-embed";
 
 describe("ONNX Embed Fallback Chain", () => {
   it("returns a working embed function", async () => {
@@ -2151,7 +2151,7 @@ describe("ONNX Embed Fallback Chain", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/onnx-embed.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/onnx-embed.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement ONNX embed fallback chain**
@@ -2210,7 +2210,7 @@ function hashPseudoEmbed(text: string): Promise<Float32Array> {
 
 - [ ] **Step 4: Run ONNX embed tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/memory/test/onnx-embed.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/memory/test/onnx-embed.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -2233,7 +2233,7 @@ git commit -m "feat(memory): add ONNX WASM embed fallback chain (WASM → API �
 `packages/plugin-api/test/contract/plugin-context-ext.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import type { PluginContext } from "@ebsclaw/plugin-api";
+import type { PluginContext } from "@miniclaw/plugin-api";
 
 describe("PluginContext v1.1 extension", () => {
   it("callPlugin is available for inter-plugin communication", () => {
@@ -2263,7 +2263,7 @@ describe("PluginContext v1.1 extension", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/plugin-api/test/contract/plugin-context-ext.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/plugin-api/test/contract/plugin-context-ext.test.ts`
 Expected: FAIL -- `callPlugin` not in PluginContext type
 
 - [ ] **Step 3: Extend PluginContext with callPlugin and getStore**
@@ -2315,19 +2315,19 @@ export type { SkillDescriptor, SkillContent, SkillPlugin } from "./skill";
 export type { DocumentSource, RAGQuery, RAGResult, RAGPlugin } from "./rag";
 export type { PluginManifest, PluginPermissions, ManifestValidationResult } from "./manifest";
 export type { SessionSnapshot, CompactBoundary } from "./session";
-export { EbsclawError, UserActionError, RetryableError, CorruptDataError, FatalError } from "./errors";
+export { MiniclawError, UserActionError, RetryableError, CorruptDataError, FatalError } from "./errors";
 export type { ErrorCategory } from "./errors";
 export { validateManifest } from "./manifest";
 ```
 
 - [ ] **Step 4: Run the new contract test**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/plugin-api/test/contract/plugin-context-ext.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/plugin-api/test/contract/plugin-context-ext.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Re-run all plugin-api contract tests to ensure no regressions**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/plugin-api/test/contract/`
+Run: `cd /mnt/d/miniclaw && bun test packages/plugin-api/test/contract/`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -2349,11 +2349,11 @@ git commit -m "feat(plugin-api): extend PluginContext with callPlugin and getSto
 `tests/integration/memory-rag-skill.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
-import { MemoryStoreHandle } from "@ebsclaw/gateway/src/memory-store-handle";
-import { MemoryPlugin } from "@ebsclaw/memory";
-import { SkillPlugin } from "@ebsclaw/skills";
-import { RAGPlugin } from "@ebsclaw/rag";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
+import { MemoryStoreHandle } from "@miniclaw/gateway/src/memory-store-handle";
+import { MemoryPlugin } from "@miniclaw/memory";
+import { SkillPlugin } from "@miniclaw/skills";
+import { RAGPlugin } from "@miniclaw/rag";
 import { mkdir, rm, writeFile } from "fs/promises";
 import { join } from "path";
 
@@ -2439,7 +2439,7 @@ describe("Memory + Skills + RAG integration", () => {
 
 - [ ] **Step 2: Run integration test**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/integration/memory-rag-skill.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/integration/memory-rag-skill.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 3: Commit**

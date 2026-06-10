@@ -1,5 +1,5 @@
 {
-	"name": "@ebsclaw/memory",
+	"name": "@miniclaw/memory",
 	"version": "0.1.0",
 	"type": "module",
 	"main": "src/index.ts",
@@ -8,13 +8,13 @@
 		".": "./src/index.ts",
 		"./types": "./src/types.ts"
 	},
-	"ebsclaw": { "type": "memory" },
+	"miniclaw": { "type": "memory" },
 	"dependencies": {
-		"@ebsclaw/plugin-api": "workspace:*",
-		"@ebsclaw/shared": "workspace:*"
+		"@miniclaw/plugin-api": "workspace:*",
+		"@miniclaw/shared": "workspace:*"
 	},
 	"devDependencies": {
-		"@ebsclaw/gateway": "workspace:*",
+		"@miniclaw/gateway": "workspace:*",
 		"typescript": "^5.6.0"
 	}
 }

@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 
 export interface AnthropicProviderDeps {
 	messages?: {

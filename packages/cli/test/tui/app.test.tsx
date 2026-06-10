@@ -6,7 +6,7 @@ describe("TUI App Shell", () => {
 	it("renders idle state by default", () => {
 		const { lastFrame } = render(<TUIApp state="idle" />);
 		const output = lastFrame();
-		expect(output).toContain("ebsclaw");
+		expect(output).toContain("miniclaw");
 	});
 
 	it("renders thinking state", () => {

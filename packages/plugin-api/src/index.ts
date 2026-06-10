@@ -6,6 +6,6 @@ export type { SkillDescriptor, SkillContent, SkillPlugin } from "./skill";
 export type { DocumentSource, RAGQuery, RAGResult, RAGPlugin } from "./rag";
 export type { PluginManifest, PluginPermissions, ManifestValidationResult } from "./manifest";
 export type { SessionSnapshot, CompactBoundary } from "./session";
-export { EbsclawError, UserActionError, RetryableError, CorruptDataError, FatalError } from "./errors";
+export { MiniclawError, UserActionError, RetryableError, CorruptDataError, FatalError } from "./errors";
 export type { ErrorCategory } from "./errors";
 export { validateManifest } from "./manifest";

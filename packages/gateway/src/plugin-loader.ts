@@ -1,11 +1,11 @@
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
-import type { Plugin, PluginContext, PluginManifest } from "@ebsclaw/plugin-api";
+import type { Plugin, PluginContext, PluginManifest } from "@miniclaw/plugin-api";
 import type { LoadedPlugin } from "./types.ts";
 
 export class PluginLoader {
 	async load(pluginDir: string): Promise<LoadedPlugin> {
-		const manifestPath = join(pluginDir, "ebsclaw.manifest.json");
+		const manifestPath = join(pluginDir, "miniclaw.manifest.json");
 		if (!existsSync(manifestPath)) {
 			throw new Error(`Manifest not found in ${pluginDir}`);
 		}

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "bun:test";
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 import { CircuitBreaker } from "../src/circuit-breaker.ts";
 import { FallbackChain } from "../src/llm-router/fallback-chain.ts";
 import type { ProviderLike } from "../src/llm-router/fallback-chain.ts";

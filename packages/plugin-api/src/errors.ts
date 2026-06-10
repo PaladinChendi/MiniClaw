@@ -1,6 +1,6 @@
 export type ErrorCategory = "user-action" | "retryable" | "corrupt" | "fatal";
 
-export class EbsclawError extends Error {
+export class MiniclawError extends Error {
 	constructor(
 		message: string,
 		public readonly category: ErrorCategory,
@@ -8,18 +8,18 @@ export class EbsclawError extends Error {
 		public readonly userAction?: string,
 	) {
 		super(message);
-		this.name = "EbsclawError";
+		this.name = "MiniclawError";
 	}
 }
 
-export class UserActionError extends EbsclawError {
+export class UserActionError extends MiniclawError {
 	constructor(message: string, userAction: string) {
 		super(message, "user-action", false, userAction);
 		this.name = "UserActionError";
 	}
 }
 
-export class RetryableError extends EbsclawError {
+export class RetryableError extends MiniclawError {
 	public readonly maxRetries: number;
 	constructor(message: string, maxRetries = 3) {
 		super(message, "retryable", true);
@@ -28,7 +28,7 @@ export class RetryableError extends EbsclawError {
 	}
 }
 
-export class CorruptDataError extends EbsclawError {
+export class CorruptDataError extends MiniclawError {
 	public readonly backupAvailable: boolean;
 	constructor(message: string, backupAvailable: boolean) {
 		super(message, "corrupt", true);
@@ -37,7 +37,7 @@ export class CorruptDataError extends EbsclawError {
 	}
 }
 
-export class FatalError extends EbsclawError {
+export class FatalError extends MiniclawError {
 	constructor(message: string) {
 		super(message, "fatal", false);
 		this.name = "FatalError";

@@ -1,4 +1,4 @@
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 import OpenAI from "openai";
 
 export interface OpenAIProviderDeps {

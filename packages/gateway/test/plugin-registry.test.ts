@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { join } from "path";
-import type { ChannelPlugin, Plugin, PluginContext } from "@ebsclaw/plugin-api";
+import type { ChannelPlugin, Plugin, PluginContext } from "@miniclaw/plugin-api";
 import { mkdir, rm, writeFile } from "fs/promises";
 import { PluginLoader } from "../src/plugin-loader.ts";
 import { PluginRegistry } from "../src/plugin-registry.ts";
@@ -34,7 +34,7 @@ describe("PluginLoader", () => {
 		await mkdir(pluginDir, { recursive: true });
 
 		await writeFile(
-			join(pluginDir, "ebsclaw.manifest.json"),
+			join(pluginDir, "miniclaw.manifest.json"),
 			JSON.stringify({
 				name: "test-plugin",
 				version: "0.1.0",

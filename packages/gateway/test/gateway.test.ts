@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { join } from "path";
-import type { Plugin, PluginContext } from "@ebsclaw/plugin-api";
+import type { Plugin, PluginContext } from "@miniclaw/plugin-api";
 import { mkdir, rm } from "fs/promises";
 import { Gateway } from "../src/index.ts";
 

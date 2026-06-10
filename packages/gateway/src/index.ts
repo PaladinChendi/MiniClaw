@@ -1,6 +1,6 @@
-import type { LLMRequest, LLMResponse, Plugin, PluginContext, PluginManifest } from "@ebsclaw/plugin-api";
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
-import { createStructuredLogger, hashVector } from "@ebsclaw/shared";
+import type { LLMRequest, LLMResponse, Plugin, PluginContext, PluginManifest } from "@miniclaw/plugin-api";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
+import { createStructuredLogger, hashVector } from "@miniclaw/shared";
 import { CronScheduler } from "./cron-scheduler.ts";
 import { HeartbeatSystem } from "./heartbeat.ts";
 import { HookEngine } from "./hook-engine.ts";
@@ -162,11 +162,11 @@ export class Gateway {
 		};
 	}
 
-	async ingress(msg: import("@ebsclaw/plugin-api").InboundMessage): Promise<void> {
+	async ingress(msg: import("@miniclaw/plugin-api").InboundMessage): Promise<void> {
 		await this.hookEngine.fire("pre_ingress", msg);
 	}
 
-	async egress(channelId: string, msg: import("@ebsclaw/plugin-api").OutboundMessage): Promise<void> {
+	async egress(channelId: string, msg: import("@miniclaw/plugin-api").OutboundMessage): Promise<void> {
 		await this.hookEngine.fire("pre_egress", { channelId, msg });
 	}
 

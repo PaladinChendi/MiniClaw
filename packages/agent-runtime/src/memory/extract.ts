@@ -1,6 +1,6 @@
 import { join } from "path";
-import type { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
-import type { MemoryType } from "@ebsclaw/plugin-api";
+import type { MemoryStore } from "@miniclaw/gateway/src/memory-store";
+import type { MemoryType } from "@miniclaw/plugin-api";
 import { writeFile } from "fs/promises";
 
 interface ConvMessage {

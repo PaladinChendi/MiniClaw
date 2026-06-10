@@ -1,12 +1,12 @@
-# ebsclaw
+# MiniClaw
 
 AI agent platform that lives in your IM channels. Cross-session memory, skill workflows, 30+ channel plugins.
 
 ## Quick Start
 
 ```bash
-bun install -g ebsclaw
-ebsclaw tui
+bun install -g miniclaw
+miniclaw tui
 ```
 
 First run triggers a 2-step setup wizard:
@@ -29,10 +29,10 @@ Gateway (Daemon) → Plugin API → Extensions (Channels/Memory/Skills/RAG)
 
 | Command | Description |
 |---------|-------------|
-| `ebsclaw tui` | Start TUI in Embedded mode (default) |
-| `ebsclaw tui --mode gateway` | Start TUI in Gateway mode (v1.1) |
-| `ebsclaw headless <prompt>` | Run agent non-interactively, output to stdout |
-| `ebsclaw gateway start` | Start Gateway daemon |
+| `miniclaw tui` | Start TUI in Embedded mode (default) |
+| `miniclaw tui --mode gateway` | Start TUI in Gateway mode (v1.1) |
+| `miniclaw headless <prompt>` | Run agent non-interactively, output to stdout |
+| `miniclaw gateway start` | Start Gateway daemon |
 
 ## 本地开发
 
@@ -64,7 +64,7 @@ cat prompt.txt | bun run packages/cli/src/index.ts headless
 bun run packages/cli/src/index.ts help
 ```
 
-首次运行会自动启动 Setup Wizard，引导配置 provider 和 API key，配置保存在 `~/.ebsclaw/config.yaml`。
+首次运行会自动启动 Setup Wizard，引导配置 provider 和 API key，配置保存在 `~/.miniclaw/config.yaml`。
 
 ### Headless 模式
 

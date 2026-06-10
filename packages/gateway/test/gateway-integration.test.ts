@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "bun:test";
 import { join } from "path";
-import type { Plugin, PluginContext, PluginManifest } from "@ebsclaw/plugin-api";
+import type { Plugin, PluginContext, PluginManifest } from "@miniclaw/plugin-api";
 import { mkdir, rm } from "fs/promises";
 import { Gateway, MemoryStore } from "../src/index.ts";
 
@@ -168,7 +168,7 @@ describe("Gateway integration: I-GP-05 getStore read-only handle", () => {
 		await store.init();
 		gw.setMemoryStore(store);
 
-		let handle: import("@ebsclaw/plugin-api").MemoryStoreHandle | null = null;
+		let handle: import("@miniclaw/plugin-api").MemoryStoreHandle | null = null;
 
 		const plugin: Plugin = {
 			async init(ctx: PluginContext) {

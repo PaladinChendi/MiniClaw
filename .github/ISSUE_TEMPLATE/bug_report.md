@@ -1,9 +1,9 @@
 ---
 name: Bug Report
-about: Report a bug in ebsclaw
+about: Report a bug in MiniClaw
 ---
 
-**ebsclaw version**: 
+**MiniClaw version**: 
 **Bun version**: 
 **OS**: 
 
@@ -17,4 +17,4 @@ about: Report a bug in ebsclaw
 
 **Actual**: 
 
-**Logs** (if applicable, from `~/.ebsclaw/logs/`):
+**Logs** (if applicable, from `~/.miniclaw/logs/`):

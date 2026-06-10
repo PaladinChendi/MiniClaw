@@ -1,4 +1,4 @@
-import type { MemoryType } from "@ebsclaw/plugin-api";
+import type { MemoryType } from "@miniclaw/plugin-api";
 
 export interface MemoryFileEntry {
 	id: string;

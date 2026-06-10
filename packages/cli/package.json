@@ -1,9 +1,9 @@
 {
-	"name": "@ebsclaw/cli",
+	"name": "@miniclaw/cli",
 	"version": "0.1.0",
 	"type": "module",
 	"bin": {
-		"ebsclaw": "src/index.ts"
+		"miniclaw": "src/index.ts"
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
@@ -11,15 +11,15 @@
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.97.1",
-		"@ebsclaw/agent-runtime": "workspace:*",
-		"@ebsclaw/gateway": "workspace:*",
+		"@miniclaw/agent-runtime": "workspace:*",
+		"@miniclaw/gateway": "workspace:*",
 		"ink": "^7.0.3",
 		"openai": "^6.38.0",
 		"react": "^19.2.6"
 	},
 	"devDependencies": {
-		"@ebsclaw/plugin-api": "workspace:*",
-		"@ebsclaw/shared": "workspace:*",
+		"@miniclaw/plugin-api": "workspace:*",
+		"@miniclaw/shared": "workspace:*",
 		"@types/bun": "^1.3.14",
 		"@types/node": "^25.9.1",
 		"@types/react": "^19.2.15",

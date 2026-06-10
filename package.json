@@ -1,5 +1,5 @@
 {
-	"name": "ebsclaw",
+	"name": "miniclaw",
 	"private": true,
 	"workspaces": [
 		"packages/*",

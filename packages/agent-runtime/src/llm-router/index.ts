@@ -1,4 +1,4 @@
-import type { LLMOptions, LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMOptions, LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 import { CircuitBreaker } from "../circuit-breaker.ts";
 import type { EmbedRequest, LLMProviderConfig } from "../types.ts";
 import { EmbedQueue } from "./embed-queue.ts";

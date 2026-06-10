@@ -1,9 +1,9 @@
 import { existsSync } from "fs";
 import { join } from "path";
-import type { MemoryFileEntry, MemoryIndexEntry } from "@ebsclaw/memory/types";
-import { MAX_INDEX_BYTES, MAX_INDEX_LINES, MEMORY_DIR, MEMORY_INDEX_FILE } from "@ebsclaw/memory/types";
-import type { MemoryType } from "@ebsclaw/plugin-api";
-import { cleanupTempFiles, writeFileAtomic } from "@ebsclaw/shared";
+import type { MemoryFileEntry, MemoryIndexEntry } from "@miniclaw/memory/types";
+import { MAX_INDEX_BYTES, MAX_INDEX_LINES, MEMORY_DIR, MEMORY_INDEX_FILE } from "@miniclaw/memory/types";
+import type { MemoryType } from "@miniclaw/plugin-api";
+import { cleanupTempFiles, writeFileAtomic } from "@miniclaw/shared";
 import { mkdir, readFile, readdir, unlink } from "fs/promises";
 
 function generateId(): string {

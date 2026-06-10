@@ -13,7 +13,7 @@ function makePipelineDeps(): CompactionPipelineDeps {
 			isCachedPrefix: () => false,
 		},
 		contextCollapse: {
-			projectView: () => "Project: ebsclaw integration test",
+			projectView: () => "Project: miniclaw integration test",
 		},
 		smCompact: {
 			summarizeWithLLM: vi.fn(async (msgs: AgentMessage[]) => `Summary of ${msgs.length} messages`),

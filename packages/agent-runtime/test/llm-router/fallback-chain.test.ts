@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "bun:test";
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 import { FallbackChain } from "../../src/llm-router/fallback-chain.ts";
 
 function makeProvider(name: string, response: string, shouldFail = false) {

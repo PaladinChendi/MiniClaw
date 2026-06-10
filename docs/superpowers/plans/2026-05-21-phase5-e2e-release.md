@@ -6,7 +6,7 @@
 
 **Architecture:** E2E harness spawns a real Gateway process with a mock QQ bot channel, sends messages via WebSocket, and asserts replies. Eval golden set drives the Agent Runtime with canned LLM responses and asserts output quality. Chaos testing uses fault injection middleware. Performance benchmarks use `performance.now()` with statistical analysis across 10 runs.
 
-**Tech Stack:** TypeScript 5.x, Bun 1.3+, bun test, @ebsclaw/gateway, @ebsclaw/plugin-api, GitHub Actions, npm registry
+**Tech Stack:** TypeScript 5.x, Bun 1.3+, bun test, @miniclaw/gateway, @miniclaw/plugin-api, GitHub Actions, npm registry
 
 ---
 
@@ -102,16 +102,16 @@ describe("E2EHarness", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/e2e/harness.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/e2e/harness.test.ts`
 Expected: FAIL -- `E2EHarness` not found
 
 - [ ] **Step 3: Implement E2EHarness and MockChannel**
 
 `tests/e2e/harness.ts`:
 ```typescript
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
-import { MemoryStoreHandle } from "@ebsclaw/gateway/src/memory-store-handle";
-import { writeFileAtomic, cleanupTempFiles } from "@ebsclaw/shared";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
+import { MemoryStoreHandle } from "@miniclaw/gateway/src/memory-store-handle";
+import { writeFileAtomic, cleanupTempFiles } from "@miniclaw/shared";
 import { existsSync } from "fs";
 import { mkdir, rm, readFile } from "fs/promises";
 import { join } from "path";
@@ -229,7 +229,7 @@ export class E2EHarness {
 
 - [ ] **Step 4: Run harness tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/e2e/harness.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/e2e/harness.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -266,7 +266,7 @@ describe("QQ Bot E2E flow", () => {
     await harness.start();
 
     const channel = harness.getMockChannel();
-    const reply = await channel.sendAndWait("What is ebsclaw?");
+    const reply = await channel.sendAndWait("What is miniclaw?");
     expect(reply).toContain("mock reply");
 
     await harness.stop();
@@ -321,7 +321,7 @@ describe("QQ Bot E2E flow", () => {
 
 - [ ] **Step 2: Run QQ bot E2E test**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/e2e/qqbot-flow.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/e2e/qqbot-flow.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 3: Commit**
@@ -406,7 +406,7 @@ describe("Compaction E2E flow", () => {
 
 - [ ] **Step 2: Run compaction E2E test**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/e2e/compaction-flow.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/e2e/compaction-flow.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 3: Commit**
@@ -471,7 +471,7 @@ describe("LLM Eval regression gate", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/eval/regress.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/eval/regress.test.ts`
 Expected: FAIL -- `GOLDEN_CASES` not found
 
 - [ ] **Step 3: Implement golden set with >=30 cases**
@@ -521,7 +521,7 @@ export const GOLDEN_CASES: GoldenCase[] = [
 
   // Conversation (6 cases)
   { id: "conv-1", category: "conversation", input: "Hello, what can you do?", expectedContains: ["help", "assist"] },
-  { id: "conv-2", category: "conversation", input: "Explain the ebsclaw architecture", expectedContains: ["gateway", "plugin"] },
+  { id: "conv-2", category: "conversation", input: "Explain the miniclaw architecture", expectedContains: ["gateway", "plugin"] },
   { id: "conv-3", category: "conversation", input: "What is AutoDream?", expectedContains: ["memory", "consolidat"] },
   { id: "conv-4", category: "conversation", input: "How does compaction work?", expectedContains: ["compact", "context"] },
   { id: "conv-5", category: "conversation", input: "Show me my memories", expectedContains: ["memory"] },
@@ -605,7 +605,7 @@ export async function runEval(cases: GoldenCase[], config: EvalConfig): Promise<
 
 - [ ] **Step 5: Run regression gate test**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/eval/regress.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/eval/regress.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -676,7 +676,7 @@ describe("Chaos scenarios", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/chaos/chaos.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/chaos/chaos.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement chaos scenarios**
@@ -829,7 +829,7 @@ export async function runAllChaos(scenarios: ChaosScenario[]): Promise<ChaosRunR
 
 - [ ] **Step 5: Run chaos tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/chaos/chaos.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/chaos/chaos.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -851,7 +851,7 @@ git commit -m "test(chaos): add 8 fault injection scenarios with runner and veri
 `tests/integration/compaction-matrix.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
 
@@ -996,7 +996,7 @@ describe("Compaction interaction matrix", () => {
 
 - [ ] **Step 2: Run compaction matrix test**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/integration/compaction-matrix.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/integration/compaction-matrix.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 3: Commit**
@@ -1060,14 +1060,14 @@ describe("Performance verification", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/perf/perf.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/perf/perf.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement benchmarks**
 
 `tests/perf/benchmarks.ts`:
 ```typescript
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
 
@@ -1170,7 +1170,7 @@ export async function runBenchmarks(config: BenchmarkConfig): Promise<BenchmarkR
 
 `tests/perf/stress-test.ts`:
 ```typescript
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
 
@@ -1233,7 +1233,7 @@ export async function runStressTest(config: StressTestConfig): Promise<StressTes
 
 - [ ] **Step 5: Run performance tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/perf/perf.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test tests/perf/perf.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -1256,11 +1256,11 @@ git commit -m "test(perf): add performance verification benchmarks and 10-sessio
 The root `package.json` needs version and bin entries:
 ```json
 {
-  "name": "ebsclaw",
+  "name": "miniclaw",
   "version": "1.0.0",
   "private": false,
   "bin": {
-    "ebsclaw": "packages/tui/src/index.ts"
+    "miniclaw": "packages/tui/src/index.ts"
   },
   "files": [
     "packages/tui/src/**",
@@ -1292,7 +1292,7 @@ The root `package.json` needs version and bin entries:
 
 - [ ] **Step 2: Verify package can be packed**
 
-Run: `cd /mnt/d/ebsclaw && bun pm pack --dry-run 2>&1 | head -20`
+Run: `cd /mnt/d/miniclaw && bun pm pack --dry-run 2>&1 | head -20`
 Expected: Package listing output (no actual publish)
 
 - [ ] **Step 3: Commit**
@@ -1348,8 +1348,8 @@ jobs:
       - run: bun pm pack
       - uses: actions/upload-artifact@v4
         with:
-          name: ebsclaw-package
-          path: ebsclaw-*.tgz
+          name: miniclaw-package
+          path: miniclaw-*.tgz
 
   build-binaries:
     needs: test
@@ -1369,12 +1369,12 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - run: bun compile packages/tui/src/index.ts --outfile=ebsclaw-${{ matrix.target }}
+      - run: bun compile packages/tui/src/index.ts --outfile=miniclaw-${{ matrix.target }}
         shell: bash
       - uses: actions/upload-artifact@v4
         with:
-          name: ebsclaw-${{ matrix.target }}
-          path: ebsclaw-${{ matrix.target }}*
+          name: miniclaw-${{ matrix.target }}
+          path: miniclaw-${{ matrix.target }}*
 
   release:
     needs: [publish-npm, build-binaries]
@@ -1394,7 +1394,7 @@ jobs:
 
 - [ ] **Step 2: Verify YAML syntax**
 
-Run: `cd /mnt/d/ebsclaw && cat .github/workflows/release.yml | python3 -c "import yaml,sys; yaml.safe_load(sys.stdin); print('YAML valid')"` 
+Run: `cd /mnt/d/miniclaw && cat .github/workflows/release.yml | python3 -c "import yaml,sys; yaml.safe_load(sys.stdin); print('YAML valid')"` 
 Expected: `YAML valid`
 
 - [ ] **Step 3: Commit**
@@ -1417,7 +1417,7 @@ git commit -m "ci: add tag-triggered release pipeline with npm pack and cross-pl
 ```markdown
 # Changelog
 
-All notable changes to ebsclaw will be documented in this file.
+All notable changes to miniclaw will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -1476,14 +1476,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bun workspace monorepo with biome lint/format
 - CI pipeline: lint + typecheck + test (80% coverage gate)
 - Tag-triggered release pipeline: npm pack + cross-platform bun compile binaries
-- npm package: `bun install -g ebsclaw`
+- npm package: `bun install -g miniclaw`
 
 ### Technical Decisions
 - D23: MemoryStoreHandle is read-only — writes go through Plugin API store()
 - D24: RAG initialization mutex prevents duplicate loading
 - D43: Embed priority queue (session > memory > RAG)
 - D40: B1 Sandbox deferred to v1.1
-- D41: ebsclaw chat CLI deferred to v1.1
+- D41: miniclaw chat CLI deferred to v1.1
 - D39: Compaction L5-L7 deferred to post-Phase 2 validation
 
 ## [0.1.0] - 2026-05-21
@@ -1508,57 +1508,57 @@ git commit -m "docs: add CHANGELOG.md for v1.0.0 release"
 
 - [ ] **Step 1: Run all tests across entire monorepo**
 
-Run: `cd /mnt/d/ebsclaw && bun test`
+Run: `cd /mnt/d/miniclaw && bun test`
 Expected: ALL PASS, coverage >= 80%
 
 - [ ] **Step 2: Run lint across entire monorepo**
 
-Run: `cd /mnt/d/ebsclaw && bun run lint`
+Run: `cd /mnt/d/miniclaw && bun run lint`
 Expected: No errors
 
 - [ ] **Step 3: Run typecheck across entire monorepo**
 
-Run: `cd /mnt/d/ebsclaw && bun run typecheck`
+Run: `cd /mnt/d/miniclaw && bun run typecheck`
 Expected: No errors
 
 - [ ] **Step 4: Verify E2E test suite passes**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/e2e/`
+Run: `cd /mnt/d/miniclaw && bun test tests/e2e/`
 Expected: ALL PASS
 
 - [ ] **Step 5: Verify eval golden set >= 90% pass rate**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/eval/`
+Run: `cd /mnt/d/miniclaw && bun test tests/eval/`
 Expected: ALL PASS, pass rate >= 90%
 
 - [ ] **Step 6: Verify chaos scenarios all recover**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/chaos/`
+Run: `cd /mnt/d/miniclaw && bun test tests/chaos/`
 Expected: ALL PASS, all scenarios recover
 
 - [ ] **Step 7: Verify performance benchmarks meet targets**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/perf/`
+Run: `cd /mnt/d/miniclaw && bun test tests/perf/`
 Expected: ALL PASS, all targets met
 
 - [ ] **Step 8: Verify integration tests pass**
 
-Run: `cd /mnt/d/ebsclaw && bun test tests/integration/`
+Run: `cd /mnt/d/miniclaw && bun test tests/integration/`
 Expected: ALL PASS
 
 - [ ] **Step 9: Verify CHANGELOG exists and is complete**
 
-Run: `cat /mnt/d/ebsclaw/CHANGELOG.md | head -5`
+Run: `cat /mnt/d/miniclaw/CHANGELOG.md | head -5`
 Expected: Shows v1.0.0 header
 
 - [ ] **Step 10: Verify release workflow YAML is valid**
 
-Run: `cd /mnt/d/ebsclaw && cat .github/workflows/release.yml | python3 -c "import yaml,sys; yaml.safe_load(sys.stdin); print('OK')"`
+Run: `cd /mnt/d/miniclaw && cat .github/workflows/release.yml | python3 -c "import yaml,sys; yaml.safe_load(sys.stdin); print('OK')"`
 Expected: `OK`
 
 - [ ] **Step 11: Dry-run npm pack**
 
-Run: `cd /mnt/d/ebsclaw && bun pm pack --dry-run 2>&1 | head -10`
+Run: `cd /mnt/d/miniclaw && bun pm pack --dry-run 2>&1 | head -10`
 Expected: Package listing without errors
 
 - [ ] **Step 12: Final commit if any uncommitted files remain**

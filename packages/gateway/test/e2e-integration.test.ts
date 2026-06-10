@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { join } from "path";
-import { SemanticSearch } from "@ebsclaw/agent-runtime/src/llm-router/semantic-search.ts";
-import { MemoryPlugin } from "@ebsclaw/agent-runtime/src/memory/memory-plugin.ts";
-import { RAGPlugin } from "@ebsclaw/agent-runtime/src/rag/rag-plugin.ts";
+import { SemanticSearch } from "@miniclaw/agent-runtime/src/llm-router/semantic-search.ts";
+import { MemoryPlugin } from "@miniclaw/agent-runtime/src/memory/memory-plugin.ts";
+import { RAGPlugin } from "@miniclaw/agent-runtime/src/rag/rag-plugin.ts";
 import { mkdir, rm, writeFile } from "fs/promises";
 import { Gateway, MemoryStore, MemoryStoreHandle } from "../src/index.ts";
 
@@ -19,7 +19,7 @@ afterEach(async () => {
 
 describe("E2E integration: Memory + RAG + Search through Gateway", () => {
 	it("stores memory, indexes RAG docs, and searches both", async () => {
-		await writeFile(join(docDir, "guide.md"), "ebsclaw is an AI agent orchestration framework");
+		await writeFile(join(docDir, "guide.md"), "miniclaw is an AI agent orchestration framework");
 
 		const store = new MemoryStore(testDir);
 		await store.init();
@@ -39,7 +39,7 @@ describe("E2E integration: Memory + RAG + Search through Gateway", () => {
 			return vec;
 		});
 		await search.index("mem-1", "user prefers dark theme");
-		await search.index("doc-1", "ebsclaw is an AI agent orchestration framework");
+		await search.index("doc-1", "miniclaw is an AI agent orchestration framework");
 
 		const results = await search.search("dark mode", { topK: 2 });
 		expect(results.length).toBe(2);

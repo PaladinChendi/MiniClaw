@@ -1,6 +1,6 @@
 import { existsSync } from "fs";
 import { join } from "path";
-import type { SkillContent, SkillDescriptor } from "@ebsclaw/plugin-api";
+import type { SkillContent, SkillDescriptor } from "@miniclaw/plugin-api";
 import { readFile, readdir, stat } from "fs/promises";
 
 interface ParsedManifest {

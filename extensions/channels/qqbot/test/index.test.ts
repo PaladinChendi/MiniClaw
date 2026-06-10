@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import type { InboundMessage, OutboundMessage, PluginContext } from "@ebsclaw/plugin-api";
+import type { InboundMessage, OutboundMessage, PluginContext } from "@miniclaw/plugin-api";
 import { QQBotChannelPlugin } from "../src/index.ts";
 import { QQBotAPI } from "../src/qq-api.ts";
 

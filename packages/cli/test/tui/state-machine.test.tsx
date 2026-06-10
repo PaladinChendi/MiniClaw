@@ -4,10 +4,10 @@ import { TUIApp } from "../../src/tui/app.tsx";
 
 describe("TUI State Machine", () => {
 	// TU-01: Renders idle state by default
-	it("TU-01: renders idle state with ebsclaw and ready message", () => {
+	it("TU-01: renders idle state with miniclaw and ready message", () => {
 		const { lastFrame } = render(<TUIApp state="idle" />);
 		const output = lastFrame();
-		expect(output).toContain("ebsclaw");
+		expect(output).toContain("miniclaw");
 		expect(output).toContain("新对话已就绪");
 	});
 
@@ -62,7 +62,7 @@ describe("TUI State Machine", () => {
 		// ink-testing-library cannot easily simulate keypress events,
 		// but we verify the component renders without error when onExit is provided
 		const output = lastFrame();
-		expect(output).toContain("ebsclaw");
+		expect(output).toContain("miniclaw");
 		expect(onExit).not.toHaveBeenCalled();
 	});
 

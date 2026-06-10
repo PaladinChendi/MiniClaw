@@ -1,4 +1,4 @@
-import type { PluginManifest } from "@ebsclaw/plugin-api";
+import type { PluginManifest } from "@miniclaw/plugin-api";
 
 export type GatewayMode = "embedded" | "gateway";
 
@@ -23,7 +23,7 @@ export interface GatewayConfig {
 
 export interface LoadedPlugin {
 	manifest: PluginManifest;
-	instance: import("@ebsclaw/plugin-api").Plugin;
+	instance: import("@miniclaw/plugin-api").Plugin;
 	dir: string;
 }
 

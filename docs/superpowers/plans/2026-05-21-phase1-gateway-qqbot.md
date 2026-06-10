@@ -21,7 +21,7 @@ packages/gateway/src/
   hook-engine.ts            — HookEngine: pre/post hooks
   cron-scheduler.ts         — CronScheduler: deterministic jitter
   heartbeat.ts              — HeartbeatSystem
-  config.ts                 — load ~/.ebsclaw/config.yaml
+  config.ts                 — load ~/.miniclaw/config.yaml
   types.ts                  — Internal Gateway types
 packages/gateway/test/
   plugin-registry.test.ts
@@ -61,7 +61,7 @@ packages/cli/test/
 `packages/gateway/package.json`:
 ```json
 {
-  "name": "@ebsclaw/gateway",
+  "name": "@miniclaw/gateway",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
@@ -74,14 +74,14 @@ packages/cli/test/
     "yaml": "^2.4.0"
   },
   "devDependencies": {
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*",
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*",
     "typescript": "^5.6.0"
   }
 }
 ```
 
-Run: `cd /mnt/d/ebsclaw && bun install`
+Run: `cd /mnt/d/miniclaw && bun install`
 Expected: workspace links resolved, yaml installed
 
 - [ ] **Step 2: Write failing config test**
@@ -89,7 +89,7 @@ Expected: workspace links resolved, yaml installed
 `packages/gateway/test/config.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { loadConfig, DEFAULT_CONFIG } from "@ebsclaw/gateway/config";
+import { loadConfig, DEFAULT_CONFIG } from "@miniclaw/gateway/config";
 import { mkdir, rm, writeFile } from "fs/promises";
 import { join } from "path";
 
@@ -169,14 +169,14 @@ gateway:
 
 - [ ] **Step 3: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/config.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/config.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 4: Implement types.ts**
 
 `packages/gateway/src/types.ts`:
 ```typescript
-import type { Plugin, PluginManifest } from "@ebsclaw/plugin-api";
+import type { Plugin, PluginManifest } from "@miniclaw/plugin-api";
 
 /** Gateway operational mode */
 export type GatewayMode = "embedded" | "daemon";
@@ -316,7 +316,7 @@ export async function loadConfig(configPath: string): Promise<GatewayConfig> {
 
 - [ ] **Step 6: Run config tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/config.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/config.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 7: Commit**
@@ -339,10 +339,10 @@ git commit -m "feat(gateway): add internal types and YAML config loader with def
 `packages/gateway/test/session-manager.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { SessionManager } from "@ebsclaw/gateway/session-manager";
+import { SessionManager } from "@miniclaw/gateway/session-manager";
 import { mkdir, rm, readFile, existsSync } from "fs/promises";
 import { join } from "path";
-import type { SessionSnapshot } from "@ebsclaw/plugin-api";
+import type { SessionSnapshot } from "@miniclaw/plugin-api";
 
 const tmpDir = join(import.meta.dir, "__tmp_session__");
 
@@ -430,7 +430,7 @@ describe("SessionManager", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/session-manager.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/session-manager.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement session-manager.ts**
@@ -440,8 +440,8 @@ Expected: FAIL — module not found
 import { join } from "path";
 import { existsSync } from "fs";
 import { readFile, unlink } from "fs/promises";
-import { writeFileAtomic } from "@ebsclaw/shared";
-import type { SessionSnapshot } from "@ebsclaw/plugin-api";
+import { writeFileAtomic } from "@miniclaw/shared";
+import type { SessionSnapshot } from "@miniclaw/plugin-api";
 
 export class SessionManager {
 	private dataDir: string;
@@ -507,7 +507,7 @@ export class SessionManager {
 
 - [ ] **Step 4: Run session manager tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/session-manager.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/session-manager.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -530,8 +530,8 @@ git commit -m "feat(gateway): add SessionManager with CRUD and atomic disk persi
 `packages/gateway/test/hook-engine.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { HookEngine } from "@ebsclaw/gateway/hook-engine";
-import type { HookPoint, HookFunction } from "@ebsclaw/gateway/types";
+import { HookEngine } from "@miniclaw/gateway/hook-engine";
+import type { HookPoint, HookFunction } from "@miniclaw/gateway/types";
 
 describe("HookEngine", () => {
 	it("registers and fires a hook successfully", async () => {
@@ -616,7 +616,7 @@ describe("HookEngine", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/hook-engine.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/hook-engine.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement hook-engine.ts**
@@ -657,7 +657,7 @@ export class HookEngine {
 
 - [ ] **Step 4: Run hook engine tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/hook-engine.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/hook-engine.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -680,7 +680,7 @@ git commit -m "feat(gateway): add HookEngine with priority ordering and failure 
 `packages/gateway/test/cron-scheduler.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { CronScheduler } from "@ebsclaw/gateway/cron-scheduler";
+import { CronScheduler } from "@miniclaw/gateway/cron-scheduler";
 
 describe("CronScheduler", () => {
 	let scheduler: CronScheduler;
@@ -781,7 +781,7 @@ describe("CronScheduler", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/cron-scheduler.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/cron-scheduler.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement cron-scheduler.ts**
@@ -869,7 +869,7 @@ export class CronScheduler {
 
 - [ ] **Step 4: Run cron scheduler tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/cron-scheduler.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/cron-scheduler.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -892,7 +892,7 @@ git commit -m "feat(gateway): add CronScheduler with deterministic jitter and mi
 `packages/gateway/test/heartbeat.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach } from "bun:test";
-import { HeartbeatSystem } from "@ebsclaw/gateway/heartbeat";
+import { HeartbeatSystem } from "@miniclaw/gateway/heartbeat";
 
 describe("HeartbeatSystem", () => {
 	it("registers a health check and reports status", async () => {
@@ -965,7 +965,7 @@ describe("HeartbeatSystem", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/heartbeat.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/heartbeat.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement heartbeat.ts**
@@ -1033,7 +1033,7 @@ export class HeartbeatSystem {
 
 - [ ] **Step 4: Run heartbeat tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/heartbeat.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/heartbeat.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -1057,9 +1057,9 @@ git commit -m "feat(gateway): add HeartbeatSystem with periodic health checks"
 `packages/gateway/test/plugin-registry.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach } from "bun:test";
-import { PluginRegistry } from "@ebsclaw/gateway/plugin-registry";
-import { PluginLoader } from "@ebsclaw/gateway/plugin-loader";
-import type { Plugin, PluginContext } from "@ebsclaw/plugin-api";
+import { PluginRegistry } from "@miniclaw/gateway/plugin-registry";
+import { PluginLoader } from "@miniclaw/gateway/plugin-loader";
+import type { Plugin, PluginContext } from "@miniclaw/plugin-api";
 import { mkdir, rm, writeFile } from "fs/promises";
 import { join } from "path";
 
@@ -1075,7 +1075,7 @@ describe("PluginRegistry", () => {
 	it("loads a plugin from a directory with manifest", async () => {
 		await mkdir(tmpDir, { recursive: true });
 		await writeFile(
-			join(tmpDir, "ebsclaw.manifest.json"),
+			join(tmpDir, "miniclaw.manifest.json"),
 			JSON.stringify({
 				name: "test-plugin",
 				version: "0.1.0",
@@ -1160,7 +1160,7 @@ describe("PluginRegistry", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/plugin-registry.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/plugin-registry.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement plugin-loader.ts**
@@ -1169,13 +1169,13 @@ Expected: FAIL — module not found
 ```typescript
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
-import { validateManifest } from "@ebsclaw/plugin-api";
-import type { PluginManifest, Plugin } from "@ebsclaw/plugin-api";
+import { validateManifest } from "@miniclaw/plugin-api";
+import type { PluginManifest, Plugin } from "@miniclaw/plugin-api";
 import type { LoadedPlugin } from "./types";
 
 export class PluginLoader {
 	async load(dir: string): Promise<LoadedPlugin> {
-		const manifestPath = join(dir, "ebsclaw.manifest.json");
+		const manifestPath = join(dir, "miniclaw.manifest.json");
 		if (!existsSync(manifestPath)) {
 			throw new Error(`No manifest found at ${manifestPath}`);
 		}
@@ -1202,7 +1202,7 @@ export class PluginLoader {
 
 `packages/gateway/src/plugin-registry.ts`:
 ```typescript
-import type { Plugin, PluginContext } from "@ebsclaw/plugin-api";
+import type { Plugin, PluginContext } from "@miniclaw/plugin-api";
 
 interface RegisteredPlugin {
 	name: string;
@@ -1242,7 +1242,7 @@ export class PluginRegistry {
 
 - [ ] **Step 5: Run plugin registry tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/plugin-registry.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/plugin-registry.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -1265,10 +1265,10 @@ git commit -m "feat(gateway): add PluginLoader and PluginRegistry with lifecycle
 `packages/gateway/test/gateway.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { Gateway } from "@ebsclaw/gateway";
+import { Gateway } from "@miniclaw/gateway";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
-import type { InboundMessage, OutboundMessage } from "@ebsclaw/plugin-api";
+import type { InboundMessage, OutboundMessage } from "@miniclaw/plugin-api";
 
 const tmpDir = join(import.meta.dir, "__tmp_gateway__");
 
@@ -1372,7 +1372,7 @@ describe("Gateway", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/gateway.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/gateway.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement index.ts (Gateway class)**
@@ -1386,8 +1386,8 @@ import { CronScheduler } from "./cron-scheduler";
 import { HeartbeatSystem } from "./heartbeat";
 import { loadConfig } from "./config";
 import type { GatewayMode, GatewayConfig } from "./types";
-import type { PluginContext, PluginConfig, LLMRequest, LLMResponse, LLMOptions, InboundMessage, OutboundMessage } from "@ebsclaw/plugin-api";
-import { createStructuredLogger } from "@ebsclaw/shared";
+import type { PluginContext, PluginConfig, LLMRequest, LLMResponse, LLMOptions, InboundMessage, OutboundMessage } from "@miniclaw/plugin-api";
+import { createStructuredLogger } from "@miniclaw/shared";
 
 export interface GatewayOptions {
 	dataDir: string;
@@ -1503,12 +1503,12 @@ export type { GatewayConfig, GatewayMode, HookPoint, HookFunction, HookRegistrat
 
 - [ ] **Step 5: Run gateway tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/gateway.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/gateway.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 6: Run ALL gateway tests together**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/`
 Expected: ALL PASS
 
 - [ ] **Step 7: Commit**
@@ -1535,20 +1535,20 @@ git commit -m "feat(gateway): add Gateway class with embedded mode, ingress/egre
 `extensions/channels/qqbot/package.json`:
 ```json
 {
-  "name": "@ebsclaw/channel-qqbot",
+  "name": "@miniclaw/channel-qqbot",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "ebsclaw": { "type": "channel", "manifest": "ebsclaw.manifest.json" },
+  "miniclaw": { "type": "channel", "manifest": "miniclaw.manifest.json" },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },
   "dependencies": {},
   "devDependencies": {
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*",
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*",
     "typescript": "^5.6.0"
   }
 }
@@ -1563,7 +1563,7 @@ Add a tsconfig.json at `extensions/channels/qqbot/tsconfig.json`:
 }
 ```
 
-Run: `cd /mnt/d/ebsclaw && bun install`
+Run: `cd /mnt/d/miniclaw && bun install`
 Expected: workspace links resolved
 
 - [ ] **Step 2: Write failing qq-api test**
@@ -1571,7 +1571,7 @@ Expected: workspace links resolved
 `extensions/channels/qqbot/test/qq-api.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { QQBotApiClient } from "@ebsclaw/channel-qqbot/qq-api";
+import { QQBotApiClient } from "@miniclaw/channel-qqbot/qq-api";
 
 describe("QQBotApiClient", () => {
 	it("constructs with appId and appSecret", () => {
@@ -1626,7 +1626,7 @@ describe("QQBotApiClient", () => {
 
 - [ ] **Step 3: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/channels/qqbot/test/qq-api.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/channels/qqbot/test/qq-api.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 4: Implement QQ-specific types**
@@ -1692,7 +1692,7 @@ export interface QQBotApiConfig {
 
 `extensions/channels/qqbot/src/qq-api.ts`:
 ```typescript
-import type { InboundMessage } from "@ebsclaw/plugin-api";
+import type { InboundMessage } from "@miniclaw/plugin-api";
 import type { QQBotApiConfig, QQMessagePayload, QQEvent, QQAuthResponse } from "./types";
 
 export class QQBotApiClient {
@@ -1789,7 +1789,7 @@ export class QQBotApiClient {
 
 - [ ] **Step 6: Run qq-api tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/channels/qqbot/test/qq-api.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/channels/qqbot/test/qq-api.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 7: Write failing channel plugin test**
@@ -1797,8 +1797,8 @@ Expected: ALL PASS
 `extensions/channels/qqbot/test/index.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { createQQBotChannelPlugin } from "@ebsclaw/channel-qqbot";
-import type { ChannelPlugin, PluginContext } from "@ebsclaw/plugin-api";
+import { createQQBotChannelPlugin } from "@miniclaw/channel-qqbot";
+import type { ChannelPlugin, PluginContext } from "@miniclaw/plugin-api";
 
 describe("QQBot ChannelPlugin", () => {
 	it("creates a ChannelPlugin with onMessage and send", () => {
@@ -1878,14 +1878,14 @@ describe("QQBot ChannelPlugin", () => {
 
 - [ ] **Step 8: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/channels/qqbot/test/index.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test extensions/channels/qqbot/test/index.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 9: Implement QQbot ChannelPlugin**
 
 `extensions/channels/qqbot/src/index.ts`:
 ```typescript
-import type { ChannelPlugin, PluginContext, InboundMessage, OutboundMessage } from "@ebsclaw/plugin-api";
+import type { ChannelPlugin, PluginContext, InboundMessage, OutboundMessage } from "@miniclaw/plugin-api";
 import { QQBotApiClient } from "./qq-api";
 import type { QQBotApiConfig } from "./types";
 
@@ -1933,7 +1933,7 @@ export type { QQBotApiConfig, QQEvent, QQMessagePayload, QQAuthResponse } from "
 
 - [ ] **Step 10: Run all qqbot tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/channels/qqbot/`
+Run: `cd /mnt/d/miniclaw && bun test extensions/channels/qqbot/`
 Expected: ALL PASS
 
 - [ ] **Step 11: Commit**
@@ -1960,22 +1960,22 @@ git commit -m "feat(qqbot): add QQ Bot API client and ChannelPlugin implementati
 `packages/cli/package.json`:
 ```json
 {
-  "name": "@ebsclaw/cli",
+  "name": "@miniclaw/cli",
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "ebsclaw": "src/index.ts"
+    "miniclaw": "src/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },
   "dependencies": {
-    "@ebsclaw/gateway": "workspace:*"
+    "@miniclaw/gateway": "workspace:*"
   },
   "devDependencies": {
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*",
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*",
     "typescript": "^5.6.0"
   }
 }
@@ -1990,7 +1990,7 @@ git commit -m "feat(qqbot): add QQ Bot API client and ChannelPlugin implementati
 }
 ```
 
-Run: `cd /mnt/d/ebsclaw && bun install`
+Run: `cd /mnt/d/miniclaw && bun install`
 Expected: workspace links resolved
 
 - [ ] **Step 2: Write failing CLI test**
@@ -1998,7 +1998,7 @@ Expected: workspace links resolved
 `packages/cli/test/commands.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { parseArgs } from "@ebsclaw/cli";
+import { parseArgs } from "@miniclaw/cli";
 
 describe("CLI argument parsing", () => {
 	it("parses 'gateway start' command", () => {
@@ -2040,14 +2040,14 @@ describe("CLI argument parsing", () => {
 
 - [ ] **Step 3: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/cli/test/commands.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/cli/test/commands.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 4: Implement gateway-start command**
 
 `packages/cli/src/commands/gateway-start.ts`:
 ```typescript
-import { Gateway } from "@ebsclaw/gateway";
+import { Gateway } from "@miniclaw/gateway";
 import { mkdirSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
@@ -2058,7 +2058,7 @@ export interface GatewayStartOptions {
 }
 
 export async function gatewayStart(opts: GatewayStartOptions = {}): Promise<Gateway> {
-	const dataDir = opts.dataDir ?? join(homedir(), ".ebsclaw", "data");
+	const dataDir = opts.dataDir ?? join(homedir(), ".miniclaw", "data");
 	mkdirSync(dataDir, { recursive: true });
 
 	const gw = new Gateway({
@@ -2076,11 +2076,11 @@ export async function gatewayStart(opts: GatewayStartOptions = {}): Promise<Gate
 
 `packages/cli/src/commands/tui.ts`:
 ```typescript
-import { Gateway } from "@ebsclaw/gateway";
+import { Gateway } from "@miniclaw/gateway";
 import { mkdirSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
-import type { GatewayMode } from "@ebsclaw/gateway";
+import type { GatewayMode } from "@miniclaw/gateway";
 
 export interface TuiOptions {
 	mode?: GatewayMode;
@@ -2089,7 +2089,7 @@ export interface TuiOptions {
 
 export async function tui(opts: TuiOptions = {}): Promise<Gateway> {
 	const mode = opts.mode ?? "embedded";
-	const dataDir = opts.dataDir ?? join(homedir(), ".ebsclaw", "data");
+	const dataDir = opts.dataDir ?? join(homedir(), ".miniclaw", "data");
 	mkdirSync(dataDir, { recursive: true });
 
 	const gw = new Gateway({
@@ -2120,7 +2120,7 @@ export interface ParsedArgs {
 }
 
 export function parseArgs(argv: string[]): ParsedArgs {
-	const args = argv.slice(2); // strip bun/ebsclaw
+	const args = argv.slice(2); // strip bun/miniclaw
 
 	if (args.length === 0) {
 		return { command: "tui" };
@@ -2181,7 +2181,7 @@ export async function main(): Promise<void> {
 				});
 				return;
 			}
-			console.log("Usage: ebsclaw gateway start [--port 8765]");
+			console.log("Usage: miniclaw gateway start [--port 8765]");
 			return;
 		}
 		case "tui": {
@@ -2194,12 +2194,12 @@ export async function main(): Promise<void> {
 		}
 		case "help":
 		default: {
-			console.log(`ebsclaw — AI agent platform
+			console.log(`miniclaw — AI agent platform
 
 Usage:
-  ebsclaw tui [--mode embedded|gateway]   Start TUI (default: embedded)
-  ebsclaw gateway start [--port 8765]      Start Gateway daemon
-  ebsclaw help                             Show this help`);
+  miniclaw tui [--mode embedded|gateway]   Start TUI (default: embedded)
+  miniclaw gateway start [--port 8765]      Start Gateway daemon
+  miniclaw help                             Show this help`);
 		}
 	}
 }
@@ -2218,7 +2218,7 @@ export { tui } from "./commands/tui";
 
 - [ ] **Step 7: Run CLI tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/cli/test/commands.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/cli/test/commands.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 8: Commit**
@@ -2240,9 +2240,9 @@ git commit -m "feat(cli): add CLI with gateway start, tui, and argument parsing"
 `packages/gateway/test/integration.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { Gateway } from "@ebsclaw/gateway";
-import { createQQBotChannelPlugin } from "@ebsclaw/channel-qqbot";
-import type { InboundMessage, OutboundMessage } from "@ebsclaw/plugin-api";
+import { Gateway } from "@miniclaw/gateway";
+import { createQQBotChannelPlugin } from "@miniclaw/channel-qqbot";
+import type { InboundMessage, OutboundMessage } from "@miniclaw/plugin-api";
 import { mkdir, rm } from "fs/promises";
 import { join } from "path";
 
@@ -2354,7 +2354,7 @@ describe("End-to-end QQ message flow", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/integration.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/integration.test.ts`
 Expected: FAIL — qqbot module path not resolving
 
 - [ ] **Step 3: Add path aliases for clean imports in test**
@@ -2364,7 +2364,7 @@ Update `packages/gateway/package.json` to add exports map:
 `packages/gateway/package.json`:
 ```json
 {
-  "name": "@ebsclaw/gateway",
+  "name": "@miniclaw/gateway",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
@@ -2387,8 +2387,8 @@ Update `packages/gateway/package.json` to add exports map:
     "yaml": "^2.4.0"
   },
   "devDependencies": {
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*",
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*",
     "typescript": "^5.6.0"
   }
 }
@@ -2399,7 +2399,7 @@ Similarly, update `extensions/channels/qqbot/package.json` exports:
 `extensions/channels/qqbot/package.json`:
 ```json
 {
-  "name": "@ebsclaw/channel-qqbot",
+  "name": "@miniclaw/channel-qqbot",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
@@ -2409,15 +2409,15 @@ Similarly, update `extensions/channels/qqbot/package.json` exports:
     "./qq-api": "./src/qq-api.ts",
     "./types": "./src/types.ts"
   },
-  "ebsclaw": { "type": "channel", "manifest": "ebsclaw.manifest.json" },
+  "miniclaw": { "type": "channel", "manifest": "miniclaw.manifest.json" },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },
   "dependencies": {},
   "devDependencies": {
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*",
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*",
     "typescript": "^5.6.0"
   }
 }
@@ -2428,7 +2428,7 @@ Also update `packages/cli/package.json` with exports:
 `packages/cli/package.json`:
 ```json
 {
-  "name": "@ebsclaw/cli",
+  "name": "@miniclaw/cli",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
@@ -2437,29 +2437,29 @@ Also update `packages/cli/package.json` with exports:
     ".": "./src/index.ts"
   },
   "bin": {
-    "ebsclaw": "src/index.ts"
+    "miniclaw": "src/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },
   "dependencies": {
-    "@ebsclaw/gateway": "workspace:*"
+    "@miniclaw/gateway": "workspace:*"
   },
   "devDependencies": {
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*",
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*",
     "typescript": "^5.6.0"
   }
 }
 ```
 
-Run: `cd /mnt/d/ebsclaw && bun install`
+Run: `cd /mnt/d/miniclaw && bun install`
 Expected: all workspaces resolved
 
 - [ ] **Step 4: Run integration test**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/integration.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/integration.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
@@ -2482,7 +2482,7 @@ git commit -m "test(gateway): add end-to-end integration test for QQ message flo
 `packages/gateway/test/auth.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { AuthSystem } from "@ebsclaw/gateway/auth";
+import { AuthSystem } from "@miniclaw/gateway/auth";
 
 describe("AuthSystem (v1)", () => {
 	it("trusts all plugins when trustAll is true", async () => {
@@ -2529,7 +2529,7 @@ describe("AuthSystem (v1)", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/auth.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/auth.test.ts`
 Expected: FAIL — module not found
 
 - [ ] **Step 3: Implement auth.ts**
@@ -2598,7 +2598,7 @@ export type { AuthConfig } from "./auth";
 
 - [ ] **Step 5: Run auth tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/test/auth.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/test/auth.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
@@ -2618,37 +2618,37 @@ git commit -m "feat(gateway): add v1 AuthSystem with trust-all model and API key
 
 - [ ] **Step 1: Run ALL tests across the full monorepo**
 
-Run: `cd /mnt/d/ebsclaw && bun test`
+Run: `cd /mnt/d/miniclaw && bun test`
 Expected: ALL PASS
 
 - [ ] **Step 2: Run lint across the full monorepo**
 
-Run: `cd /mnt/d/ebsclaw && bun run lint`
+Run: `cd /mnt/d/miniclaw && bun run lint`
 Expected: No errors
 
 - [ ] **Step 3: Run typecheck across the full monorepo**
 
-Run: `cd /mnt/d/ebsclaw && bun run typecheck`
+Run: `cd /mnt/d/miniclaw && bun run typecheck`
 Expected: No errors
 
 - [ ] **Step 4: Verify test coverage for gateway package**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/gateway/ --coverage`
+Run: `cd /mnt/d/miniclaw && bun test packages/gateway/ --coverage`
 Expected: Coverage >= 80%
 
 - [ ] **Step 5: Verify test coverage for qqbot extension**
 
-Run: `cd /mnt/d/ebsclaw && bun test extensions/channels/qqbot/ --coverage`
+Run: `cd /mnt/d/miniclaw && bun test extensions/channels/qqbot/ --coverage`
 Expected: Coverage >= 80%
 
 - [ ] **Step 6: Verify CLI tests pass**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/cli/`
+Run: `cd /mnt/d/miniclaw && bun test packages/cli/`
 Expected: ALL PASS
 
 - [ ] **Step 7: Run a quick smoke test of the CLI entry point**
 
-Run: `cd /mnt/d/ebsclaw && bun packages/cli/src/index.ts help`
+Run: `cd /mnt/d/miniclaw && bun packages/cli/src/index.ts help`
 Expected: Help text printed
 
 - [ ] **Step 8: Commit (if any fixups were needed)**

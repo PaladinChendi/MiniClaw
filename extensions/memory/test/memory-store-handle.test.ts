@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
 import { join } from "path";
-import { MemoryStore } from "@ebsclaw/gateway/src/memory-store";
-import { MemoryStoreHandle } from "@ebsclaw/gateway/src/memory-store-handle";
+import { MemoryStore } from "@miniclaw/gateway/src/memory-store";
+import { MemoryStoreHandle } from "@miniclaw/gateway/src/memory-store-handle";
 import { mkdir, rm } from "fs/promises";
 
 const testDir = join(import.meta.dir, "__tmp_handle__");

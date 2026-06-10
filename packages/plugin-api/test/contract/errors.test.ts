@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { CorruptDataError, EbsclawError, FatalError, RetryableError, UserActionError } from "../../src/index.ts";
+import { CorruptDataError, MiniclawError, FatalError, RetryableError, UserActionError } from "../../src/index.ts";
 
 describe("Error taxonomy subclasses", () => {
 	it("UserActionError has correct fields", () => {
@@ -8,7 +8,7 @@ describe("Error taxonomy subclasses", () => {
 		expect(err.recoverable).toBe(false);
 		expect(err.userAction).toBe("re-enter API key");
 		expect(err.name).toBe("UserActionError");
-		expect(err instanceof EbsclawError).toBe(true);
+		expect(err instanceof MiniclawError).toBe(true);
 	});
 
 	it("RetryableError has maxRetries", () => {

@@ -1,4 +1,4 @@
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
 
 export interface AgentRunRequest {
 	sessionId?: string;

@@ -1,6 +1,6 @@
 {
-	"name": "@ebsclaw/channel-telegram",
+	"name": "@miniclaw/channel-telegram",
 	"version": "0.1.0",
 	"type": "module",
-	"ebsclaw": { "type": "channel", "manifest": "ebsclaw.manifest.json" }
+	"miniclaw": { "type": "channel", "manifest": "miniclaw.manifest.json" }
 }

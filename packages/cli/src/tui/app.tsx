@@ -50,8 +50,6 @@ export interface TUIAppProps {
 	messages?: RichMessage[];
 	onSubmit?: (text: string) => void;
 	onExit?: () => void;
-	onToggleThinking?: () => void;
-	onToggleSummary?: () => void;
 	onAbort?: () => void;
 }
 
@@ -71,8 +69,6 @@ export function TUIApp({
 	messages = [],
 	onSubmit,
 	onExit,
-	onToggleThinking,
-	onToggleSummary,
 	onAbort,
 }: TUIAppProps) {
 	const { exit } = useApp();
@@ -84,14 +80,6 @@ export function TUIApp({
 		if (state === "thinking" || state === "compacting" || state === "tool_call") {
 			if (key.escape) {
 				onAbort?.();
-				return;
-			}
-			if (ch === "t" && onToggleThinking) {
-				onToggleThinking();
-				return;
-			}
-			if (ch === "e" && onToggleSummary) {
-				onToggleSummary();
 				return;
 			}
 			return;
@@ -114,15 +102,6 @@ export function TUIApp({
 			setInput((v) => v.slice(0, -1));
 			return;
 		}
-		// Toggle keys
-		if (ch === "t" && onToggleThinking) {
-			onToggleThinking();
-			return;
-		}
-		if (ch === "e" && onToggleSummary) {
-			onToggleSummary();
-			return;
-		}
 		if (ch && !key.ctrl && !key.meta) {
 			setInput((v) => v + ch);
 		}
@@ -133,7 +112,7 @@ export function TUIApp({
 			{/* ── Header ── */}
 			<Box justifyContent="space-between" paddingX={1}>
 				<Text color={GREEN} bold>
-					◆ ebsclaw
+					◆ miniclaw
 				</Text>
 				{state === "error" ? (
 					<Text color={RED}>
@@ -216,7 +195,7 @@ export function TUIApp({
 				) : state === "error" ? (
 					<Text color={DIM}>Enter 发送 · Esc 退出 · /compact 强制压缩</Text>
 				) : (
-					<Text color={DIM}>Enter 发送 · Esc 退出 · t 思考 · e 摘要 · /help 命令</Text>
+					<Text color={DIM}>Enter 发送 · Esc 退出 · /help 命令</Text>
 				)}
 			</Box>
 
@@ -225,7 +204,7 @@ export function TUIApp({
 				{fallbackActive ? (
 					<Text color={ORANGE}>⚠ fallback active</Text>
 				) : (
-					<Text color={DIM}>◆ ebsclaw v1.0.0-alpha</Text>
+					<Text color={DIM}>◆ miniclaw v1.0.0-alpha</Text>
 				)}
 				<Text color={DIM}>
 					{pluginCount} plugins · {memoryCount.toLocaleString()} memories · uptime {uptime}

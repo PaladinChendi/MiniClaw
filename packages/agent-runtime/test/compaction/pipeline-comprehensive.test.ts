@@ -166,7 +166,7 @@ describe("CompactionPipeline comprehensive", () => {
 		// so L5's collapsed output must be under maxTokens, but prior levels must still
 		// leave us over budget.
 		// Strategy: make projectView very short, make input very large.
-		const projectViewText = "Project: ebsclaw — multi-channel AI agent";
+		const projectViewText = "Project: miniclaw — multi-channel AI agent";
 		const deps = makeDeps({
 			contextCollapse: {
 				projectView: () => projectViewText,

@@ -1,4 +1,4 @@
-import type { ToolCall, ToolResult } from "@ebsclaw/plugin-api";
+import type { ToolCall, ToolResult } from "@miniclaw/plugin-api";
 
 // Client → Server
 export interface WSInbound {

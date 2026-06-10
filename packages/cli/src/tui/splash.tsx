@@ -89,7 +89,7 @@ export function StartupSplash({ provider, model, initSteps, onDone, collapsed }:
 			<Box flexDirection="column" marginBottom={1}>
 				<Box>
 					<Text color={GREEN} bold>
-						ebsclaw
+						miniclaw
 					</Text>
 					<Text color={DIM}> v1.0.0-alpha · </Text>
 					<Text color={CYAN}>{provider}/{model}</Text>
@@ -112,7 +112,7 @@ export function StartupSplash({ provider, model, initSteps, onDone, collapsed }:
 			</Box>
 			<Box marginTop={1}>
 				<Text color={GREEN} bold>
-					ebsclaw
+					miniclaw
 				</Text>
 				<Text color={DIM}> v1.0.0-alpha </Text>
 				<Text color={DIM}>

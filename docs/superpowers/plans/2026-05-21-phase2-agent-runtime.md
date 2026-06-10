@@ -82,7 +82,7 @@ packages/agent-runtime/
 `packages/agent-runtime/test/circuit-breaker.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach, vi } from "bun:test";
-import { CircuitBreaker } from "@ebsclaw/agent-runtime";
+import { CircuitBreaker } from "@miniclaw/agent-runtime";
 
 describe("CircuitBreaker", () => {
 	let cb: CircuitBreaker;
@@ -166,15 +166,15 @@ describe("CircuitBreaker", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/circuit-breaker.test.ts`
-Expected: FAIL -- `@ebsclaw/agent-runtime` not found or `CircuitBreaker` not exported
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/circuit-breaker.test.ts`
+Expected: FAIL -- `@miniclaw/agent-runtime` not found or `CircuitBreaker` not exported
 
 - [ ] **Step 3: Update agent-runtime package.json with dependencies**
 
 `packages/agent-runtime/package.json`:
 ```json
 {
-  "name": "@ebsclaw/agent-runtime",
+  "name": "@miniclaw/agent-runtime",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
@@ -184,8 +184,8 @@ Expected: FAIL -- `@ebsclaw/agent-runtime` not found or `CircuitBreaker` not exp
     "test": "bun test"
   },
   "dependencies": {
-    "@ebsclaw/plugin-api": "workspace:*",
-    "@ebsclaw/shared": "workspace:*"
+    "@miniclaw/plugin-api": "workspace:*",
+    "@miniclaw/shared": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.6.0"
@@ -197,7 +197,7 @@ Expected: FAIL -- `@ebsclaw/agent-runtime` not found or `CircuitBreaker` not exp
 
 `packages/agent-runtime/src/types.ts`:
 ```typescript
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 
 /** State of the circuit breaker */
 export type CircuitBreakerState = "closed" | "open" | "half-open";
@@ -397,18 +397,18 @@ export type {
 
 - [ ] **Step 7: Run bun install to link workspace**
 
-Run: `cd /mnt/d/ebsclaw && bun install`
+Run: `cd /mnt/d/miniclaw && bun install`
 Expected: workspace packages resolved
 
 - [ ] **Step 8: Run circuit-breaker tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/circuit-breaker.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/circuit-breaker.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 9: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add internal types and CircuitBreaker with half-open state"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add internal types and CircuitBreaker with half-open state"
 ```
 
 ---
@@ -424,16 +424,16 @@ cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agen
 
 - [ ] **Step 1: Install provider SDKs**
 
-Run: `cd /mnt/d/ebsclaw && bun add -d @anthropic-ai/sdk openai @google/generative-ai @aws-sdk/client-bedrock-runtime`
+Run: `cd /mnt/d/miniclaw && bun add -d @anthropic-ai/sdk openai @google/generative-ai @aws-sdk/client-bedrock-runtime`
 
 - [ ] **Step 2: Write failing provider tests**
 
 `packages/agent-runtime/test/llm-router/router.test.ts`:
 ```typescript
 import { describe, it, expect, vi, beforeEach } from "bun:test";
-import { AnthropicProvider } from "@ebsclaw/agent-runtime/llm-router/providers/anthropic";
-import { OpenAIProvider } from "@ebsclaw/agent-runtime/llm-router/providers/openai";
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import { AnthropicProvider } from "@miniclaw/agent-runtime/llm-router/providers/anthropic";
+import { OpenAIProvider } from "@miniclaw/agent-runtime/llm-router/providers/openai";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 
 describe("AnthropicProvider", () => {
 	it("converts LLMRequest to Anthropic format and returns LLMResponse", async () => {
@@ -524,7 +524,7 @@ describe("OpenAIProvider", () => {
 
 - [ ] **Step 3: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/llm-router/router.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/llm-router/router.test.ts`
 Expected: FAIL -- module not found
 
 - [ ] **Step 4: Implement AnthropicProvider**
@@ -532,7 +532,7 @@ Expected: FAIL -- module not found
 `packages/agent-runtime/src/llm-router/providers/anthropic.ts`:
 ```typescript
 import Anthropic from "@anthropic-ai/sdk";
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 import type { LLMProviderConfig } from "../../types";
 
 export interface AnthropicProviderDeps {
@@ -596,7 +596,7 @@ export class AnthropicProvider {
 `packages/agent-runtime/src/llm-router/providers/openai.ts`:
 ```typescript
 import OpenAI from "openai";
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 
 export interface OpenAIProviderDeps {
 	chat?: { completions: { create: (params: any) => Promise<any> } };
@@ -657,7 +657,7 @@ export class OpenAIProvider {
 
 `packages/agent-runtime/src/llm-router/providers/google.ts`:
 ```typescript
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 
 export class GoogleProvider {
 	constructor(
@@ -676,7 +676,7 @@ export class GoogleProvider {
 
 `packages/agent-runtime/src/llm-router/providers/bedrock.ts`:
 ```typescript
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 
 export class BedrockProvider {
 	constructor(
@@ -707,13 +707,13 @@ export { BedrockProvider } from "./llm-router/providers/bedrock";
 
 - [ ] **Step 8: Run provider tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/llm-router/router.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/llm-router/router.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 9: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add LLM provider adapters for Anthropic and OpenAI"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add LLM provider adapters for Anthropic and OpenAI"
 ```
 
 ---
@@ -730,8 +730,8 @@ cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agen
 `packages/agent-runtime/test/llm-router/fallback-chain.test.ts`:
 ```typescript
 import { describe, it, expect, vi } from "bun:test";
-import { FallbackChain } from "@ebsclaw/agent-runtime/llm-router/fallback-chain";
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import { FallbackChain } from "@miniclaw/agent-runtime/llm-router/fallback-chain";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 
 function makeProvider(name: string, response: string, shouldFail = false) {
 	return {
@@ -794,15 +794,15 @@ describe("FallbackChain", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/llm-router/fallback-chain.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/llm-router/fallback-chain.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement FallbackChain**
 
 `packages/agent-runtime/src/llm-router/fallback-chain.ts`:
 ```typescript
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
-import { RetryableError } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
+import { RetryableError } from "@miniclaw/plugin-api";
 
 export interface ProviderLike {
 	name: string;
@@ -862,7 +862,7 @@ export class FallbackChain {
 
 `packages/agent-runtime/src/llm-router/index.ts`:
 ```typescript
-import type { LLMRequest, LLMResponse, LLMOptions } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse, LLMOptions } from "@miniclaw/plugin-api";
 import type { LLMProviderConfig, EmbedRequest } from "../types";
 import { FallbackChain } from "./fallback-chain";
 import type { ProviderLike } from "./fallback-chain";
@@ -946,13 +946,13 @@ export type { ProviderLike } from "./llm-router/fallback-chain";
 
 - [ ] **Step 6: Run all router tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/llm-router/`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/llm-router/`
 Expected: ALL PASS
 
 - [ ] **Step 7: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add LLMRouter with fallback chain, circuit breakers, and hot-swap"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add LLMRouter with fallback chain, circuit breakers, and hot-swap"
 ```
 
 ---
@@ -968,7 +968,7 @@ cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agen
 `packages/agent-runtime/test/llm-router/embed-queue.test.ts`:
 ```typescript
 import { describe, it, expect, vi, beforeEach } from "bun:test";
-import { EmbedQueue } from "@ebsclaw/agent-runtime/llm-router/embed-queue";
+import { EmbedQueue } from "@miniclaw/agent-runtime/llm-router/embed-queue";
 
 describe("EmbedQueue", () => {
 	let queue: EmbedQueue;
@@ -1058,7 +1058,7 @@ describe("EmbedQueue", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/llm-router/embed-queue.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/llm-router/embed-queue.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement EmbedQueue**
@@ -1116,13 +1116,13 @@ export class EmbedQueue {
 
 - [ ] **Step 4: Run embed-queue tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/llm-router/embed-queue.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/llm-router/embed-queue.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add embed priority queue with session > memory > RAG ordering"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add embed priority queue with session > memory > RAG ordering"
 ```
 
 ---
@@ -1141,8 +1141,8 @@ cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agen
 `packages/agent-runtime/test/tool-execution.test.ts`:
 ```typescript
 import { describe, it, expect, beforeEach } from "bun:test";
-import { ToolRegistry } from "@ebsclaw/agent-runtime/tool-execution";
-import type { ToolDefinition, ToolExecutionContext } from "@ebsclaw/agent-runtime";
+import { ToolRegistry } from "@miniclaw/agent-runtime/tool-execution";
+import type { ToolDefinition, ToolExecutionContext } from "@miniclaw/agent-runtime";
 
 const mockCtx: ToolExecutionContext = {
 	sessionId: "test",
@@ -1188,13 +1188,13 @@ describe("ToolRegistry", () => {
 	});
 
 	it("bash tool rejects write commands in readOnly mode", async () => {
-		const { BashTool } = await import("@ebsclaw/agent-runtime/tools/bash");
+		const { BashTool } = await import("@miniclaw/agent-runtime/tools/bash");
 		const bash = new BashTool();
 		await expect(bash.execute({ command: "rm -rf /tmp/test" }, { ...mockCtx, readOnly: true })).rejects.toThrow("read-only");
 	});
 
 	it("read_file tool reads existing file", async () => {
-		const { ReadFileTool } = await import("@ebsclaw/agent-runtime/tools/read-file");
+		const { ReadFileTool } = await import("@miniclaw/agent-runtime/tools/read-file");
 		const tool = new ReadFileTool();
 		const content = await tool.execute({ path: "/etc/hostname" }, { ...mockCtx, workingDir: "/" });
 		expect(typeof content).toBe("string");
@@ -1202,7 +1202,7 @@ describe("ToolRegistry", () => {
 	});
 
 	it("list_files tool returns directory listing", async () => {
-		const { ListFilesTool } = await import("@ebsclaw/agent-runtime/tools/list-files");
+		const { ListFilesTool } = await import("@miniclaw/agent-runtime/tools/list-files");
 		const tool = new ListFilesTool();
 		const result = await tool.execute({ path: "/tmp" }, { ...mockCtx, workingDir: "/tmp" });
 		expect(typeof result).toBe("string");
@@ -1212,7 +1212,7 @@ describe("ToolRegistry", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/tool-execution.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/tool-execution.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement ToolRegistry**
@@ -1397,13 +1397,13 @@ export { ListFilesTool } from "./tools/list-files";
 
 - [ ] **Step 8: Run tool-execution tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/tool-execution.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/tool-execution.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 9: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add ToolRegistry and built-in tools (bash, read_file, list_files)"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add ToolRegistry and built-in tools (bash, read_file, list_files)"
 ```
 
 ---
@@ -1420,7 +1420,7 @@ Append to `packages/agent-runtime/test/tool-execution.test.ts`:
 ```typescript
 describe("SpawnSubAgentTool", () => {
 	it("returns a task ID and spawns background task", async () => {
-		const { SpawnSubAgentTool } = await import("@ebsclaw/agent-runtime/tools/spawn-sub-agent");
+		const { SpawnSubAgentTool } = await import("@miniclaw/agent-runtime/tools/spawn-sub-agent");
 		const spawnFn = vi.fn(async () => "task-123");
 		const tool = new SpawnSubAgentTool(spawnFn);
 		const result = await tool.execute({ task: "do something" }, mockCtx);
@@ -1429,7 +1429,7 @@ describe("SpawnSubAgentTool", () => {
 	});
 
 	it("validates task parameter is required", async () => {
-		const { SpawnSubAgentTool } = await import("@ebsclaw/agent-runtime/tools/spawn-sub-agent");
+		const { SpawnSubAgentTool } = await import("@miniclaw/agent-runtime/tools/spawn-sub-agent");
 		const tool = new SpawnSubAgentTool(async () => "task-abc");
 		await expect(tool.execute({}, mockCtx)).rejects.toThrow("task is required");
 	});
@@ -1438,7 +1438,7 @@ describe("SpawnSubAgentTool", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/tool-execution.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/tool-execution.test.ts`
 Expected: FAIL -- SpawnSubAgentTool not found
 
 - [ ] **Step 3: Implement SpawnSubAgentTool**
@@ -1487,13 +1487,13 @@ export type { SpawnFn } from "./tools/spawn-sub-agent";
 
 - [ ] **Step 5: Run tool-execution tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/tool-execution.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/tool-execution.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add spawn_sub_agent tool with background task spawning"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add spawn_sub_agent tool with background task spawning"
 ```
 
 ---
@@ -1509,18 +1509,18 @@ cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agen
 `packages/agent-runtime/test/prompt-assembly.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { PromptAssembler } from "@ebsclaw/agent-runtime/prompt-assembly";
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
+import { PromptAssembler } from "@miniclaw/agent-runtime/prompt-assembly";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
 
 describe("PromptAssembler", () => {
 	it("assembles system prompt with base instructions", () => {
-		const assembler = new PromptAssembler({ baseSystemPrompt: "You are ebsclaw." });
+		const assembler = new PromptAssembler({ baseSystemPrompt: "You are miniclaw." });
 		const result = assembler.assemble([], []);
-		expect(result.systemPrompt).toContain("You are ebsclaw.");
+		expect(result.systemPrompt).toContain("You are miniclaw.");
 	});
 
 	it("injects memory entries into system prompt", () => {
-		const assembler = new PromptAssembler({ baseSystemPrompt: "You are ebsclaw." });
+		const assembler = new PromptAssembler({ baseSystemPrompt: "You are miniclaw." });
 		const memories = [
 			{ content: "User prefers Chinese", type: "user" as const, relevanceScore: 0.9 },
 			{ content: "Project uses Bun", type: "project" as const, relevanceScore: 0.8 },
@@ -1531,7 +1531,7 @@ describe("PromptAssembler", () => {
 	});
 
 	it("injects tool descriptions into system prompt", () => {
-		const assembler = new PromptAssembler({ baseSystemPrompt: "You are ebsclaw." });
+		const assembler = new PromptAssembler({ baseSystemPrompt: "You are miniclaw." });
 		const toolDefs = [
 			{ name: "bash", description: "Run a bash command", parameters: {} },
 			{ name: "read_file", description: "Read file contents", parameters: {} },
@@ -1542,7 +1542,7 @@ describe("PromptAssembler", () => {
 	});
 
 	it("estimates tokens using 4 chars per token heuristic", () => {
-		const assembler = new PromptAssembler({ baseSystemPrompt: "You are ebsclaw." });
+		const assembler = new PromptAssembler({ baseSystemPrompt: "You are miniclaw." });
 		const messages: AgentMessage[] = [
 			{ role: "user", content: "hello world test", timestamp: Date.now() },
 		];
@@ -1563,7 +1563,7 @@ describe("PromptAssembler", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/prompt-assembly.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/prompt-assembly.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement PromptAssembler**
@@ -1665,13 +1665,13 @@ export type { MemoryEntry, ToolDef, PromptAssemblerConfig, AssembledPrompt } fro
 
 - [ ] **Step 5: Run prompt-assembly tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/prompt-assembly.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/prompt-assembly.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add PromptAssembler with memory injection and token budget"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add PromptAssembler with memory injection and token budget"
 ```
 
 ---
@@ -1687,8 +1687,8 @@ cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agen
 `packages/agent-runtime/test/streaming-engine.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { StreamingEngine } from "@ebsclaw/agent-runtime/streaming-engine";
-import type { StreamChunk } from "@ebsclaw/agent-runtime";
+import { StreamingEngine } from "@miniclaw/agent-runtime/streaming-engine";
+import type { StreamChunk } from "@miniclaw/agent-runtime";
 
 describe("StreamingEngine", () => {
 	it("collects text chunks and emits at sentence boundaries", async () => {
@@ -1756,7 +1756,7 @@ describe("StreamingEngine", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/streaming-engine.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/streaming-engine.test.ts`
 Expected: FAIL
 
 - [ ] **Step 3: Implement StreamingEngine**
@@ -1853,13 +1853,13 @@ export type { StreamingEngineConfig } from "./streaming-engine";
 
 - [ ] **Step 5: Run streaming-engine tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/streaming-engine.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/streaming-engine.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add StreamingEngine with sentence boundary cutting and backpressure"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add StreamingEngine with sentence boundary cutting and backpressure"
 ```
 
 ---
@@ -1933,9 +1933,9 @@ export const DEFAULT_COMPACTION_CONFIG: CompactionConfig = {
 `packages/agent-runtime/test/compaction/tool-result-budget.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { ToolResultBudget } from "@ebsclaw/agent-runtime/compaction/tool-result-budget";
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
-import { DEFAULT_COMPACTION_CONFIG } from "@ebsclaw/agent-runtime/compaction/types";
+import { ToolResultBudget } from "@miniclaw/agent-runtime/compaction/tool-result-budget";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
+import { DEFAULT_COMPACTION_CONFIG } from "@miniclaw/agent-runtime/compaction/types";
 
 describe("L1: ToolResultBudget", () => {
 	it("truncates tool results exceeding budget", () => {
@@ -2015,7 +2015,7 @@ describe("L1: ToolResultBudget", () => {
 
 - [ ] **Step 3: Run test to verify it fails**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/compaction/tool-result-budget.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/compaction/tool-result-budget.test.ts`
 Expected: FAIL
 
 - [ ] **Step 4: Implement ToolResultBudget**
@@ -2084,13 +2084,13 @@ export type { CompactionConfig, CompactionLevelResult, CompactionHookMessage, Co
 
 - [ ] **Step 7: Run L1 tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/compaction/tool-result-budget.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/compaction/tool-result-budget.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 8: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add compaction types and L1 tool-result-budget"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add compaction types and L1 tool-result-budget"
 ```
 
 ---
@@ -2108,9 +2108,9 @@ cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agen
 `packages/agent-runtime/test/compaction/time-microcompact.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { TimeMicrocompact } from "@ebsclaw/agent-runtime/compaction/time-microcompact";
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
-import { DEFAULT_COMPACTION_CONFIG } from "@ebsclaw/agent-runtime/compaction/types";
+import { TimeMicrocompact } from "@miniclaw/agent-runtime/compaction/time-microcompact";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
+import { DEFAULT_COMPACTION_CONFIG } from "@miniclaw/agent-runtime/compaction/types";
 
 describe("L2: TimeMicrocompact", () => {
 	it("removes tool results older than 1 hour", () => {
@@ -2169,9 +2169,9 @@ describe("L2: TimeMicrocompact", () => {
 `packages/agent-runtime/test/compaction/cached-microcompact.test.ts`:
 ```typescript
 import { describe, it, expect, vi } from "bun:test";
-import { CachedMicrocompact } from "@ebsclaw/agent-runtime/compaction/cached-microcompact";
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
-import { DEFAULT_COMPACTION_CONFIG } from "@ebsclaw/agent-runtime/compaction/types";
+import { CachedMicrocompact } from "@miniclaw/agent-runtime/compaction/cached-microcompact";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
+import { DEFAULT_COMPACTION_CONFIG } from "@miniclaw/agent-runtime/compaction/types";
 
 describe("L3: CachedMicrocompact", () => {
 	it("deletes cached prefix tool results via API", async () => {
@@ -2342,13 +2342,13 @@ export type { CachedMicrocompactDeps } from "./compaction/cached-microcompact";
 
 - [ ] **Step 6: Run L2 + L3 tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/compaction/`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/compaction/`
 Expected: ALL PASS
 
 - [ ] **Step 7: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add L2 time-microcompact and L3 cached-microcompact"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add L2 time-microcompact and L3 cached-microcompact"
 ```
 
 ---
@@ -2364,9 +2364,9 @@ cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agen
 `packages/agent-runtime/test/compaction/history-snip.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { HistorySnip } from "@ebsclaw/agent-runtime/compaction/history-snip";
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
-import { DEFAULT_COMPACTION_CONFIG } from "@ebsclaw/agent-runtime/compaction/types";
+import { HistorySnip } from "@miniclaw/agent-runtime/compaction/history-snip";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
+import { DEFAULT_COMPACTION_CONFIG } from "@miniclaw/agent-runtime/compaction/types";
 
 describe("L4: HistorySnip", () => {
 	it("deletes the oldest round-group of messages", () => {
@@ -2489,13 +2489,13 @@ Add to `packages/agent-runtime/src/index.ts`:
 export { HistorySnip } from "./compaction/history-snip";
 ```
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/compaction/history-snip.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/compaction/history-snip.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add L4 history-snip compaction"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add L4 history-snip compaction"
 ```
 
 ---
@@ -2516,9 +2516,9 @@ This is the most complex compaction level. It implements:
 `packages/agent-runtime/test/compaction/context-collapse.test.ts`:
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { ContextCollapse } from "@ebsclaw/agent-runtime/compaction/context-collapse";
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
-import { DEFAULT_COMPACTION_CONFIG } from "@ebsclaw/agent-runtime/compaction/types";
+import { ContextCollapse } from "@miniclaw/agent-runtime/compaction/context-collapse";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
+import { DEFAULT_COMPACTION_CONFIG } from "@miniclaw/agent-runtime/compaction/types";
 
 describe("L5: ContextCollapse", () => {
 	it("collapses history into a projectView summary when token overflow remains", () => {
@@ -2733,13 +2733,13 @@ export type { Stage, Arm } from "./compaction/context-collapse";
 
 - [ ] **Step 4: Run L5 tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/compaction/context-collapse.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/compaction/context-collapse.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add L5 context-collapse with Stage/Arm/Commit lifecycle"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add L5 context-collapse with Stage/Arm/Commit lifecycle"
 ```
 
 ---
@@ -2757,10 +2757,10 @@ L6 uses LLM to produce a semantic summary. It fires `onCompactionHookMessages` b
 `packages/agent-runtime/test/compaction/sm-compact.test.ts`:
 ```typescript
 import { describe, it, expect, vi } from "bun:test";
-import { SMCompact } from "@ebsclaw/agent-runtime/compaction/sm-compact";
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
-import type { CompactionHookMessage } from "@ebsclaw/agent-runtime/compaction/types";
-import { DEFAULT_COMPACTION_CONFIG } from "@ebsclaw/agent-runtime/compaction/types";
+import { SMCompact } from "@miniclaw/agent-runtime/compaction/sm-compact";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
+import type { CompactionHookMessage } from "@miniclaw/agent-runtime/compaction/types";
+import { DEFAULT_COMPACTION_CONFIG } from "@miniclaw/agent-runtime/compaction/types";
 
 describe("L6: SM-compact", () => {
 	it("calls LLM to summarize conversation and replaces history with summary", async () => {
@@ -2835,7 +2835,7 @@ describe("L6: SM-compact", () => {
 ```typescript
 import type { AgentMessage } from "../types";
 import type { CompactionConfig, CompactionLevelResult, CompactionHookMessage } from "./types";
-import type { LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMResponse } from "@miniclaw/plugin-api";
 
 export interface SMCompactDeps {
 	chatFn: (prompt: string, systemPrompt?: string) => Promise<LLMResponse>;
@@ -2941,13 +2941,13 @@ export type { SMCompactDeps } from "./compaction/sm-compact";
 
 - [ ] **Step 4: Run L6 tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/compaction/sm-compact.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/compaction/sm-compact.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add L6 SM-compact with LLM summary and onCompactionHookMessages"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add L6 SM-compact with LLM summary and onCompactionHookMessages"
 ```
 
 ---
@@ -2965,10 +2965,10 @@ L7 is the last resort. It forks a background agent that reads the entire convers
 `packages/agent-runtime/test/compaction/legacy-compact.test.ts`:
 ```typescript
 import { describe, it, expect, vi } from "bun:test";
-import { LegacyCompact } from "@ebsclaw/agent-runtime/compaction/legacy-compact";
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
-import type { CompactionHookMessage } from "@ebsclaw/agent-runtime/compaction/types";
-import { DEFAULT_COMPACTION_CONFIG } from "@ebsclaw/agent-runtime/compaction/types";
+import { LegacyCompact } from "@miniclaw/agent-runtime/compaction/legacy-compact";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
+import type { CompactionHookMessage } from "@miniclaw/agent-runtime/compaction/types";
+import { DEFAULT_COMPACTION_CONFIG } from "@miniclaw/agent-runtime/compaction/types";
 
 describe("L7: LegacyCompact", () => {
 	it("replaces entire conversation with a single summary from forked agent", async () => {
@@ -3140,13 +3140,13 @@ export type { LegacyCompactDeps } from "./compaction/legacy-compact";
 
 - [ ] **Step 4: Run L7 tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/compaction/legacy-compact.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/compaction/legacy-compact.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add L7 legacy-compact with forked agent summary and hooks"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add L7 legacy-compact with forked agent summary and hooks"
 ```
 
 ---
@@ -3164,9 +3164,9 @@ The pipeline runs L1 through L7 sequentially. Each level only acts if the previo
 `packages/agent-runtime/test/compaction/pipeline.test.ts`:
 ```typescript
 import { describe, it, expect, vi } from "bun:test";
-import { CompactionPipeline } from "@ebsclaw/agent-runtime/compaction";
-import type { AgentMessage } from "@ebsclaw/agent-runtime";
-import type { CompactionHookMessage } from "@ebsclaw/agent-runtime/compaction/types";
+import { CompactionPipeline } from "@miniclaw/agent-runtime/compaction";
+import type { AgentMessage } from "@miniclaw/agent-runtime";
+import type { CompactionHookMessage } from "@miniclaw/agent-runtime/compaction/types";
 
 describe("CompactionPipeline", () => {
 	it("applies L1 when tool results exceed budget", async () => {
@@ -3434,18 +3434,18 @@ export type { Stage, Arm } from "./compaction/context-collapse";
 
 - [ ] **Step 4: Run pipeline tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/compaction/pipeline.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/compaction/pipeline.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 5: Run all compaction tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/compaction/`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/compaction/`
 Expected: ALL PASS
 
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add CompactionPipeline orchestrator with L1-L7 escalation"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): add CompactionPipeline orchestrator with L1-L7 escalation"
 ```
 
 ---
@@ -3463,9 +3463,9 @@ The core agentic loop: Prompt Assembly → LLM → Tool Execution → Reply. Loo
 `packages/agent-runtime/test/agent-runtime.test.ts`:
 ```typescript
 import { describe, it, expect, vi, beforeEach } from "bun:test";
-import { AgentRuntime } from "@ebsclaw/agent-runtime";
-import type { AgentMessage, ToolDefinition, LLMResponse } from "@ebsclaw/agent-runtime";
-import type { CompactionPipeline } from "@ebsclaw/agent-runtime/compaction";
+import { AgentRuntime } from "@miniclaw/agent-runtime";
+import type { AgentMessage, ToolDefinition, LLMResponse } from "@miniclaw/agent-runtime";
+import type { CompactionPipeline } from "@miniclaw/agent-runtime/compaction";
 
 describe("AgentRuntime", () => {
 	it("runs single-turn loop: prompt → LLM → reply (no tools)", async () => {
@@ -3605,7 +3605,7 @@ describe("AgentRuntime", () => {
 Replace `packages/agent-runtime/src/index.ts` with the full implementation. The AgentRuntime class ties together all components:
 
 ```typescript
-import type { LLMRequest, LLMResponse } from "@ebsclaw/plugin-api";
+import type { LLMRequest, LLMResponse } from "@miniclaw/plugin-api";
 import type {
 	AgentMessage,
 	ToolDefinition,
@@ -3802,18 +3802,18 @@ export class AgentRuntime {
 
 - [ ] **Step 3: Run agent-runtime tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/test/agent-runtime.test.ts`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/test/agent-runtime.test.ts`
 Expected: ALL PASS
 
 - [ ] **Step 4: Run ALL agent-runtime tests**
 
-Run: `cd /mnt/d/ebsclaw && bun test packages/agent-runtime/`
+Run: `cd /mnt/d/miniclaw && bun test packages/agent-runtime/`
 Expected: ALL PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): implement core agentic loop with prompt assembly, tool execution, compaction, and streaming"
+cd /mnt/d/miniclaw && git add packages/agent-runtime/ && git commit -m "feat(agent-runtime): implement core agentic loop with prompt assembly, tool execution, compaction, and streaming"
 ```
 
 ---
@@ -3850,7 +3850,7 @@ cd /mnt/d/ebsclaw && git add packages/agent-runtime/ && git commit -m "feat(agen
 - Gateway -> AR -> LLMRouter -> Provider: The `AgentRuntime` class is the only path. Gateway calls `runtime.run()`.
 - Compaction is NOT a plugin: All 7 levels live in `packages/agent-runtime/src/compaction/`.
 - Compaction-Memory decoupling: L6/L7 fire `onCompactionHookMessages` (before/after). Memory plugin listens. Zero import of Memory module.
-- Error taxonomy: Uses `EbsclawError` hierarchy from `@ebsclaw/plugin-api`.
+- Error taxonomy: Uses `MiniclawError` hierarchy from `@miniclaw/plugin-api`.
 - Streaming backpressure: `StreamingEngine.push()` returns `true` on overflow. Caller falls back to non-streaming.
 - Embed queue priority: `session_chat > memory_search > rag_indexing` per D43.
 
