@@ -1,4 +1,4 @@
-import { Box, Text } from "ink";
+import { Box, Text } from "@miniclaw/ink";
 import type React from "react";
 
 const GREEN = "#00ff41";

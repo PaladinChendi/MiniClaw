@@ -1,4 +1,4 @@
-import { Box, Text, useApp, useInput } from "ink";
+import { Box, Text, useApp, useInput, useAnimationFrame } from "@miniclaw/ink";
 import React, { useState, useEffect } from "react";
 import type { ConfigStore, ProviderConfig, ProviderType } from "../config-store.ts";
 
@@ -11,14 +11,10 @@ const DIM = "#444";
 const MID = "#666";
 const BORDER = "#1a3a1a";
 
-// ── Pulse animation ──
-function usePulse(interval = 600) {
-	const [on, setOn] = useState(true);
-	useEffect(() => {
-		const id = setInterval(() => setOn((v) => !v), interval);
-		return () => clearInterval(id);
-	}, [interval]);
-	return on;
+// ── Blink animation ──
+function useBlink(interval = 600) {
+	const [, time] = useAnimationFrame(interval);
+	return Math.floor(time / interval) % 2 === 0;
 }
 
 // ── Horizontal rule ──
@@ -44,7 +40,7 @@ function ProgressDots({ current, total }: { current: number; total: number }) {
 const PROVIDERS: { value: ProviderType; label: string; desc: string }[] = [
 	{ value: "anthropic", label: "Anthropic", desc: "Claude · api.anthropic.com" },
 	{ value: "openai", label: "OpenAI", desc: "GPT · api.openai.com/v1" },
-	{ value: "kcode", label: "kcode", desc: "kcode kcode · 自定义端点" },
+		{ value: "kcode", label: "kcode", desc: "kcode · 自定义端点" },
 	{ value: "custom", label: "custom", desc: "自定义 OpenAI 兼容接口" },
 ];
 
@@ -55,9 +51,6 @@ const MODEL_DEFAULTS: Record<string, string> = {
 	custom: "",
 };
 
-const BASE_URL_DEFAULTS: Record<string, string> = {
-	kcode: "",
-};
 
 // ── Step labels ──
 const STEP_LABELS = ["PROVIDER", "BASE URL", "API KEY", "MODEL"];
@@ -78,7 +71,7 @@ export function SetupWizard({ step: initialStep = 0, configStore, onComplete }: 
 	const [apiKeyInput, setApiKeyInput] = useState("");
 	const [modelInput, setModelInput] = useState("");
 	const [done, setDone] = useState(false);
-	const pulse = usePulse();
+	const blink = useBlink();
 
 	useInput((input, key) => {
 		if (done) return;
@@ -89,7 +82,7 @@ export function SetupWizard({ step: initialStep = 0, configStore, onComplete }: 
 			else if (key.return) {
 				const selected = PROVIDERS[cursor].value;
 				setProvider(selected);
-				setBaseUrlInput(BASE_URL_DEFAULTS[selected] ?? "");
+				setBaseUrlInput("");
 				setModelInput(MODEL_DEFAULTS[selected]);
 				setStep(1);
 			}
@@ -214,7 +207,7 @@ export function SetupWizard({ step: initialStep = 0, configStore, onComplete }: 
 		{
 			label: "Base URL",
 			required: false,
-			hint: provider === "kcode" ? "kcode kcode 端点 · Enter 确认" : "e.g. https://api.openai.com/v1 · Enter 跳过",
+			hint: "e.g. https://api.openai.com/v1 · Enter 跳过",
 			value: baseUrlInput,
 			masked: false,
 		},
@@ -222,7 +215,7 @@ export function SetupWizard({ step: initialStep = 0, configStore, onComplete }: 
 		{
 			label: "Model",
 			required: true,
-			hint: provider === "kcode" ? "e.g. glm-5.1" : "e.g. gpt-4o, deepseek-chat, claude-sonnet-4-20250514",
+			hint: "e.g. gpt-4o, deepseek-chat, claude-sonnet-4-20250514",
 			value: modelInput,
 			masked: false,
 		},
@@ -254,7 +247,7 @@ export function SetupWizard({ step: initialStep = 0, configStore, onComplete }: 
 				<Text color={GREEN} backgroundColor="#111">
 					{"  "}
 					{currentField.masked ? "•".repeat(currentField.value.length) : currentField.value}
-					{pulse ? "█" : " "}
+					{blink ? "█" : " "}
 				</Text>
 				<Text color={DIM}>{currentField.hint}</Text>
 			</Box>

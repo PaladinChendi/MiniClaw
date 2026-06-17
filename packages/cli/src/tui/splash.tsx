@@ -1,4 +1,4 @@
-import { Box, Text } from "ink";
+import { Box, Text } from "@miniclaw/ink";
 import React, { useEffect, useRef, useState } from "react";
 
 // ── Color palette ──

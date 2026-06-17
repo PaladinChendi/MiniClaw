@@ -461,9 +461,16 @@ export class LogUpdate {
       )
     }
 
+    const cursorDiff: Diff =
+      !next.cursor.visible && prev.cursor.visible
+        ? [{ type: 'cursorHide' }]
+        : next.cursor.visible && !prev.cursor.visible
+          ? [{ type: 'cursorShow' }]
+          : []
+
     return scrollPatch.length > 0
-      ? [...scrollPatch, ...screen.diff]
-      : screen.diff
+      ? [...scrollPatch, ...screen.diff, ...cursorDiff]
+      : [...screen.diff, ...cursorDiff]
   }
 }
 

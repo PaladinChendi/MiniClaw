@@ -1,4 +1,4 @@
-import { Box, Text, useApp, useInput } from "ink";
+import { Box, Text, useApp, useInput, useAnimationFrame } from "@miniclaw/ink";
 import React, { useEffect, useState } from "react";
 import { MessageRenderer } from "./MessageRenderer.tsx";
 import type { RichMessage } from "./messages.ts";
@@ -16,12 +16,9 @@ const BORDER = "#1a3a1a";
 // ── Braille spinner ──
 const BRAILLE_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
-function usePulse(interval = 80) {
-	const [frame, setFrame] = useState(0);
-	useEffect(() => {
-		const id = setInterval(() => setFrame((f) => (f + 1) % BRAILLE_FRAMES.length), interval);
-		return () => clearInterval(id);
-	}, [interval]);
+function useBrailleSpinner(interval = 80) {
+	const [, time] = useAnimationFrame(interval);
+	const frame = Math.floor(time / interval) % BRAILLE_FRAMES.length;
 	return BRAILLE_FRAMES[frame];
 }
 
@@ -73,7 +70,7 @@ export function TUIApp({
 }: TUIAppProps) {
 	const { exit } = useApp();
 	const [input, setInput] = useState("");
-	const pulse = usePulse(80);
+	const spinner = useBrailleSpinner(80);
 	const shortSession = sessionId.slice(0, 4);
 
 	useInput((ch, key) => {
@@ -137,7 +134,7 @@ export function TUIApp({
 			{/* ── Compacting indicator ── */}
 			{state === "compacting" && (
 				<Box paddingX={1} gap={1}>
-					<Text color={CYAN}>{pulse}</Text>
+					<Text color={CYAN}>{spinner}</Text>
 					<Text color={CYAN}>COMPACTING... {compactingLevel ?? ""}</Text>
 				</Box>
 			)}
@@ -165,7 +162,7 @@ export function TUIApp({
 				{/* ── Status line inside body ── */}
 				{state === "thinking" && (
 					<Box>
-						<Text color={ORANGE}>{pulse} </Text>
+						<Text color={ORANGE}>{spinner} </Text>
 						<Text color={MID}>处理中...</Text>
 					</Box>
 				)}

@@ -51,7 +51,7 @@ describe("ConfigStore", () => {
 	it("overwrites existing config on save", async () => {
 		const store = new ConfigStore(configFile);
 		await store.save({ provider: "anthropic", baseUrl: "", apiKey: "sk-old", model: "gpt-4o" });
-		await store.save({ provider: "kcode", baseUrl: "", apiKey: "sk-new", model: "glm-5.1" });
+		await store.save({ provider: "kcode", baseUrl: "https://kcode.example.com/v1", apiKey: "sk-new", model: "glm-5.1" });
 
 		const loaded = await store.load();
 		expect(loaded!.provider).toBe("kcode");

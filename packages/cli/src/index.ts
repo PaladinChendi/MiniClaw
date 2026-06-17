@@ -2,7 +2,7 @@ import { homedir } from "os";
 import { join } from "path";
 import { buildChatFn, type AgentRuntime, type AgentMessage, type ToolSchema } from "@miniclaw/agent-runtime";
 import { Gateway, MemoryStore } from "@miniclaw/gateway";
-import { render, Box } from "ink";
+import { render, Box } from "@miniclaw/ink";
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import { parseArgs } from "./commands.ts";
 import { ConfigStore, type ProviderConfig, type ProviderType } from "./config-store.ts";
@@ -161,7 +161,7 @@ async function runTUI(mode?: string): Promise<void> {
 	let config = await configStore.load();
 
 	if (!config) {
-		const { waitUntilExit } = render(
+		const { waitUntilExit } = await render(
 			React.createElement(SetupWizard, {
 				configStore,
 				onComplete() {},
@@ -184,7 +184,7 @@ async function runTUI(mode?: string): Promise<void> {
 	// Render immediately — splash runs init steps inside the render tree
 	const initCtx = { config } as Record<string, unknown>;
 
-	const { waitUntilExit } = render(
+	const { waitUntilExit } = await render(
 		React.createElement(function AppShell() {
 			const [ready, setReady] = useState(false);
 			const handleDone = React.useCallback(() => setReady(true), []);

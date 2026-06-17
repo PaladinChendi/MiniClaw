@@ -79,7 +79,7 @@ export async function buildChatFn(
 	}
 
 	if (config.provider === "kcode") {
-		const endpoint = `${(baseUrl || "").replace(/\/$/, "")}/messages`;
+		const endpoint = `${baseUrl!.replace(/\/$/, "")}/messages`;
 		return async (msgs: AgentMessage[], tools?: ToolSchema[], signal?: AbortSignal) => {
 			const system = msgs.find((m) => m.role === "system")?.content;
 			const apiMsgs = toAnthropicApiMsgs(msgs);

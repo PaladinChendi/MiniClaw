@@ -1,5 +1,5 @@
 import type { ToolCall, ToolResult } from "@miniclaw/agent-runtime";
-import { Box, Text } from "ink";
+import { Box, Text, useAnimationFrame } from "@miniclaw/ink";
 import React, { useState } from "react";
 import { Markdown } from "./Markdown.tsx";
 import type { RichMessage, ToolUseStatus } from "./messages.ts";
@@ -17,12 +17,9 @@ const BORDER = "#1a3a1a";
 // ── Braille spinner ──
 const BRAILLE_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
-function usePulse(interval = 80) {
-	const [frame, setFrame] = useState(0);
-	React.useEffect(() => {
-		const id = setInterval(() => setFrame((f) => (f + 1) % BRAILLE_FRAMES.length), interval);
-		return () => clearInterval(id);
-	}, [interval]);
+function useBrailleSpinner(interval = 80) {
+	const [, time] = useAnimationFrame(interval);
+	const frame = Math.floor(time / interval) % BRAILLE_FRAMES.length;
 	return BRAILLE_FRAMES[frame];
 }
 
@@ -163,8 +160,8 @@ function AssistantText({ content }: { content: string }) {
 
 function ToolStatusIcon({ status }: { status: ToolUseStatus }) {
 	if (status === "running") {
-		const pulse = usePulse(150);
-		return <Text color={ORANGE}>{pulse}</Text>;
+		const spinner = useBrailleSpinner(150);
+		return <Text color={ORANGE}>{spinner}</Text>;
 	}
 	if (status === "error") return <Text color={RED}>✗</Text>;
 	return <Text color={GREEN}>●</Text>;

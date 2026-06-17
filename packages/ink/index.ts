@@ -1,4 +1,4 @@
-export { default as render, renderSync, createRoot } from './root.js'
+export { default as render, createRoot } from './root.js'
 export type { RenderOptions, Instance, Root } from './root.js'
 
 export { default as Box } from './components/Box.js'
